@@ -8,7 +8,7 @@ require "/../config/database.php";
 $result = $conn->query("SELECT 1");
 
 if ($result) {
-    echo "Database query successful!";
+    echo "Database query successful!!";
 } else {
     echo "Query failed: " . $conn->error;
 }
