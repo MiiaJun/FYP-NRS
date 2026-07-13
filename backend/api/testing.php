@@ -8,7 +8,11 @@ require __DIR__ . "/../config/database.php";
 $result = $conn->query("SELECT 1");
 
 if ($result) {
-    echo "Database query successful!!";
+    echo json_encode([
+        "message" => "Database query successful!"
+    ]);
 } else {
-    echo "Query failed: " . $conn->error;
+    echo json_encode([
+        "message" => $conn->error
+    ]);
 }
