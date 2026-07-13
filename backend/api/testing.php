@@ -3,4 +3,7 @@
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
 
-echo "PHP is running";
+echo json_encode([
+    "status" => "success",
+    "message" => "PHP API is working"
+]);
