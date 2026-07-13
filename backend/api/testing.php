@@ -3,7 +3,7 @@
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
 
-require "database.php";
+require "/../config/database.php";
 
 $result = $conn->query("SELECT 1");
 
