@@ -3,9 +3,9 @@
 header("Content-Type: application/json");
 
 echo json_encode([
-    "MYSQL_HOST" => getenv("MYSQL_HOST"),
-    "MYSQL_PORT" => getenv("MYSQL_PORT"),
-    "MYSQL_USER" => getenv("MYSQL_USER"),
-    "MYSQL_PASSWORD" => getenv("MYSQL_PASSWORD") ? "SET" : false,
-    "MYSQL_DATABASE" => getenv("MYSQL_DATABASE"),
+    "MYSQLHOST" => getenv("MYSQLHOST"),
+    "MYSQLPORT" => getenv("MYSQLPORT"),
+    "MYSQLUSER" => getenv("MYSQLUSER"),
+    "MYSQLPASSWORD" => getenv("MYSQLPASSWORD") ? "SET" : false,
+    "MYSQLDATABASE" => getenv("MYSQLDATABASE"),
 ]);
