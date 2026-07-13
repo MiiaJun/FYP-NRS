@@ -5,14 +5,21 @@ header("Content-Type: application/json");
 
 require __DIR__ . "/../config/database.php";
 
-$result = $conn->query("SELECT 1");
+$data = json_decode(file_get_contents("php://input"), true);
 
-if ($result) {
+$name = $data["name"];
+
+$stmt = $conn->prepare("INSERT INTO test (name) VALUES (?)");
+$stmt->bind_param("s", $name);
+
+if ($stmt->execute()) {
     echo json_encode([
-        "message" => "Database query successful!"
+        "success" => true,
+        "message" => "Inserted successfully"
     ]);
 } else {
     echo json_encode([
-        "message" => $conn->error
+        "success" => false,
+        "message" => $stmt->error
     ]);
 }

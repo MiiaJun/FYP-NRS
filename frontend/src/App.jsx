@@ -1,26 +1,57 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 function App() {
+  const [name, setName] = useState("");
   const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    fetch("https://fyp-nrs-production.up.railway.app/api/testing.php")
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        setMessage(data.message);
-      })
-      .catch((error) => {
-        console.error(error);
-        setMessage("Failed to connect to PHP backend");
-      });
-  }, []);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch(
+        "https://fyp-nrs-production.up.railway.app/api/test.php",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: name,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      setMessage(data.message);
+    } catch (error) {
+      console.error(error);
+      setMessage("Failed to connect to server.");
+    }
+  };
 
   return (
-    <>
-      <h1>React + PHP Test</h1>
+    <div>
+      <h1>Insert Test Data</h1>
+
+      <form onSubmit={handleSubmit}>
+        <label>
+          Name:
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+        </label>
+
+        <br />
+        <br />
+
+        <button type="submit">Submit</button>
+      </form>
+
       <p>{message}</p>
-    </>
+    </div>
   );
 }
 
