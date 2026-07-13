@@ -9,7 +9,7 @@ function App() {
 
     try {
       const response = await fetch(
-        "https://fyp-nrs-production.up.railway.app/api/test.php",
+        "https://fyp-nrs-production.up.railway.app/api/testing.php",
         {
           method: "POST",
           headers: {
