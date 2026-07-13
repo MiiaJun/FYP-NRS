@@ -4,7 +4,7 @@ function App() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    fetch("https://optimistic-emotion-production-0309.up.railway.app/api/testing.php")
+    fetch("https://fyp-nrs-production.up.railway.app/api/testing.php")
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
