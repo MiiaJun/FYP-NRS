@@ -1,4 +1,5 @@
 import { useState } from "react";
+import EditorTest from "./assets/pages/editortest";
 
 function App() {
   const [name, setName] = useState("");
@@ -51,6 +52,8 @@ function App() {
       </form>
 
       <p>{message}</p>
+
+	  <EditorTest />
     </div>
   );
 }
