@@ -1,16 +1,14 @@
-import { useState } from 'react';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Search, LogIn } from 'lucide-react'
-import './Header.css'
 import ProfileMenu from './ProfileMenu';
-import LoginModal from './LoginModal';
-import RegisterModal from './RegisterModal'
+import './Header.css'
 
 export default function Header() {
-	const { user, isLoggedIn, login, logout } = useAuth();
+	const { user, isLoggedIn, logout, openLogin, openRegister } = useAuth();
 	const [showProfileMenu, setShowProfileMenu] = useState(false);
-	const [showLoginModal, setShowLoginModal] = useState(false);
-	const [showRegisterModal, setShowRegisterModal] = useState(false);
+	const navigate = useNavigate();
 
 	const handleLogout = () => {
 		logout();
@@ -19,7 +17,7 @@ export default function Header() {
 
 	return (
 		<header className="header">
-			<div className="logo">P</div>
+			<div className="logo" onClick={() => navigate("/")}>P</div>
 
 			<div className="search">
 				<Search size={20} />
@@ -42,34 +40,14 @@ export default function Header() {
 					</div>
 				) : (
 					<>
-						<button className="signup-button" onClick={() => setShowRegisterModal(true)}>
+						<button className="signup-button" onClick={openRegister}>
 							Sign up
 						</button>
 
-						<button className="login-button" onClick={() => setShowLoginModal(true)}>
+						<button className="login-button" onClick={openLogin}>
 							<LogIn size={20} />
 							Log in
 						</button>
-
-						{showLoginModal && (
-							<LoginModal 
-								onClose={() => setShowLoginModal(false)} 
-								onOpenRegister={() => {
-									setShowLoginModal(false);
-									setShowRegisterModal(true);
-								}}
-							/>
-						)}
-
-						{showRegisterModal && (
-							<RegisterModal 
-								onClose={() => setShowRegisterModal(false)} 
-								onOpenLogin={() => {
-									setShowLoginModal(true);
-									setShowRegisterModal(false);
-								}}
-							/>
-						)}
 					</>
 				)}
 			</div>

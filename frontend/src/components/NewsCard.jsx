@@ -1,8 +1,10 @@
+import { useNavigate } from "react-router-dom";
 import './NewsCard.css'
 
 export default function NewsCard({ article }) {
+	const navigate = useNavigate();
     return (
-        <article className="news-card">
+        <article className="news-card" onClick={() => navigate(`/article/${article.id}`)}>
             <div className="news-thumbnail">
                 {article.trending && (
                     <span className="trending-badge">
@@ -23,7 +25,7 @@ export default function NewsCard({ article }) {
 					<h2>{article.title}</h2>
 					<p>{article.description}</p>
 				</div>
-				<div className="news-actions">
+				<div className="news-actions" onClick={(e) => e.stopPropagation()}>
 					{/* icons */}
 				</div>
             </div>

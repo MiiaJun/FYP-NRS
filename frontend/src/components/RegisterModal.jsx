@@ -46,7 +46,7 @@ export default function LoginModal({ onClose, onOpenLogin }) {
 							id="username"
 							value={formData.username}
 							onChange={handleChange}
-							placeholder="you@example.com"
+							placeholder="Username"
 							required
 						/>
 					</div>
@@ -58,7 +58,7 @@ export default function LoginModal({ onClose, onOpenLogin }) {
 							type="password"
 							value={formData.password}
 							onChange={handleChange}
-							placeholder="Enter your password"
+							placeholder="At least 8 character"
 							required
 						/>
 					</div>
