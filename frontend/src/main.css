@@ -8,7 +8,9 @@ body {
 	font-family: sans-serif;
 }
 
-button,
-input {
-	font: inherit;
+input,
+select,
+textarea,
+button {
+	font-family: inherit;
 }

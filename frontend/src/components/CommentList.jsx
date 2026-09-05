@@ -1,12 +1,23 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useModal } from '../context/ModalContext';
+import api from "../api/axios";
 import Comment from "./Comment";
 import "./CommentList.css";
 
 export default function CommentList({ articleId }) {
-	const { user, isLoggedIn, openLogin } = useAuth();
+	const { user, isLoggedIn } = useAuth();
+	const { openLogin } = useModal();
 	const [commentText, setCommentText] = useState("");
 	const commentInputRef = useRef(null);
+	const [comments, setComments] = useState([]);
+
+	useEffect(() => {
+		api.get(`/article/listComment.php?id=${articleId}`)
+			.then(response => {
+				setComments(response.data.comments);
+			});
+	}, [articleId, user?.user_id]);
 
 	const handleCommentChange = (e) => {
 		setCommentText(e.target.value);
@@ -14,53 +25,6 @@ export default function CommentList({ articleId }) {
 		e.target.style.height = "24px";
 		e.target.style.height = `${e.target.scrollHeight}px`;
 	};
-
-	const [comments, setComments] = useState([
-		{
-			comment_id: 1,
-			user_id: 1,
-			username: "John",
-			profile_picture: null,
-			content: "This looks really interesting!",
-			created_at: "31 August 2026",
-			parent_comment_id: null,
-			like_count: 12,
-			dislike_count: 1
-		},
-		{
-			comment_id: 2,
-			user_id: 2,
-			username: "Sarah",
-			profile_picture: null,
-			content: "I agree! Really looking forward to it.",
-			created_at: "31 August 2026",
-			parent_comment_id: 1,
-			like_count: 5,
-			dislike_count: 0
-		},
-		{
-			comment_id: 4,
-			user_id: 4,
-			username: "Alex",
-			profile_picture: null,
-			content: "Same here! I can't wait to see more.",
-			created_at: "31 August 2026",
-			parent_comment_id: 1,
-			like_count: 8,
-			dislike_count: 1
-		},
-		{
-			comment_id: 3,
-			user_id: 3,
-			username: "Mike",
-			profile_picture: null,
-			content: "Hopefully we get more information soon.",
-			created_at: "31 August 2026",
-			parent_comment_id: null,
-			like_count: 3,
-			dislike_count: 2
-		}
-	]);
 
 	const repliesByParent = useMemo(() => {
 		const map = {};
@@ -77,8 +41,13 @@ export default function CommentList({ articleId }) {
 
 		for (const key in map) {
 			map[key].sort(
-				(a, b) =>
-					new Date(a.created_at) - new Date(b.created_at)
+				(a, b) => {
+					if (key === "root") {
+						return new Date(b.created_at) - new Date(a.created_at);
+					}
+
+					return new Date(a.created_at) - new Date(b.created_at);
+				}
 			);
 		}
 
@@ -87,7 +56,7 @@ export default function CommentList({ articleId }) {
 
 	const parentComments = repliesByParent["root"] ?? [];
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
 
 		if (!isLoggedIn) {
@@ -99,20 +68,12 @@ export default function CommentList({ articleId }) {
 			return;
 		}
 
-		// POST to PHP later
-		const newComment = {
-			comment_id: comments.length + 1,
-			user_id: user.user_id,
-			username: user.username,
-			profile_picture: user.profile_picture,
-			content: commentText,
-			created_at: "1 September 2026",
-			parent_comment_id: null,
-			like_count: 0,
-			dislike_count: 0
-		};
+		const response = await api.post("/article/createComment.php", {
+			article_id: articleId,
+			content: commentText
+		});
 
-		setComments(prev => [newComment, ...prev]);
+		setComments(prev => [response.data.comment, ...prev]);
 		setCommentText("");
 
 		commentInputRef.current.style.height = "24px";

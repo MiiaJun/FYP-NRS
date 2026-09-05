@@ -1,19 +1,17 @@
 .article {
-    background: white;
     padding: 40px 50px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Article header */
 
 .article-meta {
+	display: flex;
+    align-items: center;
+    gap: 6px;
     margin-bottom: 12px;
     color: #777;
     font-size: 14px;
-}
-
-.article-meta b {
-    font-weight: 600;
 }
 
 .article h1 {
@@ -65,6 +63,8 @@
 .article-body img {
     display: block;
     max-width: 100%;
+	max-height: 1080px;
+	width: auto;
     height: auto;
     margin: 30px auto;
 }

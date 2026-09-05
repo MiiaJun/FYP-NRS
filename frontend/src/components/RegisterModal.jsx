@@ -1,8 +1,9 @@
 import { useState } from "react";
+import api from "../api/axios";
 import "./LoginModal.css";
 
-export default function LoginModal({ onClose, onOpenLogin }) {
-
+export default function RegisterModal({ onClose, onOpenLogin }) {
+	const [error, setError] = useState("");
 	const [formData, setFormData] = useState({
 		email: "",
 		username: "",
@@ -16,16 +17,30 @@ export default function LoginModal({ onClose, onOpenLogin }) {
 		}));
 	};
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
-		onClose();
+		
+		setError("");
+
+		try {
+			await api.post("/auth/register.php", {
+				email: formData.email,
+				username: formData.username,
+				password: formData.password
+			});
+			onClose();
+		} catch (error) {
+			setError(error.response?.data?.message || "Register failed");
+		}
 	};
 
 	return (
 		<div className="login-modal-overlay" onClick={onClose}>
 			<div className="login-modal" onClick={(e) => e.stopPropagation()}>
 				<h2>Join our community</h2>
-				<p>Create a free account to like, comment, bookmark and publish articles</p>
+				<p className="login-description">Create a free account to like, comment, bookmark and publish articles</p>
+
+				{error && <p className="error-message">{error}</p>}
 
 				<form onSubmit={handleSubmit}>
 					<div className="form-group">
@@ -41,7 +56,7 @@ export default function LoginModal({ onClose, onOpenLogin }) {
 					</div>
 
 					<div className="form-group">
-						<label htmlFor="username">Email</label>
+						<label htmlFor="username">Username</label>
 						<input
 							id="username"
 							value={formData.username}

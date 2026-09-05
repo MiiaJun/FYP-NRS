@@ -1,6 +1,6 @@
 import Header from "../components/Header";
-import NewsList from "../components/NewsList";
 import Sidebar from "../components/Sidebar";
+import NewsList from "../components/NewsList";
 import './NewsPage.css'
 
 export default function LandingPage() {

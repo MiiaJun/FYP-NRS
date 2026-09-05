@@ -1,17 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useModal } from '../context/ModalContext';
+import { getTimeAgo } from "../utils/date";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
+import api from "../api/axios";
 import "./Comment.css";
 
 export default function Comment({ comment, repliesByParent, onReply, onEditComment }) {
-	const [reaction, setReaction] = useState(null);
+	const [reaction, setReaction] = useState(comment.user_reaction);
+	const [likeCount, setLikeCount] = useState(comment.like_count);
 	const [showReply, setShowReply] = useState(false);
 	const [replyText, setReplyText] = useState("");
-	const { user, isLoggedIn, openLogin } = useAuth();
+	const { user, isLoggedIn} = useAuth();
+	const { openLogin } = useModal();
 	const [editing, setEditing] = useState(false);
 	const [editText, setEditText] = useState(comment.content);
 
 	const replies = repliesByParent[comment.comment_id] ?? [];
+
+	useEffect(() => {
+		setReaction(comment.user_reaction);
+		setLikeCount(comment.like_count);
+	}, [comment.user_reaction, comment.like_count]);
 
 	const handleReplyChange = (e) => {
 		setReplyText(e.target.value);
@@ -27,26 +37,38 @@ export default function Comment({ comment, repliesByParent, onReply, onEditComme
 		e.target.style.height = `${e.target.scrollHeight}px`;
 	};
 
-	const handleLike = () => {
+	const handleLike = async () => {
 		if (!isLoggedIn) {
 			openLogin();
 			return;
 		}
 
-		setReaction(
-			reaction === "like" ? null : "like"
-		);
+		const newReaction = reaction === 1 ? null : 1;
+
+		const response = await api.post("/article/setCommentReaction.php", {
+			comment_id: comment.comment_id,
+			reaction: newReaction
+		});
+
+		setReaction(response.data.user_reaction);
+		setLikeCount(response.data.like_count);
 	};
 
-	const handleDislike = () => {
+	const handleDislike = async () => {
 		if (!isLoggedIn) {
 			openLogin();
 			return;
 		}
 
-		setReaction(
-			reaction === "dislike" ? null : "dislike"
-		);
+		const newReaction = reaction === 0 ? null : 0;
+
+		const response = await api.post("/article/setCommentReaction.php", {
+			comment_id: comment.comment_id,
+			reaction: newReaction
+		});
+
+		setReaction(response.data.user_reaction);
+		setLikeCount(response.data.like_count);
 	};
 
 	const handleReply = () => {
@@ -58,46 +80,38 @@ export default function Comment({ comment, repliesByParent, onReply, onEditComme
 		setShowReply(true);
 	};
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
 
 		if (!replyText.trim()) {
 			return;
 		}
 
-		// POST to PHP later
-		const newReply = {
-			comment_id: Date.now(),
-			user_id: 1,
-			username: "John",
-			profile_picture: null,
-			content: replyText,
-			created_at: "1 September 2026",
+		const response = await api.post("/article/createComment.php", {
+			article_id: comment.article_id,
 			parent_comment_id: comment.comment_id,
-			like_count: 0,
-			dislike_count: 0
-		};
+			content: replyText
+		});
 
-		onReply(newReply);
+		onReply(response.data.comment);
 
 		setReplyText("");
 		setShowReply(false);
 	};
 
-	const handleSubmitEdit = (e) => {
+	const handleSubmitEdit = async (e) => {
 		e.preventDefault();
 
 		if (!editText.trim()) {
 			return;
 		}
 
-		// Update comment later through API
-		const updatedComment = {
-			...comment,
+		const response = await api.put("/article/editComment.php", {
+			comment_id: comment.comment_id,
 			content: editText
-		};
+		});
 
-		onEditComment(updatedComment);
+		onEditComment(response.data.comment);
 
 		setEditing(false);
 	};
@@ -114,7 +128,11 @@ export default function Comment({ comment, repliesByParent, onReply, onEditComme
 				<div className="comment-user">
 					<b>{comment.username}</b>
 					<span>•</span>
-					<b>{comment.created_at}</b>
+					<b>
+						{comment.updated_at
+							? `Edited ${getTimeAgo(comment.updated_at)}`
+							: getTimeAgo(comment.created_at)}
+					</b>
 				</div>
 
 				{editing ? (
@@ -149,16 +167,16 @@ export default function Comment({ comment, repliesByParent, onReply, onEditComme
 
 				<div className="comment-actions">
 					<button
-						className={reaction === "like" ? "active" : ""}
+						className={reaction === 1 ? "active" : ""}
 						onClick={handleLike}
 					>
 						<ThumbsUp size={18} />
 					</button>
 
-					<span>{comment.like_count}</span>
+					<span>{likeCount}</span>
 
 					<button
-						className={reaction === "dislike" ? "active" : ""}
+						className={reaction === 0 ? "active" : ""}
 						onClick={handleDislike}
 					>
 						<ThumbsDown size={18} />

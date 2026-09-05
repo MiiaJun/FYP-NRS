@@ -1,4 +1,9 @@
 .news-page {
     display: grid;
-    grid-template-columns: minmax(200px, 400px) minmax(800px, 1fr) minmax(200px, 400px);
+    grid-template-columns: 300px minmax(800px, 1fr) minmax(200px, 400px);
+}
+
+.page {
+	display: grid;
+    grid-template-columns: 300px minmax(800px, 1fr)
 }

@@ -1,65 +1,54 @@
-import { createContext, useContext, useState } from 'react';
-import LoginModal from "../components/LoginModal";
-import RegisterModal from "../components/RegisterModal";
+import { createContext, useContext, useState, useEffect } from 'react';
+import api from "../api/axios";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
 	const [user, setUser] = useState(null);
-	const [showLoginModal, setShowLoginModal] = useState(false);
-	const [showRegisterModal, setShowRegisterModal] = useState(false);
+	const [isLoading, setIsLoading] = useState(true);
 
-	const login = (userData) => {
-		setUser(userData);
+	useEffect(() => {
+		api.get("/auth/me.php")
+			.then(response => {
+				setUser(response.data.user);
+			})
+			.catch(() => {
+				setUser(null);
+			}).finally(() => {
+				setIsLoading(false);
+			});
+	}, []);
+
+	const login = async (email, password) => {
+		const response = await api.post("/auth/login.php", {
+			email,
+			password
+		});
+
+		setUser(response.data.user);
 	};
 
-	const logout = () => {
-		setUser(null);
+	const logout = async () => {
+		try {
+			await api.post("/auth/logout.php");
+		} finally {
+			setUser(null);
+		}
 	};
 
 	const isLoggedIn = user !== null;
-
-	const openLogin = () => {
-		setShowRegisterModal(false);
-		setShowLoginModal(true);
-	};
-
-	const openRegister = () => {
-		setShowLoginModal(false);
-		setShowRegisterModal(true);
-	};
-
-	const closeModals = () => {
-		setShowLoginModal(false);
-		setShowRegisterModal(false);
-	};
 
 	return (
 		<AuthContext.Provider
 			value={{
 				user,
 				isLoggedIn,
+				isLoading,
 				login,
 				logout,
-				openLogin,
-				openRegister,
 			}}
 		>
 			{children}
-
-			{showLoginModal && (
-				<LoginModal
-					onClose={closeModals}
-					onOpenRegister={openRegister}
-				/>
-			)}
-
-			{showRegisterModal && (
-				<RegisterModal
-					onClose={closeModals}
-					onOpenLogin={openLogin}
-				/>
-			)}
 		</AuthContext.Provider>
 	);
 }

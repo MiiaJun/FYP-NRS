@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext"
+import { useModal } from "../context/ModalContext";;
 import { Search, LogIn } from 'lucide-react'
 import ProfileMenu from './ProfileMenu';
 import './Header.css'
 
 export default function Header() {
-	const { user, isLoggedIn, logout, openLogin, openRegister } = useAuth();
+	const { user, isLoggedIn, logout } = useAuth();
+	const { openLogin, openRegister } = useModal();
 	const [showProfileMenu, setShowProfileMenu] = useState(false);
 	const navigate = useNavigate();
 

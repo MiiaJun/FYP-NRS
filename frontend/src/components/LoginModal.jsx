@@ -3,12 +3,13 @@ import { useAuth } from "../context/AuthContext";
 import "./LoginModal.css";
 
 export default function LoginModal({ onClose, onOpenRegister }) {
-	const { login } = useAuth();
-
+	const [error, setError] = useState("");
 	const [formData, setFormData] = useState({
 		email: "",
 		password: "",
 	});
+	const { login } = useAuth();
+
 
 	const handleChange = (e) => {
 		setFormData((prev) => ({
@@ -17,24 +18,27 @@ export default function LoginModal({ onClose, onOpenRegister }) {
 		}));
 	};
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
-		// Temporary login until PHP backend is ready
-		login({
-			user_id: 1,
-			username: "TestUser",
-			email: formData.email,
-			profile_picture: null,
-		});
-		onClose();
+		
+		setError("");
+
+		try {
+			await login(formData.email, formData.password);
+			onClose();
+		} catch (error) {
+			setError(error.response?.data?.message || "Login failed");
+		}
 	};
 
 	return (
 		<div className="login-modal-overlay" onClick={onClose}>
 			<div className="login-modal" onClick={(e) => e.stopPropagation()}>
 				<h2>Welcome Back</h2>
-				<p>Log in to continue reading, publishing and following your favorite authors</p>
+				<p className="login-description">Log in to continue reading, publishing and following your favorite authors</p>
 
+				{error && <p className="error-message">{error}</p>}
+				
 				<form onSubmit={handleSubmit}>
 					<div className="form-group">
 						<label htmlFor="email">Email</label>

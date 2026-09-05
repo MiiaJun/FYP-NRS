@@ -1,0 +1,45 @@
+.notification {
+    position: fixed;
+    bottom: 60px;
+    left: 50%;
+	transform: translateX(-50%);
+    padding: 14px 18px;
+    border-radius: 8px;
+    color: white;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+	pointer-events: none;
+
+	animation: toast-in 0.25s ease-out,
+               toast-out 0.25s ease-in 3.75s forwards;
+}
+
+.notification.error {
+    background: #c62828;
+}
+
+.notification.success {
+    background: #2e7d32;
+}
+
+@keyframes toast-in {
+    from {
+        opacity: 0;
+		transform: translate(-50%, 20px);
+    }
+
+    to {
+        opacity: 1;
+		transform: translate(-50%, 0);
+    }
+}
+
+@keyframes toast-out {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}

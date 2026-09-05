@@ -1,0 +1,114 @@
+.create-article {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 36px 0 30px;
+}
+
+.create-article .form-group {
+    display: flex;
+	flex-direction: column;
+	margin-bottom: 18px;
+}
+
+.create-article .form-group label {
+    margin-bottom: 6px;
+	font-weight: 600;
+}
+
+.create-article .form-group input,
+.create-article .article-meta input,
+.create-article .article-meta select,
+.create-article .form-group textarea {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+	padding: 10px 12px;
+}
+
+/* Category + Tags */
+
+.create-article .article-meta {
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr);
+    gap: 12px;
+	margin-bottom: 18px;
+}
+
+/* Cover */
+
+.create-article .cover-upload {
+    width: 100%;
+	aspect-ratio: 16 / 9;
+    border: 1px dashed #ddd;
+    border-radius: 8px;
+    background: #faf9fc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+	margin-bottom: 18px;
+}
+
+.create-article .cover-upload img {
+	width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+}
+
+.create-article .cover-upload:hover {
+    background: #f7f5fa;
+}
+
+/* Body */
+
+.create-article .ck-editor__editable {
+	min-height: 300px;
+}
+
+.create-article .ck-content .image img {
+    min-width: 0;
+    max-width: 100%;
+    max-height: 1080px;
+    object-fit: contain;
+}
+
+/* Bottom buttons */
+
+.create-article .create-article-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.create-article .secondary-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.create-article .create-article-actions button {
+    padding: 10px 30px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.create-article .create-article-actions button{
+	background: none;
+}
+
+.create-article .create-article-actions button:hover {
+    background: #f0f0f0;
+}
+
+.create-article .create-article-actions .publish-button {
+	border: none;
+    background: #6d49c6;
+    color: white;
+}
+
+.create-article .create-article-actions .publish-button:hover {
+    background: #5e3eb0;
+}
