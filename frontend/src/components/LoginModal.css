@@ -9,7 +9,7 @@
 }
 
 .login-modal-overlay .login-modal {
-	width: 600px;
+	width: min(600px, 90%);
 	padding: 40px;
 	background: white;
 	border-radius: 16px;

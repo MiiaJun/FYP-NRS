@@ -5,7 +5,7 @@
 
 /* Article header */
 
-.article-meta {
+.article .article-meta {
 	display: flex;
     align-items: center;
     gap: 6px;
@@ -14,7 +14,7 @@
     font-size: 14px;
 }
 
-.article h1 {
+.article .article h1 {
     margin: 0 0 30px;
     font-size: 38px;
     line-height: 1.2;
@@ -23,7 +23,7 @@
 
 /* Main thumbnail */
 
-.article-thumbnail {
+.article .article-thumbnail {
     display: block;
     max-width: 100%;
     height: auto;
@@ -32,26 +32,27 @@
 
 /* Article body */
 
-.article-body {
+.article .article-body {
     font-size: 17px;
     line-height: 1.8;
     color: #222;
+	overflow-wrap: anywhere;
 }
 
-.article-body p {
+.article .article-body p {
     margin-bottom: 22px;
 }
 
 /* Headings */
 
-.article-body h2 {
+.article .article-body h2 {
     margin: 40px 0 18px;
     font-size: 26px;
     line-height: 1.3;
     font-weight: 600;
 }
 
-.article-body h3 {
+.article .article-body h3 {
     margin: 32px 0 14px;
     font-size: 21px;
     line-height: 1.4;
@@ -60,7 +61,7 @@
 
 /* Images inside article */
 
-.article-body img {
+.article .article-body img {
     display: block;
     max-width: 100%;
 	max-height: 1080px;
@@ -71,30 +72,30 @@
 
 /* Lists */
 
-.article-body ul,
-.article-body ol {
+.article .article-body ul,
+.article .article-body ol {
     margin: 0 0 24px;
     padding-left: 28px;
 }
 
-.article-body li {
+.article .article-body li {
     margin-bottom: 8px;
 }
 
 /* Links */
 
-.article-body a {
+.article .article-body a {
     color: #7046c6;
     text-decoration: underline;
 }
 
-.article-body a:hover {
+.article .article-body a:hover {
     text-decoration: none;
 }
 
 /* Blockquotes */
 
-.article-body blockquote {
+.article .article-body blockquote {
     margin: 30px 0;
     padding: 16px 24px;
     border-left: 4px solid #7046c6;
@@ -105,11 +106,11 @@
 
 /* Text formatting */
 
-.article-body strong {
+.article .article-body strong {
     font-weight: 600;
 }
 
-.article-body em {
+.article .article-body em {
     font-style: italic;
 }
 
@@ -118,13 +119,5 @@
 @media (max-width: 768px) {
     .article {
         padding: 30px 25px;
-    }
-
-    .article h1 {
-        font-size: 30px;
-    }
-
-    .article-body {
-        font-size: 16px;
     }
 }

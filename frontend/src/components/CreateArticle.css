@@ -28,7 +28,7 @@
 
 /* Category + Tags */
 
-.create-article .article-meta {
+.create-article > .article-meta {
     display: grid;
     grid-template-columns: 250px minmax(0, 1fr);
     gap: 12px;

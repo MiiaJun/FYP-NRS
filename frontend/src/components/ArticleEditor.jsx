@@ -3,14 +3,16 @@ import { useNotification } from "../context/NotificationContext";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import { ClassicEditor, Essentials, Paragraph, Bold, Italic, Heading, List, Link, BlockQuote, Image, ImageToolbar, ImageUpload, ImageResize, PendingActions  } from "ckeditor5";
 import uploadAdapter from "../utils/uploadAdapter";
+import ArticlePreview from "./ArticlePreview";
 import "ckeditor5/ckeditor5.css";
 import "./CreateArticle.css";
 
 export default function ArticleEditor({ initialData, onSave }) {
 	const formRef = useRef(null);
-	const [thumbnailPreview, setThumbnailPreview] = useState(null);
+	const [thumbnailPreview, setThumbnailPreview] = useState(initialData?.thumbnail || null);
 	const [isUploading, setIsUploading] = useState(false);
 	const { showNotification } = useNotification();
+	const [showPreview, setShowPreview] = useState(false);
 
 	const [formData, setFormData] = useState({
 		title: initialData?.title || "",
@@ -22,7 +24,7 @@ export default function ArticleEditor({ initialData, onSave }) {
 
 	useEffect(() => {
 		return () => {
-			if (thumbnailPreview) {
+			if (thumbnailPreview?.startsWith("blob:")) {
 				URL.revokeObjectURL(thumbnailPreview);
 			}
 		};
@@ -67,6 +69,24 @@ export default function ArticleEditor({ initialData, onSave }) {
 		}
 
 		onSave(formData, 0);
+	};
+
+	const handlePreview = () => {
+		if (!formRef.current.reportValidity()) {
+			return;
+		}
+
+		if (!formData.content.trim()) {
+			showNotification("Content is required", "error");
+			return;
+		}
+
+		if (isUploading) {
+			showNotification("Please wait for images to finish uploading", "error");
+			return;
+		}
+
+		setShowPreview(true);
 	};
 
 	const handleCoverChange = (e) => {
@@ -191,7 +211,7 @@ export default function ArticleEditor({ initialData, onSave }) {
                 <div className="create-article-actions">
                     <div className="secondary-actions">
                         <button type="button" onClick={handleSaveDraft}>Save Draft</button>
-                        <button type="button">Preview</button>
+                        <button type="button" onClick={handlePreview}>Preview</button>
                     </div>
 
                     <button type="submit" className="publish-button">
@@ -199,6 +219,17 @@ export default function ArticleEditor({ initialData, onSave }) {
                     </button>
                 </div>
             </form>
+			{showPreview && (
+				<ArticlePreview
+					article={{
+						...formData,
+						published_at: new Date().toISOString(),
+						updated_at: null
+					}}
+					thumbnailPreview={thumbnailPreview}
+					onClose={() => setShowPreview(false)}
+				/>
+			)}
         </main>
     );
 }
