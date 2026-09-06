@@ -1,6 +1,7 @@
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import NewsList from "../components/NewsList";
+import LeftSidebar from "../components/LeftSideBar";
 import './NewsPage.css'
 
 export default function LandingPage() {
@@ -8,7 +9,7 @@ export default function LandingPage() {
 		<div>
 			<Header />
 			<main className="news-page">
-				<Sidebar />
+				<LeftSidebar />
 				<NewsList />
 				<Sidebar />
 			</main>

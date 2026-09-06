@@ -33,6 +33,7 @@ if (!$stmt->execute()) {
 
 $result = $stmt->get_result();
 $stmt->close();
+$articles = [];
 
 while ($article = $result->fetch_assoc()) {
     $articles[] = $article;

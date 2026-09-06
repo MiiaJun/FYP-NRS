@@ -93,6 +93,12 @@ export default function CommentList({ articleId }) {
 		);
 	};
 
+	const handleDeleteComment = (commentId) => {
+		setComments(prev =>
+			prev.filter(comment => comment.comment_id !== commentId)
+		);
+	};
+
 	return (
 		<section className="comment-list">
 			<h2>Comments</h2>
@@ -122,6 +128,7 @@ export default function CommentList({ articleId }) {
 						repliesByParent={repliesByParent}
 						onReply={handleReply}
 						onEditComment={handleEditComment}
+						onDeleteComment={handleDeleteComment}
 					/>
 				))}
 			</div>

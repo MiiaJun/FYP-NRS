@@ -89,7 +89,6 @@ if (!$stmt->execute()) {
 
 $result = $stmt->get_result();
 $stmt->close();
-
 $comments = [];
 
 while ($comment = $result->fetch_assoc()) {

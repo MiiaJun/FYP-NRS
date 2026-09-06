@@ -1,20 +1,22 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useModal } from '../context/ModalContext';
+import { useNotification } from "../context/NotificationContext";
 import { getTimeAgo } from "../utils/date";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import api from "../api/axios";
 import "./Comment.css";
 
-export default function Comment({ comment, repliesByParent, onReply, onEditComment }) {
+export default function Comment({ comment, repliesByParent, onReply, onEditComment, onDeleteComment }) {
 	const [reaction, setReaction] = useState(comment.user_reaction);
 	const [likeCount, setLikeCount] = useState(comment.like_count);
 	const [showReply, setShowReply] = useState(false);
 	const [replyText, setReplyText] = useState("");
-	const { user, isLoggedIn} = useAuth();
-	const { openLogin } = useModal();
 	const [editing, setEditing] = useState(false);
 	const [editText, setEditText] = useState(comment.content);
+	const { user, isLoggedIn} = useAuth();
+	const { openLogin } = useModal();
+	const { showNotification } = useNotification();
 
 	const replies = repliesByParent[comment.comment_id] ?? [];
 
@@ -78,6 +80,20 @@ export default function Comment({ comment, repliesByParent, onReply, onEditComme
 		}
 
 		setShowReply(true);
+	};
+
+	const handleDelete = async () => {
+		try {
+			await api.delete("/article/deleteComment.php", {
+				data: {
+					comment_id: comment.comment_id
+				}
+			});
+
+			onDeleteComment(comment.comment_id);
+		} catch (error) {
+			showNotification(error.response?.data?.message || "Failed to delete comment", "error");
+		}
 	};
 
 	const handleSubmit = async (e) => {
@@ -195,7 +211,7 @@ export default function Comment({ comment, repliesByParent, onReply, onEditComme
 								Edit
 							</button>
 
-							<button className="delete-button">
+							<button className="delete-button" onClick={handleDelete}>
 								Delete
 							</button>
 						</>

@@ -10,7 +10,6 @@ if (!isset($_SESSION["user_id"])) {
         "success" => false,
         "message" => "You must be logged in",
     ]);
-
     exit;
 }
 

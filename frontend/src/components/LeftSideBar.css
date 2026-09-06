@@ -1,0 +1,7 @@
+.left-sidebar {
+	height: calc(100vh - 120px);
+	position: sticky;
+	top: 120px;
+	border-right: 1px solid #ddd;
+	overflow-y: auto;
+}

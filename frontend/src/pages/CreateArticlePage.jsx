@@ -1,5 +1,5 @@
 import Header from "../components/Header";
-import Sidebar from "../components/Sidebar";
+import LeftSidebar from "../components/LeftSideBar";
 import CreateArticle from "../components/CreateArticle";
 import "./NewsPage.css";
 
@@ -8,7 +8,7 @@ export default function CreateArticlePage() {
 		<div>
 			<Header />
 			<main className="page">
-				<Sidebar />
+				<LeftSidebar />
 				<CreateArticle />
 			</main>
 		</div>
