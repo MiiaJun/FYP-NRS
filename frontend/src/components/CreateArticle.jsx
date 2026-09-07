@@ -14,7 +14,7 @@ export default function CreateArticle() {
 		if (!isLoading && !isLoggedIn) {
 			navigate("/");
 		}
-	}, [isLoggedIn, navigate]);
+	}, [isLoading, isLoggedIn, navigate]);
 
 	const uploadThumbnail = async (thumbnail) => {
 		if (!thumbnail) {

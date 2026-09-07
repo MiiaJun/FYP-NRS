@@ -26,6 +26,7 @@
 .article .article-thumbnail {
     display: block;
     max-width: 100%;
+	max-height: 1080px;
     height: auto;
     margin: 0 auto 40px;
 }

@@ -7,7 +7,7 @@ import ArticlePreview from "./ArticlePreview";
 import "ckeditor5/ckeditor5.css";
 import "./CreateArticle.css";
 
-export default function ArticleEditor({ initialData, onSave }) {
+export default function ArticleEditor({ initialData, onSave, isEditing = false }) {
 	const formRef = useRef(null);
 	const [thumbnailPreview, setThumbnailPreview] = useState(initialData?.thumbnail || null);
 	const [isUploading, setIsUploading] = useState(false);
@@ -107,7 +107,7 @@ export default function ArticleEditor({ initialData, onSave }) {
 
     return (
         <main className="create-article">
-            <h1>Create new article</h1>
+            <h1>{isEditing ? "Edit article" : "Create new article"}</h1>
 
             <form ref={formRef} onSubmit={handleSubmit}>
                 <div className="form-group">
@@ -210,12 +210,16 @@ export default function ArticleEditor({ initialData, onSave }) {
 
                 <div className="create-article-actions">
                     <div className="secondary-actions">
-                        <button type="button" onClick={handleSaveDraft}>Save Draft</button>
+                         {!isEditing && (
+							<button type="button" onClick={handleSaveDraft}>
+								Save Draft
+							</button>
+						)}
                         <button type="button" onClick={handlePreview}>Preview</button>
                     </div>
 
                     <button type="submit" className="publish-button">
-                        Publish
+                        {isEditing ? "Save Changes" : "Publish"}
                     </button>
                 </div>
             </form>

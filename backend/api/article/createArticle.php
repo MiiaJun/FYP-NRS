@@ -57,7 +57,7 @@ if ($status == 1) {
             published_at,
             category_id
         )
-        VALUES (?, ?, ?, ?, ?, ?, NOW(), ?)"
+         VALUES (?, ?, ?, ?, ?, ?, NOW(), ?)"
     );
 } else {
     $stmt = $conn->prepare(
@@ -71,7 +71,7 @@ if ($status == 1) {
             published_at,
             category_id
         )
-        VALUES (?, ?, ?, ?, ?, ?, NULL, ?)"
+         VALUES (?, ?, ?, ?, ?, ?, NULL, ?)"
     );
 }
 

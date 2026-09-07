@@ -6,13 +6,10 @@ $articleId = $_GET["id"] ?? null;
 
 if (!$articleId || !is_numeric($articleId)) {
     http_response_code(400);
-
     echo json_encode([
         "success" => false,
         "message" => "Invalid article ID",
-		"error" => "INVALID_ARTICLE_ID"
     ]);
-
     exit;
 }
 
@@ -27,10 +24,10 @@ $stmt = $conn->prepare(
 		a.status,
         u.username AS author,
         c.category_name AS category
-    FROM article a
-    JOIN users u ON a.author_id = u.user_id
-    JOIN category c ON a.category_id = c.category_id
-    WHERE a.article_id = ?"
+     FROM article a
+     JOIN users u ON a.author_id = u.user_id
+     JOIN category c ON a.category_id = c.category_id
+     WHERE a.article_id = ?"
 );
 
 if (!$stmt) {
@@ -57,7 +54,6 @@ if (!$article) {
     echo json_encode([
         "success" => false,
         "message" => "Article not found",
-		"error" => "ARTICLE_NOT_FOUND"
     ]);
 
     exit;
@@ -69,7 +65,6 @@ if ($article["status"] != 1) {
     echo json_encode([
         "success" => false,
         "message" => "Article is not available",
-		"error" => "ARTICLE_NOT_AVAILABLE"
     ]);
 
     exit;
