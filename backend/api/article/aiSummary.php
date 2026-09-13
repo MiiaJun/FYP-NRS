@@ -170,6 +170,9 @@ curl_setopt($ch, CURLOPT_POST, true);
 
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
     "model" => "gpt-5.6-luna",
+	"reasoning" => [
+        "effort" => "none"
+    ],
     "input" => $prompt
 ]));
 
