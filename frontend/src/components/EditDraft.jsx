@@ -65,15 +65,17 @@ export default function EditDraft() {
             const response = await api.post("/article/updateArticle.php", {
                 article_id: article.article_id,
                 title: formData.title,
+				summary: formData.summary,
                 content: formData.content,
                 thumbnail: thumbnailUrl,
                 status: status,
-                category_id: formData.category
+                category_id: formData.category,
+				published_at: formData.published_at
             });
 
-            showNotification(response.data.message, "success");
+			navigate("/profile");
         } catch (error) {
-            showNotification(error.response?.data?.message || "Failed to save article","error");
+            showNotification(error.response?.data?.message || "Failed to save article", "error");
         }
     };
 

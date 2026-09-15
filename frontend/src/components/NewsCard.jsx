@@ -35,9 +35,6 @@ export default function NewsCard({ article, onClick, children }) {
 					<h2>{article.title}</h2>
 					<p>{article.summary}</p>
 				</div>
-				<div className="news-actions" onClick={(e) => e.stopPropagation()}>
-					{/* icons */}
-				</div>
             </div>
         </article>
     );

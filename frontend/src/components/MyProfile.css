@@ -2,6 +2,103 @@
     padding: 24px;
 }
 
+.my-profile .profile-header {
+    display: flex;
+    flex-direction: column;
+	gap: 10px;
+	padding-bottom: 20px;
+	margin-bottom: 20px;
+	border-bottom: 1px solid #ddd;
+}
+
+.my-profile .profile-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+	padding-right: 48px;
+}
+
+.my-profile .profile-info {
+    flex: 1;
+}
+
+.my-profile .profile-name-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.my-profile .profile-picture {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.my-profile .profile-info h1 {
+    margin: 0;
+}
+
+.my-profile .trust-score {
+    font-size: 14px;
+	border-radius: 20px;
+	padding: 7px 14px;
+	margin: 8px 0;
+}
+
+.my-profile .trust-score.high {
+    color: #287a4b;
+    background: #e3f5ea;
+}
+
+.my-profile .trust-score.medium {
+    color: #a66a00;
+    background: #fff0d2;
+}
+
+.my-profile .trust-score.low {
+    color: #b83b3b;
+    background: #fde5e5;
+}
+
+.my-profile .profile-bio {
+    margin: 0;
+	color: #666;
+}
+
+.my-profile .edit-profile-button {
+    padding: 10px 12px;
+    border: none;
+    border-radius: 16px;
+    background: #7046c6;
+    color: white;
+    font-weight: 600;
+}
+
+.my-profile .edit-profile-button:hover {
+    background: #5d38aa;
+}
+
+.my-profile .profile-stats {
+    display: flex;
+    gap: 42px;
+}
+
+.my-profile .profile-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.my-profile .profile-stat strong {
+    font-size: 24px;
+}
+
+.my-profile .profile-stat span {
+    font-size: 14px;
+    color: #666;
+}
+
 .my-profile .profile-tabs {
     display: flex;
     gap: 8px;

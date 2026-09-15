@@ -2,18 +2,16 @@
 require __DIR__ . "/../../config/cors.php";
 require __DIR__ . "/../../config/database.php";
 
-session_start();
+$userId = $_GET["user_id"] ?? null;
 
-if (!isset($_SESSION["user_id"])) {
-    http_response_code(401);
+if (!$userId || !is_numeric($userId)) {
+    http_response_code(400);
     echo json_encode([
         "success" => false,
-        "message" => "You must be logged in"
+        "message" => "Invalid user ID"
     ]);
     exit;
 }
-
-$userId = $_SESSION["user_id"];
 
 $stmt = $conn->prepare(
     "SELECT
@@ -23,13 +21,12 @@ $stmt = $conn->prepare(
         a.thumbnail,
         a.published_at,
         a.updated_at,
-        a.status,
 		u.username AS author,
         c.category_name AS category
      FROM article a
      JOIN category c ON a.category_id = c.category_id
      JOIN users u ON a.author_id = u.user_id
-     WHERE a.author_id = ?
+     WHERE a.author_id = ? AND a.status = 1 AND a.published_at <= NOW()
      ORDER BY a.published_at DESC"
 );
 
@@ -49,19 +46,13 @@ if (!$stmt->execute()) {
 
 $result = $stmt->get_result();
 $stmt->close();
-$published = [];
-$drafts = [];
+$articles = [];
 
 while ($article = $result->fetch_assoc()) {
-	if ($article["status"] == 1) {
-		$published[] = $article;
-	} elseif ($article["status"] == 0) {
-		$drafts[] = $article;
-	}
+    $articles[] = $article;
 }
 
 echo json_encode([
     "success" => true,
-    "published" => $published,
-    "drafts" => $drafts
+    "articles" => $articles
 ]);

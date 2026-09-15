@@ -33,7 +33,10 @@ export default function EditPublished() {
                 setArticle(response.data.article);
             })
             .catch(error => {
-                showNotification(error.response?.data?.message || "Failed to load draft", "error");
+                showNotification(
+					error.response?.data?.message || "Failed to load draft", 
+					"error"
+				);
                 navigate("/profile");
             });
     }, [id, navigate, showNotification]);
@@ -65,15 +68,19 @@ export default function EditPublished() {
             const response = await api.post("/article/updateArticle.php", {
                 article_id: article.article_id,
                 title: formData.title,
+				summary: formData.summary,
                 content: formData.content,
                 thumbnail: thumbnailUrl,
                 status: status,
                 category_id: formData.category
             });
 
-            showNotification(response.data.message, "success");
+			navigate("/profile");
         } catch (error) {
-            showNotification(error.response?.data?.message || "Failed to save article","error");
+            showNotification(
+				error.response?.data?.message || "Failed to save article",
+				"error"
+			);
         }
     };
 

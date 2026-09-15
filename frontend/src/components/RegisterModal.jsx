@@ -30,7 +30,10 @@ export default function RegisterModal({ onClose, onOpenLogin }) {
 			});
 			onClose();
 		} catch (error) {
-			setError(error.response?.data?.message || "Register failed");
+			setError(
+				error.response?.data?.message || "Register failed",
+				"error"
+			);
 		}
 	};
 

@@ -1,6 +1,7 @@
 <?php
 require __DIR__ . "/../../config/cors.php";
 require __DIR__ . "/../../config/database.php";
+require __DIR__ . "/../../config/sanitize.php";
 
 session_start();
 
@@ -16,11 +17,12 @@ if (!isset($_SESSION["user_id"])) {
 $data = json_decode(file_get_contents("php://input"), true);
 
 $title = trim($data["title"] ?? "");
-$content = $data["content"] ?? "";
-$summary = "";
+$content = sanitizeHtml($data["content"] ?? "");
+$summary = trim($data["summary"] ?? "");
 $thumbnail = $data["thumbnail"] ?? null;
 $status = $data["status"] ?? null;
 $categoryId = $data["category_id"] ?? null;
+$publishedAt = $data["published_at"] ?? null;
 $userId = $_SESSION["user_id"];
 
 if ($title === "" || $content === "" || $status === null || !$categoryId) {
@@ -46,19 +48,62 @@ if ($status != 0 && $status != 1) {
 }
 
 if ($status == 1) {
-    $stmt = $conn->prepare(
-        "INSERT INTO article (
-            title,
-            content,
-            summary,
-            thumbnail,
-            author_id,
-            status,
-            published_at,
-            category_id
-        )
-         VALUES (?, ?, ?, ?, ?, ?, NOW(), ?)"
-    );
+    if ($publishedAt) {
+		$scheduledDateTime = new DateTime($publishedAt);
+		$scheduledDateTime->setTimezone(new DateTimeZone("Asia/Singapore"));
+        $publishedAt = $scheduledDateTime->format("Y-m-d H:i:s");
+
+        $stmt = $conn->prepare(
+            "INSERT INTO article (
+                title,
+                content,
+                summary,
+                thumbnail,
+                author_id,
+                status,
+                published_at,
+                category_id
+            )
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+        );
+
+        $stmt->bind_param(
+            "ssssiisi",
+            $title,
+            $content,
+            $summary,
+            $thumbnail,
+            $userId,
+            $status,
+            $publishedAt,
+            $categoryId
+        );
+    } else {
+        $stmt = $conn->prepare(
+            "INSERT INTO article (
+                title,
+                content,
+                summary,
+                thumbnail,
+                author_id,
+                status,
+                published_at,
+                category_id
+            )
+             VALUES (?, ?, ?, ?, ?, ?, NOW(), ?)"
+        );
+
+        $stmt->bind_param(
+            "ssssiii",
+            $title,
+            $content,
+            $summary,
+            $thumbnail,
+            $userId,
+            $status,
+            $categoryId
+        );
+    }
 } else {
     $stmt = $conn->prepare(
         "INSERT INTO article (
@@ -73,6 +118,17 @@ if ($status == 1) {
         )
          VALUES (?, ?, ?, ?, ?, ?, NULL, ?)"
     );
+
+    $stmt->bind_param(
+        "ssssiii",
+        $title,
+        $content,
+        $summary,
+        $thumbnail,
+        $userId,
+        $status,
+        $categoryId
+    );
 }
 
 if (!$stmt) {
@@ -80,17 +136,6 @@ if (!$stmt) {
     echo json_encode(["success" => false, "message" => "Server error"]);
     exit;
 }
-
-$stmt->bind_param(
-    "ssssiii",
-    $title,
-    $content,
-    $summary,
-    $thumbnail,
-    $userId,
-    $status,
-    $categoryId
-);
 
 if (!$stmt->execute()) {
     http_response_code(500);

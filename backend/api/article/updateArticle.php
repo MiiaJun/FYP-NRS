@@ -1,6 +1,7 @@
 <?php
 require __DIR__ . "/../../config/cors.php";
 require __DIR__ . "/../../config/database.php";
+require __DIR__ . "/../../config/sanitize.php";
 
 session_start();
 
@@ -17,8 +18,8 @@ $data = json_decode(file_get_contents("php://input"), true);
 
 $articleId = $data["article_id"] ?? null;
 $title = $data["title"] ?? "";
-$content = $data["content"] ?? "";
-$summary = "";
+$content = sanitizeHtml($data["content"] ?? "");
+$summary = trim($data["summary"] ?? "");
 $thumbnail = $data["thumbnail"] ?? null;
 $status = $data["status"] ?? null;
 $categoryId = $data["category_id"] ?? null;

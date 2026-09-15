@@ -1,0 +1,44 @@
+.pagination {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+	list-style: none;
+}
+
+.pagination .page-circle {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	border: 1px solid #999;
+	background: white;
+	font-weight: 600;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: background 0.5s ease, border-color 0.5s ease;
+}
+
+.pagination .page-circle a {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+}
+
+.pagination .active {
+	background: #6d49c6;
+	border-color: #6d49c6;
+	color: white;
+}
+
+.pagination .disabled {
+	opacity: 0.5;
+}
+
+.pagination .page-break {
+	width: 40px;
+	text-align: center;
+	font-weight: 600;
+	cursor: default;
+}

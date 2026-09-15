@@ -19,9 +19,6 @@ export default function FollowBar() {
             .then(response => {
                 setFollowingUsers(response.data.users);
             })
-            .catch(error => {
-                console.error(error);
-            });
     }, [isLoggedIn]);
 
 	return (

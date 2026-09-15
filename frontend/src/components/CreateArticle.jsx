@@ -42,13 +42,15 @@ export default function CreateArticle() {
 
 			const response = await api.post("/article/createArticle.php", {
 				title: formData.title,
+				summary: formData.summary,
 				content: formData.content,
 				thumbnail: thumbnailUrl,
 				status: status,
-				category_id: formData.category
+				category_id: formData.category,
+				published_at: formData.published_at
 			});
 
-			showNotification(response.data.message, "success");
+			navigate("/");
 		} catch (error) {
 			showNotification(
 				error.response?.data?.message || "Failed to save article",

@@ -7,29 +7,27 @@ session_start();
 if (!isset($_SESSION["user_id"])) {
     echo json_encode([
         "success" => true,
-        "bookmarked" => false
+        "following" => false
     ]);
     exit;
 }
 
-$articleId = $_GET["id"] ?? null;
-$userId = $_SESSION["user_id"];
+$subscriberId = $_SESSION["user_id"];
+$userId = $_GET["id"] ?? null;
 
-if (!$articleId || !is_numeric($articleId)) {
+if (!$userId || !is_numeric($userId)) {
     http_response_code(400);
-
     echo json_encode([
         "success" => false,
-        "message" => "Invalid article ID",
+        "message" => "Invalid user ID"
     ]);
-
     exit;
 }
 
 $stmt = $conn->prepare(
-    "SELECT article_id
-     FROM article_bookmark
-     WHERE article_id = ? AND user_id = ?"
+    "SELECT subscriber_id
+     FROM user_subscription
+     WHERE subscriber_id = ? AND subscribed_to_id = ?"
 );
 
 if (!$stmt) {
@@ -38,7 +36,7 @@ if (!$stmt) {
     exit;
 }
 
-$stmt->bind_param("ii", $articleId, $userId);
+$stmt->bind_param("ii", $subscriberId, $userId);
 
 if (!$stmt->execute()) {
     http_response_code(500);
@@ -48,9 +46,9 @@ if (!$stmt->execute()) {
 
 $result = $stmt->get_result();
 $stmt->close();
-$bookmarked = $result->num_rows > 0;
+$following = $result->num_rows > 0;
 
 echo json_encode([
     "success" => true,
-    "bookmarked" => $bookmarked
+    "following" => $following
 ]);

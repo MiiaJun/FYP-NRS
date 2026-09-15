@@ -72,7 +72,6 @@ if ($existingBookmark) {
     }
 
     $stmt->close();
-
     $bookmarked = false;
 } else {
     $stmt = $conn->prepare(
@@ -95,7 +94,6 @@ if ($existingBookmark) {
     }
 
     $stmt->close();
-
     $bookmarked = true;
 }
 

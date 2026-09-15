@@ -13,13 +13,41 @@ export default function ArticleEditor({ initialData, onSave, isEditing = false }
 	const [isUploading, setIsUploading] = useState(false);
 	const { showNotification } = useNotification();
 	const [showPreview, setShowPreview] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
+
+	const [publishMode, setPublishMode] = useState("now");
+	const [scheduledDate, setScheduledDate] = useState("");
+	const [scheduledTime, setScheduledTime] = useState("");
+	const today = new Date();
+	const getLocalDateString = (date) => {
+		const year = date.getFullYear();
+		const month = String(date.getMonth() + 1).padStart(2, "0");
+		const day = String(date.getDate()).padStart(2, "0");
+
+		return `${year}-${month}-${day}`;
+	};
+	const getLocalTimeString = (date) => {
+		const hours = String(date.getHours()).padStart(2, "0");
+		const minutes = String(date.getMinutes()).padStart(2, "0");
+
+		return `${hours}:${minutes}`;
+	};
+	const getMinTime = () => {
+		if (scheduledDate !== getLocalDateString(today)) {
+			return undefined;
+		}
+
+		return getLocalTimeString(today);
+	};
 
 	const [formData, setFormData] = useState({
 		title: initialData?.title || "",
+		summary: initialData?.summary || "",
 		category: initialData?.category_id ? String(initialData.category_id) : "",
 		tags: initialData?.tags || "",
 		content: initialData?.content || "",
 		thumbnail: initialData?.thumbnail || null,
+		published_at: null
 	});
 
 	useEffect(() => {
@@ -37,7 +65,7 @@ export default function ArticleEditor({ initialData, onSave, isEditing = false }
 		}));
 	};
 	
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
 		if (!formData.content.trim()) {
@@ -50,10 +78,35 @@ export default function ArticleEditor({ initialData, onSave, isEditing = false }
 			return;
 		}
 
-    	onSave(formData, 1);
+		let publishedAt;
+		if (publishMode === "schedule") {
+			if (!scheduledDate || !scheduledTime) {
+				showNotification("Please choose a date and time", "error");
+				return;
+			}
+
+			const scheduledDateTime = new Date(
+				`${scheduledDate}T${scheduledTime}:00`
+			);
+
+			if (scheduledDateTime <= new Date()) {
+				showNotification("Scheduled time must be in the future", "error");
+				return;
+			}
+
+			publishedAt = scheduledDateTime.toISOString();
+		}
+
+		setIsLoading(true);
+
+    	try {
+			await onSave({ ...formData, published_at: publishedAt }, 1);
+		} finally {
+			setIsLoading(false);
+		}
     };
 
-	const handleSaveDraft = () => {
+	const handleSaveDraft = async () => {
 		if (!formRef.current.reportValidity()) {
 			return;
 		}
@@ -68,7 +121,13 @@ export default function ArticleEditor({ initialData, onSave, isEditing = false }
 			return;
 		}
 
-		onSave(formData, 0);
+		setIsLoading(true);
+
+		try {
+			await onSave(formData, 0);
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	const handlePreview = () => {
@@ -121,6 +180,17 @@ export default function ArticleEditor({ initialData, onSave, isEditing = false }
 						required
                     />
                 </div>
+
+				<div className="form-group">
+					<label htmlFor="summary">Summary</label>
+					<textarea
+						id="summary"
+						value={formData.summary}
+						onChange={handleChange}
+						placeholder="Write a short summary of your article..."
+						rows="4"
+					/>
+				</div>
 
                 <div className="article-meta">
                     <select 
@@ -205,8 +275,50 @@ export default function ArticleEditor({ initialData, onSave, isEditing = false }
 							}));
 						}}
 					/>
-					<pre>{formData.content}</pre>
                 </div>
+
+				{!isEditing && (
+					<div className="publish-settings">
+						<h3>Publish settings</h3>
+						<label>
+							<input
+								type="radio"
+								name="publishMode"
+								checked={publishMode === "now"}
+								onChange={() => setPublishMode("now")}
+							/>
+							Publish now
+						</label>
+						<label>
+							<input
+								type="radio"
+								name="publishMode"
+								checked={publishMode === "schedule"}
+								onChange={() => setPublishMode("schedule")}
+							/>
+							Schedule for later
+						</label>
+						{publishMode === "schedule" && (
+							<div className="schedule-inputs">
+								<input
+									type="date"
+									value={scheduledDate}
+									onChange={(e) => setScheduledDate(e.target.value)}
+									min={getLocalDateString(today)}
+									required
+								/>
+
+								<input
+									type="time"
+									value={scheduledTime}
+									onChange={(e) => setScheduledTime(e.target.value)}
+									min={getMinTime()}
+									required
+								/>
+							</div>
+						)}
+					</div>
+				)}
 
                 <div className="create-article-actions">
                     <div className="secondary-actions">
@@ -233,6 +345,15 @@ export default function ArticleEditor({ initialData, onSave, isEditing = false }
 					thumbnailPreview={thumbnailPreview}
 					onClose={() => setShowPreview(false)}
 				/>
+			)}
+
+			{isLoading && (
+				<div className="loading-overlay">
+					<div className="loading-modal">
+						<div className="loading-spinner"></div>
+						<p>Loading...</p>
+					</div>
+				</div>
 			)}
         </main>
     );
