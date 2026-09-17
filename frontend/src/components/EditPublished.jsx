@@ -75,6 +75,8 @@ export default function EditPublished() {
                 category_id: formData.category
             });
 
+			showNotification(response.data.message, "success");
+
 			navigate("/profile");
         } catch (error) {
             showNotification(

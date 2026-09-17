@@ -1,0 +1,115 @@
+.edit-profile {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 36px 20px 30px;
+}
+
+.edit-profile .edit-profile-content {
+    display: flex;
+    gap: 50px;
+}
+
+.edit-profile .profile-picture-upload {
+	position: relative;
+    flex-shrink: 0;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    overflow: hidden;
+	border: 1px solid black;
+}
+
+.edit-profile .profile-picture-upload img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-picture-camera {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0, 0, 0, 0.4);
+	color: white;
+	opacity: 0;
+	transition: opacity 0.2s ease;
+}
+
+.profile-picture-upload:hover .profile-picture-camera {
+	opacity: 0.8;
+}
+
+.edit-profile .edit-profile-form {
+    flex: 1;
+}
+
+.edit-profile .error-message {
+	margin: 8px 0 12px;
+	padding: 10px 12px;
+	border-radius: 6px;
+	background: #ffe5e5;
+	color: #c62828;
+	text-align: center;
+}
+
+.edit-profile .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 18px;
+}
+
+.edit-profile .form-group label {
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.edit-profile .form-group input,
+.edit-profile .form-group textarea {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    padding: 10px 12px;
+}
+
+.edit-profile .form-group textarea {
+    resize: none;
+}
+
+.edit-profile .bio-character-count {
+    align-self: flex-end;
+    margin-top: 4px;
+    font-size: 13px;
+    color: #666;
+}
+
+.edit-profile .edit-profile-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 30px;
+}
+
+.edit-profile .edit-profile-actions button {
+    padding: 10px 30px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    font-weight: 600;
+    background: none;
+}
+
+.edit-profile .edit-profile-actions button:hover {
+    background: #f0f0f0;
+}
+
+.edit-profile .edit-profile-actions .save-button {
+    border: none;
+    background: #6d49c6;
+    color: white;
+}
+
+.edit-profile .edit-profile-actions .save-button:hover {
+    background: #5e3eb0;
+}

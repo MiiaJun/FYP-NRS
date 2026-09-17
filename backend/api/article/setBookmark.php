@@ -14,7 +14,6 @@ if (!isset($_SESSION["user_id"])) {
 }
 
 $data = json_decode(file_get_contents("php://input"), true);
-
 $articleId = $data["article_id"] ?? null;
 $userId = $_SESSION["user_id"];
 

@@ -50,6 +50,8 @@ export default function CreateArticle() {
 				published_at: formData.published_at
 			});
 
+			showNotification(response.data.message, "success");
+
 			navigate("/");
 		} catch (error) {
 			showNotification(

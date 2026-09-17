@@ -9,6 +9,7 @@
 	height: 250px;
     overflow: hidden;
     border-bottom: 1px solid #ddd;
+	border-top: 1px solid #ddd;
 	padding: 0 24px;
 }
 
@@ -88,6 +89,15 @@
 
 .news-card .news-content .news-card-buttons .delete-button:hover {
     background: #f0f0f0;
+}
+
+.news-card .news-content .news-card-buttons .bookmark-button {
+	border-radius: 50%;
+}
+
+.news-card .news-content .news-card-buttons .bookmark-active svg {
+	color: #f5b800;
+	fill: #f5b800;
 }
 
 .news-card .news-content h2 {

@@ -33,6 +33,7 @@
     height: 120px;
     border-radius: 50%;
     object-fit: cover;
+	border: 1px solid black;
 }
 
 .my-profile .profile-info h1 {
@@ -57,13 +58,14 @@
 }
 
 .my-profile .trust-score.low {
-    color: #b83b3b;
-    background: #fde5e5;
+    color: #c62828;
+    background: #ffe5e5;
 }
 
 .my-profile .profile-bio {
     margin: 0;
 	color: #666;
+	overflow-wrap: anywhere;
 }
 
 .my-profile .edit-profile-button {

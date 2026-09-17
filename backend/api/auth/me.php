@@ -8,14 +8,13 @@ if (!isset($_SESSION["user_id"])) {
 		"success" => false,
 		"user" => null
 	]);
-
 	exit;
 }
 
 $userId = $_SESSION["user_id"];
 
 $stmt = $conn->prepare(
-	"SELECT user_id, username, email, profile_picture, role_id, status, suspended_until
+	"SELECT user_id, username, email, profile_picture, bio, role_id, status, suspended_until
      FROM users
      WHERE user_id = ?"
 );

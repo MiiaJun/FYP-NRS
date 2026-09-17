@@ -38,6 +38,11 @@ export function AuthProvider({ children }) {
 
 	const isLoggedIn = user !== null;
 
+	const refreshUser = async () => {
+		const response = await api.get("/auth/me.php");
+		setUser(response.data.user);
+	};
+
 	return (
 		<AuthContext.Provider
 			value={{
@@ -46,6 +51,7 @@ export function AuthProvider({ children }) {
 				isLoading,
 				login,
 				logout,
+				refreshUser,
 			}}
 		>
 			{children}

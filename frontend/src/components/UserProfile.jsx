@@ -134,7 +134,7 @@ export default function UserProfile() {
 							</button>
 						</div>
 						<p className="profile-bio">
-							Covering PC hardware, indie games and retro re-releases since 2019.
+							{profileUser.bio}
 						</p>
 					</div>
 				</div>

@@ -23,6 +23,7 @@ $summary = trim($data["summary"] ?? "");
 $thumbnail = $data["thumbnail"] ?? null;
 $status = $data["status"] ?? null;
 $categoryId = $data["category_id"] ?? null;
+$publishedAt = $data["published_at"] ?? null;
 $userId = $_SESSION["user_id"];
 
 if (!$articleId || !is_numeric($articleId)) {
@@ -34,25 +35,30 @@ if (!$articleId || !is_numeric($articleId)) {
     exit;
 }
 
-if ($title === "" || $content === "" || $status === null || !$categoryId) {
+if ($title === "" || $content === "" || $status === null) {
     http_response_code(400);
-
     echo json_encode([
         "success" => false,
         "message" => "Required fields are missing"
     ]);
+    exit;
+}
 
+if (!$categoryId || !is_numeric($categoryId)) {
+    http_response_code(400);
+    echo json_encode([
+        "success" => false,
+        "message" => "Invalid category ID"
+    ]);
     exit;
 }
 
 if ($status != 0 && $status != 1) {
     http_response_code(400);
-
     echo json_encode([
         "success" => false,
         "message" => "Invalid article status"
     ]);
-
     exit;
 }
 
@@ -87,6 +93,15 @@ if ($result->num_rows === 0) {
 
 $article = $result->fetch_assoc();
 
+if ($article["status"] != 0 && $article["status"] != 1) {
+    http_response_code(409);
+    echo json_encode([
+        "success" => false,
+        "message" => "This article cannot be edited"
+    ]);
+    exit;
+}
+
 if ($article["author_id"] != $userId) {
     http_response_code(403);
     echo json_encode([
@@ -105,47 +120,66 @@ if ($article["status"] == 1 && $status == 0) {
     exit;
 }
 
-
 if ($article["status"] == 0) {
-	if ($status == 1) {
-		$stmt = $conn->prepare(
-			"UPDATE article
-			 SET
-				title = ?,
-				content = ?,
-				summary = ?,
-				thumbnail = ?,
-				status = ?,
-				published_at = NOW(),
-				category_id = ?
-			 WHERE article_id = ?"
-		);
-	} else {
-		$stmt = $conn->prepare(
-			"UPDATE article
-			 SET
-				title = ?,
-				content = ?,
-				summary = ?,
-				thumbnail = ?,
-				status = ?,
-				category_id = ?
-			 WHERE article_id = ?"
-		);
-	}
+    if ($status == 1) {
+        if ($publishedAt) {
+            $scheduledDateTime = new DateTime($publishedAt);
+            $scheduledDateTime->setTimezone(new DateTimeZone("Asia/Singapore"));
+            $publishedAt = $scheduledDateTime->format("Y-m-d H:i:s");
+
+            $stmt = $conn->prepare(
+                "UPDATE article
+                 SET
+                    title = ?,
+                    content = ?,
+                    summary = ?,
+                    thumbnail = ?,
+                    status = ?,
+                    published_at = ?,
+                    category_id = ?
+                 WHERE article_id = ?"
+            );
+        } else {
+            $stmt = $conn->prepare(
+                "UPDATE article
+                 SET
+                    title = ?,
+                    content = ?,
+                    summary = ?,
+                    thumbnail = ?,
+                    status = ?,
+                    published_at = NOW(),
+                    category_id = ?
+                 WHERE article_id = ?"
+            );
+        }
+    } else {
+        $stmt = $conn->prepare(
+            "UPDATE article
+             SET
+                title = ?,
+                content = ?,
+                summary = ?,
+                thumbnail = ?,
+                status = ?,
+                published_at = NULL,
+                category_id = ?
+             WHERE article_id = ?"
+        );
+    }
 } else {
-	$stmt = $conn->prepare(
-		"UPDATE article
-		 SET
-			title = ?,
-			content = ?,
-			summary = ?,
-			thumbnail = ?,
-			status = ?,
-			updated_at = NOW(),
-			category_id = ?
-		 WHERE article_id = ?"
-	);
+    $stmt = $conn->prepare(
+        "UPDATE article
+         SET
+            title = ?,
+            content = ?,
+            summary = ?,
+            thumbnail = ?,
+            status = ?,
+            updated_at = NOW(),
+            category_id = ?
+         WHERE article_id = ?"
+    );
 }
 
 if (!$stmt) {
@@ -154,16 +188,30 @@ if (!$stmt) {
     exit;
 }
 
-$stmt->bind_param(
-    "ssssiii",
-    $title,
-    $content,
-	$summary,
-    $thumbnail,
-    $status,
-    $categoryId,
-    $articleId
-);
+if ($article["status"] == 0 && $status == 1 && $publishedAt) {
+    $stmt->bind_param(
+        "ssssisii",
+        $title,
+        $content,
+        $summary,
+        $thumbnail,
+        $status,
+        $publishedAt,
+        $categoryId,
+        $articleId
+    );
+} else {
+    $stmt->bind_param(
+        "ssssiii",
+        $title,
+        $content,
+        $summary,
+        $thumbnail,
+        $status,
+        $categoryId,
+        $articleId
+    );
+}
 
 if (!$stmt->execute()) {
     http_response_code(500);

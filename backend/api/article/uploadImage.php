@@ -4,12 +4,10 @@ require __DIR__ . "/../../config/cloudinary.php";
 
 if (!isset($_FILES["upload"])) {
     http_response_code(400);
-
     echo json_encode([
         "success" => false,
         "message" => "No image uploaded"
     ]);
-
     exit;
 }
 
@@ -17,12 +15,10 @@ $file = $_FILES["upload"];
 
 if ($file["error"] !== UPLOAD_ERR_OK) {
     http_response_code(400);
-
     echo json_encode([
         "success" => false,
         "message" => "Image upload failed"
     ]);
-
     exit;
 }
 
@@ -31,12 +27,10 @@ $mimeType = mime_content_type($file["tmp_name"]);
 
 if (!in_array($mimeType, $allowedTypes, true)) {
     http_response_code(400);
-
     echo json_encode([
         "success" => false,
         "message" => "Unsupported image file type"
     ]);
-
     exit;
 }
 
@@ -63,12 +57,10 @@ curl_close($ch);
 
 if ($response === false) {
     http_response_code(502);
-
     echo json_encode([
         "success" => false,
         "message" => "Cloudinary upload failed"
     ]);
-
     exit;
 }
 
@@ -76,12 +68,10 @@ $data = json_decode($response, true);
 
 if (!isset($data["secure_url"])) {
     http_response_code(500);
-
     echo json_encode([
         "success" => false,
         "message" => "Cloudinary upload failed"
     ]);
-
     exit;
 }
 

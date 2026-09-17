@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useModal } from '../context/ModalContext';
+import { useNotification } from "../context/NotificationContext";	
 import api from "../api/axios";
 import Comment from "./Comment";
 import "./CommentList.css";
@@ -8,15 +9,28 @@ import "./CommentList.css";
 export default function CommentList({ articleId }) {
 	const { user, isLoggedIn } = useAuth();
 	const { openLogin } = useModal();
+	const { showNotification } = useNotification();
 	const [commentText, setCommentText] = useState("");
 	const commentInputRef = useRef(null);
 	const [comments, setComments] = useState([]);
 
 	useEffect(() => {
-		api.get(`/article/listComment.php?id=${articleId}`)
-			.then(response => {
+		const loadComments = async () => {
+			try {
+				const response = await api.get(
+					`/article/listComment.php?id=${articleId}`
+				);
+
 				setComments(response.data.comments);
-			});
+			} catch (error) {
+				showNotification(
+					error.response?.data?.message || "Failed to load comments",
+					"error"
+				);
+			}
+		};
+
+		loadComments();
 	}, [articleId, user?.user_id]);
 
 	const handleCommentChange = (e) => {
@@ -68,15 +82,22 @@ export default function CommentList({ articleId }) {
 			return;
 		}
 
-		const response = await api.post("/article/createComment.php", {
-			article_id: articleId,
-			content: commentText
-		});
+		try {
+			const response = await api.post("/article/createComment.php", {
+				article_id: articleId,
+				content: commentText
+			});
 
-		setComments(prev => [response.data.comment, ...prev]);
-		setCommentText("");
+			setComments(prev => [response.data.comment, ...prev]);
+			setCommentText("");
 
-		commentInputRef.current.style.height = "24px";
+			commentInputRef.current.style.height = "24px";
+		} catch (error) {
+			showNotification(
+				error.response?.data?.message || "Failed to post comment",
+				"error"
+			);
+		}
 	};
 
 	const handleReply = (newReply) => {

@@ -34,7 +34,7 @@ if (!in_array($mimeType, $allowedTypes, true)) {
     exit;
 }
 
-$folder = "FYP-NRS/thumbnails";
+$folder = "FYP-NRS/profilepic";
 $timestamp = time();
 
 $paramsToSign = "folder={$folder}&timestamp={$timestamp}{$apiSecret}";

@@ -14,33 +14,39 @@ if (!isset($_SESSION["user_id"])) {
 }
 
 $data = json_decode(file_get_contents("php://input"), true);
-$commentId = $data["comment_id"] ?? null;
+$articleId = $data["article_id"] ?? null;
 $userId = $_SESSION["user_id"];
 
-if (!$commentId || !is_numeric($commentId)) {
+if (!$articleId || !is_numeric($articleId)) {
     http_response_code(400);
     echo json_encode([
-		"success" => false, 
-		"message" => "Invalid comment ID"
-	]);
+        "success" => false,
+        "message" => "Invalid article ID"
+    ]);
     exit;
 }
 
 $stmt = $conn->prepare(
-    "SELECT user_id FROM comment WHERE comment_id = ?"
+    "SELECT author_id FROM article WHERE article_id = ?"
 );
 
 if (!$stmt) {
     http_response_code(500);
-    echo json_encode(["success" => false, "message" => "Server error"]);
+    echo json_encode([
+        "success" => false,
+        "message" => "Server error"
+    ]);
     exit;
 }
 
-$stmt->bind_param("i", $commentId);
+$stmt->bind_param("i", $articleId);
 
 if (!$stmt->execute()) {
     http_response_code(500);
-    echo json_encode(["success" => false, "message" => "Server error"]);
+    echo json_encode([
+        "success" => false,
+        "message" => "Server error"
+    ]);
     exit;
 }
 
@@ -51,26 +57,26 @@ if ($result->num_rows === 0) {
     http_response_code(404);
     echo json_encode([
         "success" => false,
-        "message" => "Comment not found"
+        "message" => "Article not found"
     ]);
     exit;
 }
 
-$comment = $result->fetch_assoc();
+$article = $result->fetch_assoc();
 
-if ($comment["user_id"] != $userId) {
+if ($article["author_id"] != $userId) {
     http_response_code(403);
     echo json_encode([
         "success" => false,
-        "message" => "You cannot delete this comment"
+        "message" => "You cannot delete this article"
     ]);
     exit;
 }
 
 $stmt = $conn->prepare(
-    "UPDATE comment
-     SET status = 0
-     WHERE comment_id = ? AND user_id = ?"
+    "UPDATE article
+     SET status = 3
+     WHERE article_id = ? AND author_id = ?"
 );
 
 if (!$stmt) {
@@ -79,7 +85,7 @@ if (!$stmt) {
     exit;
 }
 
-$stmt->bind_param("ii", $commentId, $userId);
+$stmt->bind_param("ii", $articleId, $userId);
 
 if (!$stmt->execute()) {
     http_response_code(500);
@@ -91,5 +97,5 @@ $stmt->close();
 
 echo json_encode([
     "success" => true,
-    "message" => "Comment deleted"
+    "message" => "Article deleted"
 ]);

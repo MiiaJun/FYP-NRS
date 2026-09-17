@@ -6,9 +6,11 @@ import LandingPage from "./pages/LandingPage";
 import ArticlePage from "./pages/ArticlePage";
 import CreateArticlePage from "./pages/CreateArticlePage";
 import ProfilePage from "./pages/ProfilePage"
+import EditProfilePage from "./pages/EditProfilePage"
 import UserProfilePage from "./pages/UserProfilePage";
 import EditDraftPage from "./pages/EditDraftPage";
 import EditPublishedPage from "./pages/EditPublishedPage";
+import BookmarkPage from "./pages/BookmarkPage";
 import ModalRoot from "./components/ModalRoot";
 import NotificationRoot from "./components/NotificationRoot";
 
@@ -23,9 +25,11 @@ export default function App() {
 							<Route path="/create" element={<CreateArticlePage/>} />
 							<Route path="/article/:id" element={<ArticlePage />} />
 							<Route path="/profile" element={<ProfilePage />} />
+							<Route path="/edit-profile" element={<EditProfilePage />} />
 							<Route path="/profile/:id" element={<UserProfilePage />} />
 							<Route path="edit-draft" element={<EditDraftPage />} />
 							<Route path="edit-published" element={<EditPublishedPage />} />
+							<Route path="/bookmark" element={<BookmarkPage />} />
 						</Routes>
 						<ModalRoot />
 						<NotificationRoot />

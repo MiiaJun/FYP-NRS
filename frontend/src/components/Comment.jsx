@@ -47,13 +47,20 @@ export default function Comment({ comment, repliesByParent, onReply, onEditComme
 
 		const newReaction = reaction === 1 ? null : 1;
 
-		const response = await api.post("/article/setCommentReaction.php", {
-			comment_id: comment.comment_id,
-			reaction: newReaction
-		});
+		try {
+			const response = await api.post("/article/setCommentReaction.php", {
+				comment_id: comment.comment_id,
+				reaction: newReaction
+			});
 
-		setReaction(response.data.user_reaction);
-		setLikeCount(response.data.like_count);
+			setReaction(response.data.user_reaction);
+			setLikeCount(response.data.like_count);
+		} catch (error) {
+			showNotification(
+				error.response?.data?.message || "Failed to set reaction",
+				"error"
+			);
+		}
 	};
 
 	const handleDislike = async () => {
@@ -64,13 +71,20 @@ export default function Comment({ comment, repliesByParent, onReply, onEditComme
 
 		const newReaction = reaction === 0 ? null : 0;
 
-		const response = await api.post("/article/setCommentReaction.php", {
-			comment_id: comment.comment_id,
-			reaction: newReaction
-		});
+		try {
+			const response = await api.post("/article/setCommentReaction.php", {
+				comment_id: comment.comment_id,
+				reaction: newReaction
+			});
 
-		setReaction(response.data.user_reaction);
-		setLikeCount(response.data.like_count);
+			setReaction(response.data.user_reaction);
+			setLikeCount(response.data.like_count);
+		} catch (error) {
+			showNotification(
+				error.response?.data?.message || "Failed to set reaction",
+				"error"
+			);
+		}
 	};
 
 	const handleReply = () => {
@@ -83,6 +97,9 @@ export default function Comment({ comment, repliesByParent, onReply, onEditComme
 	};
 
 	const handleDelete = async () => {
+		if (!window.confirm("Are you sure you want to delete this comment?")) {
+			return;
+		}
 		try {
 			await api.delete("/article/deleteComment.php", {
 				data: {
@@ -92,7 +109,10 @@ export default function Comment({ comment, repliesByParent, onReply, onEditComme
 
 			onDeleteComment(comment.comment_id);
 		} catch (error) {
-			showNotification(error.response?.data?.message || "Failed to delete comment", "error");
+			showNotification(
+				error.response?.data?.message || "Failed to delete comment", 
+				"error"
+			);
 		}
 	};
 

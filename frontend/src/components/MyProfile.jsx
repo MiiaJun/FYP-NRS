@@ -54,6 +54,10 @@ export default function MyProfile() {
 	}, [user]);
 
 	useEffect(() => {
+		if (!isLoggedIn) {
+			return;
+		}
+
 		api.get("/article/listMyArticle.php")
 			.then(response => {
 				setPublishedArticles(response.data.published);
@@ -65,7 +69,7 @@ export default function MyProfile() {
 					"error"
 				);
 			});
-	}, []);
+	}, [isLoggedIn]);
 
 	useEffect(() => {
 		if (publishedPage > publishedTotalPages) {
@@ -81,6 +85,34 @@ export default function MyProfile() {
 		navigate(url, {
 			state: { articleId }
 		});
+	};
+
+	const handleDelete = async (articleId) => {
+		if (!window.confirm("Are you sure you want to delete this article?")) {
+			return;
+		}
+		try {
+			const response = await api.post("/article/deleteArticle.php", {
+				article_id: articleId
+			});
+
+			setPublishedArticles((prev) =>
+				prev.filter(article => article.article_id !== articleId)
+			);
+			setDrafts((prev) =>
+				prev.filter(article => article.article_id !== articleId)
+			);
+
+			showNotification(
+				response.data.message, 
+				"success"
+			);
+		} catch (error) {
+			showNotification(
+				error.response?.data?.message || "Failed to delete article",
+				"error"
+			);
+		}
 	};
 
 	if (isLoading || !user || !profileUser) {
@@ -112,7 +144,7 @@ export default function MyProfile() {
 							</button>
 						</div>
 						<p className="profile-bio">
-							Covering PC hardware, indie games and retro re-releases since 2019.
+							{profileUser.bio}
 						</p>
 					</div>
 				</div>
@@ -163,7 +195,12 @@ export default function MyProfile() {
 								>
 									Edit
 								</button>
-								<button className="delete-button">Delete</button>
+								<button 
+									className="delete-button"
+									onClick={() => handleDelete(article.article_id)}
+								>
+									Delete
+								</button>
 							</NewsCard>
 						))}
 					</div>
@@ -190,7 +227,12 @@ export default function MyProfile() {
 							>
 								Edit
 							</button>
-                            <button className="delete-button">Delete</button>
+                            <button 
+								className="delete-button"
+								onClick={() => handleDelete(article.article_id)}
+							>
+								Delete
+							</button>
                         </NewsCard>
                     ))}
                 </div>

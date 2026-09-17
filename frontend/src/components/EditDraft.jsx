@@ -73,9 +73,14 @@ export default function EditDraft() {
 				published_at: formData.published_at
             });
 
+			showNotification(response.data.message, "success");
+
 			navigate("/profile");
         } catch (error) {
-            showNotification(error.response?.data?.message || "Failed to save article", "error");
+            showNotification(
+				error.response?.data?.message || "Failed to save article", 
+				"error"
+			);
         }
     };
 

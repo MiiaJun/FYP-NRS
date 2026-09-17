@@ -1,5 +1,5 @@
 export function getTimeAgo(dateString) {
-    const date = new Date(dateString.replace(" ", "T"));
+    const date = new Date(dateString.replace(" ", "T") + "+08:00");
     const now = new Date();
 	const diff = now - date;
     const diffSeconds = Math.floor(diff / 1000);
@@ -7,6 +7,7 @@ export function getTimeAgo(dateString) {
     const diffHours = Math.floor(diffMinutes / 60);
     const diffDays = Math.floor(diffHours / 24);
 
+	if (diffSeconds < 0) return "Scheduled";
 	if (diffSeconds < 60) return "Just now";
     if (diffMinutes < 60) return `${diffMinutes} min${diffMinutes !== 1 ? "s" : ""} ago`;
     if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? "s" : ""} ago`;

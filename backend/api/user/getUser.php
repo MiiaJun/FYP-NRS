@@ -18,6 +18,7 @@ $stmt = $conn->prepare(
         u.user_id,
         u.username,
         u.profile_picture,
+		u.bio,
         (SELECT COUNT(*)
          FROM user_subscription
          WHERE subscribed_to_id = u.user_id) AS followers_count,

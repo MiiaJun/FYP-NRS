@@ -4,6 +4,7 @@ import { CKEditor } from "@ckeditor/ckeditor5-react";
 import { ClassicEditor, Essentials, Paragraph, Bold, Italic, Heading, List, Link, BlockQuote, Image, ImageToolbar, ImageUpload, ImageResize, PendingActions  } from "ckeditor5";
 import uploadAdapter from "../utils/uploadAdapter";
 import ArticlePreview from "./ArticlePreview";
+import LoadingOverlay from "./LoadingOverlay";
 import "ckeditor5/ckeditor5.css";
 import "./CreateArticle.css";
 
@@ -220,7 +221,7 @@ export default function ArticleEditor({ initialData, onSave, isEditing = false }
                 <label className="cover-upload">
                     <input 
 						type="file" 
-						accept="image/*" 
+						accept="image/jpeg,image/png,image/webp"
 						hidden 
 						onChange={handleCoverChange}
 					/>
@@ -348,12 +349,7 @@ export default function ArticleEditor({ initialData, onSave, isEditing = false }
 			)}
 
 			{isLoading && (
-				<div className="loading-overlay">
-					<div className="loading-modal">
-						<div className="loading-spinner"></div>
-						<p>Loading...</p>
-					</div>
-				</div>
+				<LoadingOverlay />
 			)}
         </main>
     );
