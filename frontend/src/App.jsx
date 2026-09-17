@@ -11,6 +11,7 @@ import UserProfilePage from "./pages/UserProfilePage";
 import EditDraftPage from "./pages/EditDraftPage";
 import EditPublishedPage from "./pages/EditPublishedPage";
 import BookmarkPage from "./pages/BookmarkPage";
+import NotificationPage from "./pages/NotifcationPage";
 import ModalRoot from "./components/ModalRoot";
 import NotificationRoot from "./components/NotificationRoot";
 
@@ -30,6 +31,7 @@ export default function App() {
 							<Route path="edit-draft" element={<EditDraftPage />} />
 							<Route path="edit-published" element={<EditPublishedPage />} />
 							<Route path="/bookmark" element={<BookmarkPage />} />
+							<Route path="/notification" element={<NotificationPage />} />
 						</Routes>
 						<ModalRoot />
 						<NotificationRoot />

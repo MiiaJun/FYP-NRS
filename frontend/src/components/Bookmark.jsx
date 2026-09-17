@@ -48,7 +48,7 @@ export default function BookmarkList() {
 					"error"
 				);
 			});
-	}, [isLoggedIn]);
+	}, [isLoggedIn, showNotification]);
 
 	const handleBookmark = async (articleId) => {
 		try {
@@ -71,6 +71,10 @@ export default function BookmarkList() {
 		}
 	};
 
+	const handleArticleClick = (article) => {
+		navigate(`/article/${article.article_id}`);
+	};
+
 	return (
 		<section className="bookmark-page">
 			<div className="bookmark-header">
@@ -82,6 +86,7 @@ export default function BookmarkList() {
 					<NewsCard
 						key={article.article_id}
 						article={article}
+						onClick={() => handleArticleClick(article)}
 					>
 						<button
 							className={`bookmark-button ${article.bookmarked ? "bookmark-active" : ""}`}

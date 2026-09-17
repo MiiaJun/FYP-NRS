@@ -9,7 +9,6 @@
 	export default function Article() {
 		const { id } = useParams();
 		const navigate = useNavigate();
-
 		const [article, setArticle] = useState(null);
 		const [errorMessage, setErrorMessage] = useState(null);
 

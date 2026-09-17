@@ -44,6 +44,10 @@ export default function UserProfile() {
 				setProfileUser(response.data.user);
 			})
 			.catch(error => {
+				if (error.response?.status === 400 || error.response?.status === 404) {
+					navigate("/");
+					return;
+				}
 				showNotification(
 					error.response?.data?.message || "Failed to load profile",
 					"error"
