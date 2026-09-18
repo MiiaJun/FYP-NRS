@@ -3,5 +3,9 @@
 	position: sticky;
 	top: 120px;
 	border-right: 1px solid #ddd;
+	overflow-y: hidden;
+}
+
+.left-sidebar:hover {
 	overflow-y: auto;
 }

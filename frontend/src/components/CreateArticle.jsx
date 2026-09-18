@@ -62,6 +62,9 @@ export default function CreateArticle() {
 	};
 
     return (
-        <ArticleEditor onSave={saveArticle} />
+        <ArticleEditor 
+			onSave={saveArticle} 
+			heading="Create new article"
+		/>
     );
 }

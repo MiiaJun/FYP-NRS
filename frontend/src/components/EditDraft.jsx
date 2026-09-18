@@ -92,6 +92,7 @@ export default function EditDraft() {
         <ArticleEditor
             initialData={article}
             onSave={saveArticle}
+			heading="Edit draft"
         />
     );
 }

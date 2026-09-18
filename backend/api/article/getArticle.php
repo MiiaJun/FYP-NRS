@@ -19,10 +19,12 @@ $stmt = $conn->prepare(
         a.title,
         a.content,
         a.thumbnail,
+		a.author_id,
         a.published_at,
         a.updated_at,
 		a.status,
         u.username AS author,
+		u.profile_picture AS author_profile_picture,
         c.category_name AS category
      FROM article a
      JOIN users u ON a.author_id = u.user_id

@@ -6,7 +6,20 @@ $users = [
     ["Bob", "bob@test.com", "Test123!"],
     ["Charlie", "charlie@test.com", "Test123!"],
     ["David", "david@test.com", "Test123!"],
-    ["Emma", "emma@test.com", "Test123!"]
+    ["Emma", "emma@test.com", "Test123!"],
+	["Fiona", "fiona@test.com", "Test123!"],
+	["George", "george@test.com", "Test123!"],
+	["Hannah", "hannah@test.com", "Test123!"],
+	["Isaac", "isaac@test.com", "Test123!"],
+	["Julia", "julia@test.com", "Test123!"],
+	["Kevin", "kevin@test.com", "Test123!"],
+	["Lily", "lily@test.com", "Test123!"],
+	["Mason", "mason@test.com", "Test123!"],
+	["Nora", "nora@test.com", "Test123!"],
+	["Owen", "owen@test.com", "Test123!"],
+	["Priya", "priya@test.com", "Test123!"],
+	["Quinn", "quinn@test.com", "Test123!"],
+	["Ryan", "ryan@test.com", "Test123!"]
 ];
 
 foreach ($users as $user) {

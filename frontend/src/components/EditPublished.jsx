@@ -95,6 +95,7 @@ export default function EditPublished() {
             initialData={article}
             onSave={saveArticle}
 			isEditing={true}
+			heading="Edit article"
         />
     );
 }

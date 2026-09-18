@@ -54,8 +54,8 @@ export default function NotificationList() {
 					>
 						<p>
 							<b
-								onClick={(event) => {
-									event.stopPropagation();
+								onClick={(e) => {
+									e.stopPropagation();
 									navigate(`/profile/${notification.actor_id}`);
 								}}
 							>

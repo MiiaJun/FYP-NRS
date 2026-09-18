@@ -11,20 +11,36 @@ export default function Header() {
 	const { openLogin, openRegister } = useModal();
 	const [showProfileMenu, setShowProfileMenu] = useState(false);
 	const navigate = useNavigate();
+	const [keyword, setKeyword] = useState("");
 
 	const handleLogout = () => {
 		logout();
 		setShowProfileMenu(false);
 	};
 
+	const handleSearch = (e) => {
+		e.preventDefault();
+
+		if (!keyword.trim()) {
+			return;
+		}
+
+		navigate(`/search?search=${encodeURIComponent(keyword.trim())}`);
+	};
+
 	return (
 		<header className="header">
 			<div className="logo" onClick={() => navigate("/")}>P</div>
 
-			<div className="search">
+			<form className="search" onSubmit={handleSearch}>
 				<Search size={20} />
-				<input type="text" placeholder="Search" />
-			</div>
+				<input
+					type="text"
+					placeholder="Search"
+					value={keyword}
+					onChange={(e) => setKeyword(e.target.value)}
+				/>
+			</form>
 
 			<div className="header-actions">
 				{isLoggedIn ? (

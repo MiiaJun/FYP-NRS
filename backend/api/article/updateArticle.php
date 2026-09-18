@@ -221,6 +221,158 @@ if (!$stmt->execute()) {
 
 $stmt->close();
 
+if ($article["status"] == 0 && $status == 1) {
+	$stmt = $conn->prepare(
+		"SELECT subscriber_id
+		 FROM user_subscription
+		 WHERE subscribed_to_id = ?"
+	);
+
+	if (!$stmt) {
+		http_response_code(500);
+		echo json_encode(["success" => false, "message" => "Server error"]);
+		exit;
+	}
+
+	$stmt->bind_param("i", $userId);
+
+	if (!$stmt->execute()) {
+		http_response_code(500);
+		echo json_encode(["success" => false, "message" => "Server error"]);
+		exit;
+	}
+
+	$result = $stmt->get_result();
+	$stmt->close();
+
+	if ($publishedAt) {
+		$stmt = $conn->prepare(
+			"INSERT INTO notification (
+				user_id,
+				actor_id,
+				article_id,
+				type,
+				message,
+				created_at
+			)
+			 VALUES (?, ?, ?, 1, ?, ?)"
+		);
+	} else {
+		$stmt = $conn->prepare(
+			"INSERT INTO notification (
+				user_id,
+				actor_id,
+				article_id,
+				type,
+				message,
+				created_at
+			)
+			 VALUES (?, ?, ?, 1, ?, NOW())"
+		);
+	}
+
+	if (!$stmt) {
+		http_response_code(500);
+		echo json_encode(["success" => false, "message" => "Server error"]);
+		exit;
+	}
+
+	while ($subscriber = $result->fetch_assoc()) {
+		$subscriberId = $subscriber["subscriber_id"];
+		$message = "published a new article: " . $title;
+
+		if ($publishedAt) {
+			$stmt->bind_param(
+				"iiiss",
+				$subscriberId,
+				$userId,
+				$articleId,
+				$message,
+				$publishedAt
+			);
+		} else {
+			$stmt->bind_param(
+				"iiis",
+				$subscriberId,
+				$userId,
+				$articleId,
+				$message
+			);
+		}
+
+		if (!$stmt->execute()) {
+			http_response_code(500);
+			echo json_encode(["success" => false, "message" => "Server error"]);
+			exit;
+		}
+	}
+
+	$stmt->close();
+
+} elseif ($article["status"] == 1 && $status == 1) {
+	$stmt = $conn->prepare(
+		"SELECT subscriber_id
+		 FROM user_subscription
+		 WHERE subscribed_to_id = ?"
+	);
+
+	if (!$stmt) {
+		http_response_code(500);
+		echo json_encode(["success" => false, "message" => "Server error"]);
+		exit;
+	}
+
+	$stmt->bind_param("i", $userId);
+
+	if (!$stmt->execute()) {
+		http_response_code(500);
+		echo json_encode(["success" => false, "message" => "Server error"]);
+		exit;
+	}
+
+	$result = $stmt->get_result();
+	$stmt->close();
+
+	$stmt = $conn->prepare(
+		"INSERT INTO notification (
+			user_id,
+			actor_id,
+			article_id,
+			type,
+			message,
+			created_at
+		)
+		 VALUES (?, ?, ?, 1, ?, NOW())"
+	);
+
+	if (!$stmt) {
+		http_response_code(500);
+		echo json_encode(["success" => false, "message" => "Server error"]);
+		exit;
+	}
+
+	while ($subscriber = $result->fetch_assoc()) {
+		$subscriberId = $subscriber["subscriber_id"];
+		$message = "edited an article: " . $title;
+
+		$stmt->bind_param(
+			"iiis",
+			$subscriberId,
+			$userId,
+			$articleId,
+			$message
+		);
+
+		if (!$stmt->execute()) {
+			http_response_code(500);
+			echo json_encode(["success" => false, "message" => "Server error"]);
+			exit;
+		}
+	}
+
+	$stmt->close();
+}
+
 echo json_encode([
     "success" => true,
     "message" => "Article updated successfully"

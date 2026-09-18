@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b0d9ecf7a47a2f31037f3cbabf7dc78a",
+    "content-hash": "e208938f6276d62e51791b5195779509",
     "packages": [
         {
             "name": "ezyang/htmlpurifier",
@@ -66,66 +66,6 @@
                 "source": "https://github.com/ezyang/htmlpurifier/tree/v4.19.0"
             },
             "time": "2025-10-17T16:34:55+00:00"
-        },
-        {
-            "name": "xemlock/htmlpurifier-html5",
-            "version": "v0.1.12",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/xemlock/htmlpurifier-html5.git",
-                "reference": "535349cb160bf79752920e1e83c4a94c3e7d2b21"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/xemlock/htmlpurifier-html5/zipball/535349cb160bf79752920e1e83c4a94c3e7d2b21",
-                "reference": "535349cb160bf79752920e1e83c4a94c3e7d2b21",
-                "shasum": ""
-            },
-            "require": {
-                "ezyang/htmlpurifier": "^4.8",
-                "php": ">=5.3"
-            },
-            "require-dev": {
-                "masterminds/html5": "^2.7",
-                "php-coveralls/php-coveralls": "^1.1|^2.1",
-                "phpunit/phpunit": ">=4.7 <10.0"
-            },
-            "suggest": {
-                "masterminds/html5": "Required to use HTMLPurifier_Lexer_HTML5"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "library/HTMLPurifier/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "xemlock",
-                    "email": "xemlock@gmail.com"
-                }
-            ],
-            "description": "HTML5 support for HTML Purifier",
-            "homepage": "https://github.com/xemlock/htmlpurifier-html5",
-            "keywords": [
-                "HTML5",
-                "Purifier",
-                "html",
-                "htmlpurifier",
-                "security",
-                "tidy",
-                "validator",
-                "xss"
-            ],
-            "support": {
-                "issues": "https://github.com/xemlock/htmlpurifier-html5/issues",
-                "source": "https://github.com/xemlock/htmlpurifier-html5/tree/v0.1.12"
-            },
-            "time": "2026-02-09T21:03:14+00:00"
         }
     ],
     "packages-dev": [],

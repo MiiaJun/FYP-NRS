@@ -2,10 +2,7 @@
 	padding: 0 24px;
 }
 
-.bookmark-page .bookmark-header {
-	padding: 20px 0;
-}
-
 .bookmark-page .bookmark-header h1 {
 	margin: 0;
+	padding: 20px 0;
 }

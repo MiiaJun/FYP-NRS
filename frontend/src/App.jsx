@@ -3,6 +3,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { ModalProvider } from "./context/ModalContext";
 import { NotificationProvider } from "./context/NotificationContext";
 import LandingPage from "./pages/LandingPage";
+import SearchPage from "./pages/SearchPage";
 import ArticlePage from "./pages/ArticlePage";
 import CreateArticlePage from "./pages/CreateArticlePage";
 import ProfilePage from "./pages/ProfilePage"
@@ -23,6 +24,7 @@ export default function App() {
 					<NotificationProvider>
 						<Routes>
 							<Route path="/" element={<LandingPage />} />
+							<Route path="/search" element={<SearchPage />} />
 							<Route path="/create" element={<CreateArticlePage/>} />
 							<Route path="/article/:id" element={<ArticlePage />} />
 							<Route path="/profile" element={<ProfilePage />} />

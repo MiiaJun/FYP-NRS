@@ -19,9 +19,9 @@ if (!$articleId || !is_numeric($articleId)) {
 }
 
 $stmt = $conn->prepare(
-    "SELECT summary
-     FROM article_ai_summary
-     WHERE article_id = ?"
+	"SELECT summary, comment_count, generated_at
+	 FROM article_ai_summary
+	 WHERE article_id = ?"
 );
 
 if (!$stmt) {
@@ -42,18 +42,10 @@ $result = $stmt->get_result();
 $existing = $result->fetch_assoc();
 $stmt->close();
 
-if ($existing) {
-    echo json_encode([
-        "success" => true,
-        "summary" => $existing["summary"]
-    ]);
-    exit;
-}
-
 $stmt = $conn->prepare(
-    "SELECT content
-     FROM article
-     WHERE article_id = ?"
+	"SELECT content, updated_at
+	 FROM article
+	 WHERE article_id = ?"
 );
 
 if (!$stmt) {
@@ -76,12 +68,10 @@ $article = $result->fetch_assoc();
 
 if (!$article) {
     http_response_code(404);
-
     echo json_encode([
         "success" => false,
         "message" => "Article not found"
     ]);
-
     exit;
 }
 
@@ -108,9 +98,24 @@ if (!$stmt->execute()) {
 $result = $stmt->get_result();
 $stmt->close();
 $comments = [];
+$commentCount = 0;
 
 while ($comment = $result->fetch_assoc()) {
     $comments[] = $comment;
+	$commentCount++;
+}
+
+if ($existing) {
+	$summaryTime = strtotime($existing["generated_at"]);
+	$articleTime = $article["updated_at"] ? strtotime($article["updated_at"]) : 0;
+
+	if ($articleTime <= $summaryTime && abs($commentCount - $existing["comment_count"]) < 5) {
+		echo json_encode([
+			"success" => true,
+			"summary" => $existing["summary"]
+		]);
+		exit;
+	}
 }
 
 $commentText = "";
@@ -222,7 +227,18 @@ if (isset($data["error"])) {
     exit;
 }
 
-$summary = $data["output"][0]["content"][0]["text"] ?? null;
+$summary = null;
+
+foreach ($data["output"] ?? [] as $output) {
+	if (($output["type"] ?? "") === "message") {
+		foreach ($output["content"] ?? [] as $content) {
+			if (($content["type"] ?? "") === "output_text") {
+				$summary = $content["text"] ?? null;
+				break 2;
+			}
+		}
+	}
+}
 
 if ($summary === null) {
     http_response_code(500);
@@ -233,10 +249,22 @@ if ($summary === null) {
     exit;
 }
 
-$stmt = $conn->prepare(
-    "INSERT INTO article_ai_summary (article_id, summary)
-     VALUES (?, ?)"
-);
+if ($existing) {
+	$stmt = $conn->prepare(
+		"UPDATE article_ai_summary
+		 SET summary = ?, comment_count = ?, generated_at = NOW()
+		 WHERE article_id = ?"
+	);
+} else {
+	$stmt = $conn->prepare(
+		"INSERT INTO article_ai_summary (
+			article_id,
+			summary,
+			comment_count
+		)
+		 VALUES (?, ?, ?)"
+	);
+}
 
 if (!$stmt) {
     http_response_code(500);
@@ -244,7 +272,21 @@ if (!$stmt) {
     exit;
 }
 
-$stmt->bind_param("is", $articleId, $summary);
+if ($existing) {
+	$stmt->bind_param(
+		"sii",
+		$summary,
+		$commentCount,
+		$articleId
+	);
+} else {
+	$stmt->bind_param(
+		"isi",
+		$articleId,
+		$summary,
+		$commentCount
+	);
+}
 
 if (!$stmt->execute()) {
     http_response_code(500);

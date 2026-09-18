@@ -274,6 +274,7 @@ export default function Comment({ comment, repliesByParent, onReply, onEditComme
 								repliesByParent={repliesByParent}
 								onReply={onReply}
 								onEditComment={onEditComment}
+								onDeleteComment={onDeleteComment}
 							/>
 						))}
 					</div>

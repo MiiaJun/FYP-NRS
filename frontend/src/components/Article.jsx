@@ -40,12 +40,25 @@
 		return (
 			<div className="article">
 				<article>
-					<div className="article-meta">
-						In <b>{article.category}</b> by <b>{article.author}</b>
-						<span>•</span>
-						{article.updated_at ? `Updated ${getTimeAgo(article.updated_at)}` : getTimeAgo(article.published_at)}
-					</div>
 					<h1>{article.title}</h1>
+					<div className="article-meta">
+						<button
+							className="article-author"
+							onClick={() => navigate(`/profile/${article.author_id}`)}
+						>
+							<img
+								src={article.author_profile_picture || "/default-profile.svg"}
+								alt=""
+							/>
+							<b>{article.author}</b>
+						</button>
+						<span>|</span>
+						<span>
+							{article.updated_at
+								? `Updated ${getTimeAgo(article.updated_at)}`
+								: getTimeAgo(article.published_at)}
+						</span>
+					</div>
 
 					{article.thumbnail && (
 						<img

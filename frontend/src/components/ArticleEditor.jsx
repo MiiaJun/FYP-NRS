@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useNotification } from "../context/NotificationContext";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
-import { ClassicEditor, Essentials, Paragraph, Bold, Italic, Heading, List, Link, BlockQuote, Image, ImageToolbar, ImageUpload, ImageResize, PendingActions  } from "ckeditor5";
+import { ClassicEditor, Essentials, Paragraph, Bold, Italic, Heading, List, Link, BlockQuote, Image, ImageToolbar, ImageUpload, ImageResize, PendingActions, MediaEmbed  } from "ckeditor5";
 import uploadAdapter from "../utils/uploadAdapter";
 import ArticlePreview from "./ArticlePreview";
 import LoadingOverlay from "./LoadingOverlay";
 import "ckeditor5/ckeditor5.css";
 import "./CreateArticle.css";
 
-export default function ArticleEditor({ initialData, onSave, isEditing = false }) {
+export default function ArticleEditor({ initialData, onSave, isEditing = false, heading }) {
 	const formRef = useRef(null);
 	const [thumbnailPreview, setThumbnailPreview] = useState(initialData?.thumbnail || null);
 	const [isUploading, setIsUploading] = useState(false);
@@ -167,7 +167,7 @@ export default function ArticleEditor({ initialData, onSave, isEditing = false }
 
     return (
         <main className="create-article">
-            <h1>{isEditing ? "Edit article" : "Create new article"}</h1>
+            <h1>{heading}</h1>
 
             <form ref={formRef} onSubmit={handleSubmit}>
                 <div className="form-group">
@@ -242,19 +242,27 @@ export default function ArticleEditor({ initialData, onSave, isEditing = false }
 						editor={ClassicEditor}
 						config={{
 							licenseKey: "GPL",
-							plugins: [Essentials, Paragraph, Bold, Italic, Heading, List, Link, BlockQuote, Image, ImageUpload, ImageResize, ImageToolbar, PendingActions],
+							ui: {
+								viewportOffset: {
+									top: 120
+								}
+							},
+							plugins: [Essentials, Paragraph, Bold, Italic, Heading, List, Link, BlockQuote, Image, ImageUpload, ImageResize, ImageToolbar, PendingActions, MediaEmbed],
 							toolbar: [	
 								"undo", "redo", "|",
 								"heading", "|",
 								"bold", "italic", "|",
 								"bulletedList", "numberedList", "|",
 								"link", "blockQuote", "|",
-								"uploadImage"
+								"uploadImage", "mediaEmbed"
 							],
 							image: {
 								toolbar: [
 									"resizeImage",
 								]
+							},
+							mediaEmbed: {
+								previewsInData: true,
 							},
 							placeholder: "Write your story...",
 						}}

@@ -27,7 +27,7 @@ $stmt = $conn->prepare(
 		u.username AS actor_username
 	 FROM notification n
 	 LEFT JOIN users u ON u.user_id = n.actor_id
-	 WHERE n.user_id = ?
+	 WHERE n.user_id = ? AND n.created_at <= NOW()
 	 ORDER BY n.created_at DESC"
 );
 
