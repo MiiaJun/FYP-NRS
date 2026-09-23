@@ -26,23 +26,138 @@
 	font-weight: bold;
 }
 
-.header .search {
-	margin-left: 175px;
+.header .search-bar {
+	position: relative;
 	width: 335px;
+	margin-left: 175px;
+}
+
+.header .search {
+	width: 100%;
 	height: 44px;
-	border: 1px solid #ddd;
-	border-radius: 24px;
 	display: flex;
 	align-items: center;
+	gap: 18px;
 	padding: 0 18px;
-	gap:18px;
+	border: 1px solid #ddd;
+	border-radius: 24px;
 }
 
 .header .search input {
+	flex: 1;
+	min-width: 0;
 	border: none;
 	outline: none;
 	font-size: 16px;
+}
+
+.header .search-dropdown {
+	position: absolute;
+	top: calc(100% + 8px);
+	z-index: 200;
 	width: 100%;
+	box-sizing: border-box;
+	max-height: 400px;
+	overflow-y: auto;
+	border: 1px solid #ddd;
+	border-radius: 10px;
+	background: white;
+	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.header .search-dropdown-section {
+	padding: 16px;
+}
+
+.header .search-dropdown-section + .search-dropdown-section {
+	border-top: 1px solid #ddd;
+}
+
+.header .search-dropdown-section h3 {
+	margin: 0;
+	font-size: 14px;
+}
+
+.header .search-dropdown-heading {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 10px;
+}
+
+.header .clear-search-history {
+	padding: 0;
+	border: none;
+	background: none;
+	color: #7046c6;
+	font-size: 13px;
+}
+
+.header .search-history-list {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.header .search-history-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.header .search-history-row:hover {
+	background: #f0ebfb;
+}
+
+.header .search-history-item {
+	display: flex;
+	flex: 1;
+	min-width: 0;
+	align-items: center;
+	gap: 10px;
+	padding: 0;
+	border: none;
+	background: none;
+	font-size: 16px;
+	text-align: left;
+}
+
+.header .search-history-item svg {
+	flex-shrink: 0;
+}
+
+.header .search-history-item span {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.header .remove-search-history {
+	border: none;
+	background: none;
+	font-size: 16px;
+}
+
+.header .suggested-tag-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 10px;
+}
+
+.header .suggested-tag {
+	padding: 4px 8px;
+	border: none;
+	border-radius: 16px;
+	background: #f0ebfb;
+	color: #5e3eb0;
+	font-size: 14px;
+}
+
+.header .suggested-tag:hover {
+	background: #e6ddf8;
 }
 
 .header .header-actions {

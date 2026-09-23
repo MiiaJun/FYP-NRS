@@ -15,22 +15,16 @@ export default function CommentList({ articleId }) {
 	const [comments, setComments] = useState([]);
 
 	useEffect(() => {
-		const loadComments = async () => {
-			try {
-				const response = await api.get(
-					`/article/listComment.php?id=${articleId}`
-				);
-
-				setComments(response.data.comments);
-			} catch (error) {
-				showNotification(
-					error.response?.data?.message || "Failed to load comments",
-					"error"
-				);
-			}
-		};
-
-		loadComments();
+		api.get(`/article/listComment.php?id=${articleId}`)
+		.then((response) => {
+			setComments(response.data.comments);
+		})
+		.catch((error) => {
+			showNotification(
+				error.response?.data?.message || "Failed to load comments",
+				"error"
+			);
+		});
 	}, [articleId, user?.user_id]);
 
 	const handleCommentChange = (e) => {

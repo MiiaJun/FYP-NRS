@@ -70,8 +70,16 @@ export default function EditDraft() {
                 thumbnail: thumbnailUrl,
                 status: status,
                 category_id: formData.category,
-				published_at: formData.published_at
+				published_at: formData.published_at,
+				tag_ids: formData.tags.map((tag) => tag.tag_id)
             });
+
+			if (status === 1) {
+				void api.post("/user/createArticleNotification.php", {
+					article_id: article.article_id,
+					type: 1,
+				}).catch(() => {});
+			}
 
 			showNotification(response.data.message, "success");
 

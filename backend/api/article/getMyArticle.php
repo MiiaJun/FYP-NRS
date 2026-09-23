@@ -98,6 +98,39 @@ $result = $stmt->get_result();
 $stmt->close();
 $article = $result->fetch_assoc();
 
+$stmt = $conn->prepare(
+    "SELECT
+        t.tag_id,
+        t.name
+     FROM article_tag at
+     JOIN tag t ON at.tag_id = t.tag_id
+     WHERE at.article_id = ?
+     ORDER BY t.name ASC"
+);
+
+if (!$stmt) {
+    http_response_code(500);
+    echo json_encode(["success" => false, "message" => "Server error"]);
+    exit;
+}
+
+$stmt->bind_param("i", $articleId);
+
+if (!$stmt->execute()) {
+    http_response_code(500);
+    echo json_encode(["success" => false, "message" => "Server error"]);
+    exit;
+}
+
+$result = $stmt->get_result();
+$stmt->close();
+
+$article["tags"] = [];
+
+while ($tag = $result->fetch_assoc()) {
+    $article["tags"][] = $tag;
+}
+
 echo json_encode([
     "success" => true,
     "article" => $article

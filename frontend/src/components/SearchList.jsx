@@ -16,6 +16,8 @@ export default function SearchList() {
 	const [pagination, setPagination] = useState(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const search = searchParams.get("search") || "";
+	const tagId = searchParams.get("tag_id") || "";
+	const [tagName, setTagName] = useState("");
 
 	useEffect(() => {
 		const controller = new AbortController();
@@ -23,12 +25,15 @@ export default function SearchList() {
 		setArticles([]);
 		setPagination(null);
 
-		api.get(
-			`/article/searchArticle.php?search=${encodeURIComponent(search)}&page=${page}`
-		)
+		const url = tagId
+			? `/article/searchArticle.php?tag_id=${tagId}&page=${page}`
+			: `/article/searchArticle.php?search=${encodeURIComponent(search)}&page=${page}`;
+
+		api.get(url)
 		.then(response => {
 			setArticles(response.data.articles);
 			setPagination(response.data.pagination);
+			setTagName(response.data.tag_name || "");
 		})
 		.catch(error => {
 			if (!controller.signal.aborted) {
@@ -45,7 +50,7 @@ export default function SearchList() {
 		});
 
 		return () => controller.abort();
-	}, [search, page, showNotification]);
+	}, [search, tagId, page, showNotification]);
 
 	useEffect(() => {
 		setPage(1);
@@ -57,7 +62,16 @@ export default function SearchList() {
 
 	return (
 		<section className="search-list">
-			<h1>Results for "{search}" <span>·</span> {pagination?.total || 0} articles</h1>
+			{tagId ? (
+				<>
+					<h1>Results for #{tagName} <span>·</span> {pagination?.total || 0} articles</h1>
+				</>
+			) : (
+				<>
+					<h1>Results for "{search}" <span>·</span> {pagination?.total || 0} articles</h1>
+				</>
+			)}
+			
 
 			{isLoading ? (
 				<Loading />

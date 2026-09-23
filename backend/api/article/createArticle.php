@@ -23,6 +23,7 @@ $thumbnail = $data["thumbnail"] ?? null;
 $status = $data["status"] ?? null;
 $categoryId = $data["category_id"] ?? null;
 $publishedAt = $data["published_at"] ?? null;
+$tagIds = $data["tag_ids"] ?? [];
 $userId = $_SESSION["user_id"];
 
 if ($title === "" || $content === "" || $status === null) {
@@ -51,6 +52,17 @@ if ($status != 0 && $status != 1) {
     ]);
     exit;
 }
+
+if (!is_array($tagIds)) {
+    http_response_code(400);
+    echo json_encode([
+        "success" => false,
+        "message" => "Invalid tags",
+    ]);
+    exit;
+}
+
+$conn->begin_transaction();
 
 if ($status == 1) {
     if ($publishedAt) {
@@ -142,93 +154,48 @@ if (!$stmt->execute()) {
 $articleId = $stmt->insert_id;
 $stmt->close();
 
-if ($status == 1) {
-	$stmt = $conn->prepare(
-		"SELECT subscriber_id
-		 FROM user_subscription
-		 WHERE subscribed_to_id = ?"
-	);
+if (!empty($tagIds)) {
+    $stmt = $conn->prepare(
+        "INSERT INTO article_tag (article_id, tag_id) 
+		 VALUES (?, ?)"
+    );
 
-	if (!$stmt) {
-		http_response_code(500);
-		echo json_encode(["success" => false, "message" => "Server error"]);
-		exit;
-	}
+    if (!$stmt) {
+		$conn->rollback();
+        http_response_code(500);
+        echo json_encode(["success" => false, "message" => "Server error"]);
+        exit;
+    }
 
-	$stmt->bind_param("i", $userId);
-
-	if (!$stmt->execute()) {
-		http_response_code(500);
-		echo json_encode(["success" => false, "message" => "Server error"]);
-		exit;
-	}
-
-	$result = $stmt->get_result();
-	$stmt->close();
-
-	if ($publishedAt) {
-		$stmt = $conn->prepare(
-			"INSERT INTO notification (
-				user_id,
-				actor_id,
-				article_id,
-				type,
-				message,
-				created_at
-			)
-			 VALUES (?, ?, ?, 1, ?, ?)"
-		);
-	} else {
-		$stmt = $conn->prepare(
-			"INSERT INTO notification (
-				user_id,
-				actor_id,
-				article_id,
-				type,
-				message,
-				created_at
-			)
-			 VALUES (?, ?, ?, 1, ?, NOW())"
-		);
-	}
-
-	if (!$stmt) {
-		http_response_code(500);
-		echo json_encode(["success" => false, "message" => "Server error"]);
-		exit;
-	}
-
-	while ($subscriber = $result->fetch_assoc()) {
-		$subscriberId = $subscriber["subscriber_id"];
-		$message = "published a new article: " . $title;
-
-		if ($publishedAt) {
-			$stmt->bind_param(
-				"iiiss",
-				$subscriberId,
-				$userId,
-				$articleId,
-				$message,
-				$publishedAt
-			);
-		} else {
-			$stmt->bind_param(
-				"iiis",
-				$subscriberId,
-				$userId,
-				$articleId,
-				$message
-			);
-		}
-
-		if (!$stmt->execute()) {
-			http_response_code(500);
-			echo json_encode(["success" => false, "message" => "Server error"]);
+    foreach ($tagIds as $tagId) {
+        if (!is_numeric($tagId)) {
+			$conn->rollback();
+			http_response_code(400);
+			echo json_encode([
+				"success" => false,
+				"message" => "Invalid tag ID",
+			]);
 			exit;
 		}
-	}
 
-	$stmt->close();
+        $stmt->bind_param("ii", $articleId, $tagId);
+
+        if (!$stmt->execute()) {
+			$conn->rollback();
+            http_response_code(500);
+            echo json_encode(["success" => false, "message" => "Server error"]);
+            exit;
+        }
+    }
+
+    $stmt->close();
+}
+
+if (!$conn->commit()) {
+    $conn->rollback();
+    http_response_code(500);
+    echo json_encode(["success" => false, "message" => "Server error"]);
+    exit;
 }
 
 echo json_encode([
@@ -236,4 +203,5 @@ echo json_encode([
     "message" => $status == 1
         ? "Article published successfully"
         : "Article saved as draft",
+	"article_id" => $articleId
 ]);

@@ -3,7 +3,7 @@
 	position: sticky;
 	top: 120px;
 	overflow-y: hidden;
-
+	scrollbar-gutter: stable;
 	padding: 20px 34px;
 	border-left: 1px solid #ddd;
 }

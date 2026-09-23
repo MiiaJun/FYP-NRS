@@ -3,6 +3,7 @@ import { useNotification } from "../context/NotificationContext";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import { ClassicEditor, Essentials, Paragraph, Bold, Italic, Heading, List, Link, BlockQuote, Image, ImageToolbar, ImageUpload, ImageResize, PendingActions, MediaEmbed  } from "ckeditor5";
 import uploadAdapter from "../utils/uploadAdapter";
+import api from "../api/axios";
 import ArticlePreview from "./ArticlePreview";
 import LoadingOverlay from "./LoadingOverlay";
 import "ckeditor5/ckeditor5.css";
@@ -15,6 +16,9 @@ export default function ArticleEditor({ initialData, onSave, isEditing = false, 
 	const { showNotification } = useNotification();
 	const [showPreview, setShowPreview] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
+	const [allTags, setAllTags] = useState([]);
+	const [tagInput, setTagInput] = useState("");
+	const [showTagDropdown, setShowTagDropdown] = useState(false);
 
 	const [publishMode, setPublishMode] = useState("now");
 	const [scheduledDate, setScheduledDate] = useState("");
@@ -45,11 +49,24 @@ export default function ArticleEditor({ initialData, onSave, isEditing = false, 
 		title: initialData?.title || "",
 		summary: initialData?.summary || "",
 		category: initialData?.category_id ? String(initialData.category_id) : "",
-		tags: initialData?.tags || "",
+		tags: initialData?.tags || [],
 		content: initialData?.content || "",
 		thumbnail: initialData?.thumbnail || null,
 		published_at: null
 	});
+
+	useEffect(() => {
+		api.get("/article/listTag.php")
+			.then((response) => {
+				setAllTags(response.data.tags);
+			})
+			.catch((error) => {
+				showNotification(
+					error.response?.data?.message || "Failed to load tags",
+					"error"
+				);
+			});
+	}, [showNotification]);
 
 	useEffect(() => {
 		return () => {
@@ -65,7 +82,37 @@ export default function ArticleEditor({ initialData, onSave, isEditing = false, 
 			[e.target.id]: e.target.value,
 		}));
 	};
-	
+
+	const addTag = (tag) => {
+		setFormData((prev) => {
+			if (prev.tags.some((t) => t.tag_id === tag.tag_id)) {
+				return prev;
+			}
+
+			return {
+				...prev,
+				tags: [...prev.tags, tag],
+			};
+		});
+
+		setTagInput("");
+		setShowTagDropdown(false);
+	};
+
+	const removeTag = (tagId) => {
+		setFormData((prev) => ({
+			...prev,
+			tags: prev.tags.filter((selectedTag) => selectedTag.tag_id !== tagId),
+		}));
+	};
+
+	const filteredTags = allTags.filter((tag) =>
+		tag.name.toLowerCase().includes(tagInput.toLowerCase()) &&
+		!formData.tags.some(
+			(selectedTag) => selectedTag.tag_id === tag.tag_id
+		)
+	);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -209,13 +256,48 @@ export default function ArticleEditor({ initialData, onSave, isEditing = false, 
 						<option value="4">PC</option>
                     </select>
 
-                    <input
-						id="tags"
-                        type="text"
-						value={formData.tags}
-						onChange={handleChange}
-                        placeholder="Add entity tags (e.g. Elden Ring, FromSoftware)"
-                    />
+					<div className="tag-selector">
+						<div className="tag-input">
+							{formData.tags.map((tag) => (
+								<span className="tag-chip" key={tag.tag_id}>
+									{tag.name}
+									<button
+										type="button"
+										onClick={() => removeTag(tag.tag_id)}
+									>
+										×
+									</button>
+								</span>
+							))}
+
+							<input
+								id="tags"
+								type="text"
+								value={tagInput}
+								onFocus={() => setShowTagDropdown(true)}
+								onBlur={() => setShowTagDropdown(false)}
+								onChange={(e) => {
+									setTagInput(e.target.value);
+									setShowTagDropdown(true);
+								}}
+								placeholder="Search tags..."
+							/>
+						</div>
+
+						{showTagDropdown && (
+							<div className="tag-options">
+								{filteredTags.map((tag) => (
+									<button
+										type="button"
+										key={tag.tag_id}
+										onMouseDown={() => addTag(tag)}
+									>
+										{tag.name}
+									</button>
+								))}
+							</div>
+						)}
+					</div>
                 </div>
 
                 <label className="cover-upload">

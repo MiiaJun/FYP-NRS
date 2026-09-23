@@ -2,6 +2,7 @@
 	height: calc(100vh - 120px);
 	position: sticky;
 	top: 120px;
+	scrollbar-gutter: stable;
 	border-right: 1px solid #ddd;
 	overflow-y: hidden;
 }
