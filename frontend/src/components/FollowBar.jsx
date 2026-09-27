@@ -1,25 +1,10 @@
-import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { UserPlus } from "lucide-react";
-import api from "../api/axios";
 import "./FollowBar.css";
 
 export default function FollowBar() {
-	const { isLoggedIn } = useAuth();
-    const [followingUsers, setFollowingUsers] = useState([]);
-
-	useEffect(() => {
-        if (!isLoggedIn) {
-            setFollowingUsers([]);
-            return;
-        }
-
-        api.get("/user/getFollowing.php")
-            .then(response => {
-                setFollowingUsers(response.data.users);
-            })
-    }, [isLoggedIn]);
+	const { followingUsers } = useAuth();
 
 	return (
 		<section className="follow-bar">
@@ -34,11 +19,20 @@ export default function FollowBar() {
 					to={`/profile/${user.user_id}`}
 					className="following-item"
 				>
-					<img
-						className="following-profile-picture"
-						src={user.profile_picture || "/default-profile.svg"}
-						alt={user.username}
-					/>
+					<div className="following-avatar">
+						<img
+							className="following-profile-picture"
+							src={user.profile_picture || "/default-profile.svg"}
+							alt={user.username}
+						/>
+
+						<img
+							className="following-profile-frame"
+							src="/frame1.png"
+							alt=""
+							aria-hidden="true"
+						/>
+					</div>
 					<span>{user.username}</span>
 				</NavLink>
 			))}

@@ -30,31 +30,31 @@ export default function SearchList() {
 			: `/article/searchArticle.php?search=${encodeURIComponent(search)}&page=${page}`;
 
 		api.get(url)
-		.then(response => {
-			setArticles(response.data.articles);
-			setPagination(response.data.pagination);
-			setTagName(response.data.tag_name || "");
-		})
-		.catch(error => {
-			if (!controller.signal.aborted) {
-				showNotification(
-					error.response?.data?.message || "Failed to search articles",
-					"error"
-				);
-			}
-		})
-		.finally(() => {
-			if (!controller.signal.aborted) {
-				setIsLoading(false);
-			}
-		});
+			.then(response => {
+				setArticles(response.data.articles);
+				setPagination(response.data.pagination);
+				setTagName(response.data.tag_name || "");
+			})
+			.catch(error => {
+				if (!controller.signal.aborted) {
+					showNotification(
+						error.response?.data?.message || "Failed to search articles",
+						"error"
+					);
+				}
+			})
+			.finally(() => {
+				if (!controller.signal.aborted) {
+					setIsLoading(false);
+				}
+			});
 
 		return () => controller.abort();
 	}, [search, tagId, page, showNotification]);
 
 	useEffect(() => {
 		setPage(1);
-	}, [search]);
+	}, [search, tagId]);
 
 	const handleArticleClick = (article) => {
 		navigate(`/article/${article.article_id}`);
@@ -63,37 +63,34 @@ export default function SearchList() {
 	return (
 		<section className="search-list">
 			{tagId ? (
-				<>
 					<h1>Results for #{tagName} <span>·</span> {pagination?.total || 0} articles</h1>
-				</>
 			) : (
-				<>
 					<h1>Results for "{search}" <span>·</span> {pagination?.total || 0} articles</h1>
-				</>
 			)}
-			
 
-			{isLoading ? (
-				<Loading />
-			) : articles.length === 0 ? (
-				<p>No articles found.</p>
-			) : (
-				articles.map((article) => (
-					<NewsCard
-						key={article.article_id}
-						article={article}
-						onClick={() => handleArticleClick(article)}
+			<div className="search-list-content">
+				{isLoading ? (
+					<Loading />
+				) : articles.length === 0 ? (
+					<p className="search-empty">No articles found.</p>
+				) : (
+					articles.map((article) => (
+						<NewsCard
+							key={article.article_id}
+							article={article}
+							onClick={() => handleArticleClick(article)}
+						/>
+					))
+				)}
+
+				{pagination && pagination.total_pages > 1 && (
+					<Pagination
+						page={pagination.page}
+						totalPages={pagination.total_pages}
+						onPageChange={setPage}
 					/>
-				))
-			)}
-
-			{pagination && pagination.total_pages > 1 && (
-				<Pagination
-					page={pagination.page}
-					totalPages={pagination.total_pages}
-					onPageChange={setPage}
-				/>
-			)}
+				)}
+			</div>
 		</section>
 	);
 }

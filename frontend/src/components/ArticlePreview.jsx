@@ -22,10 +22,20 @@ export default function ArticlePreview({ article, thumbnailPreview, onClose }) {
 						<h1>{article.title}</h1>
 						<div className="article-meta">
 							<div className="article-author">
-								<img
-									src={user?.profile_picture || "/default-profile.svg"}
-									alt=""
-								/>
+								<div className="article-author-avatar">
+									<img
+										className="article-author-picture"
+										src={user?.profile_picture || "/default-profile.svg"}
+										alt=""
+									/>
+
+									<img
+										className="article-author-frame"
+										src="/frame1.png"
+										alt=""
+										aria-hidden="true"
+									/>
+								</div>
 								<b>{user?.username || "Unknown User"}</b>
 							</div>
 							<span>|</span>

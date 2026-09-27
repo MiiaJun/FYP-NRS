@@ -11,7 +11,7 @@ import "./MyProfile.css";
 export default function UserProfile() {
 	const navigate = useNavigate();
 	const { id } = useParams();
-	const { user, isLoggedIn } = useAuth();
+	const { user, isLoggedIn, refreshFollowing } = useAuth();
 	const { openLogin } = useModal();
 	const { showNotification } = useNotification();
 	const [profileUser, setProfileUser] = useState(null);
@@ -101,6 +101,8 @@ export default function UserProfile() {
 				...prev,
 				followers_count: response.data.followers_count
 			}));
+
+			await refreshFollowing();
 		} catch (error) {
 			showNotification(
 				error.response?.data?.message || "Failed to follow user",
@@ -117,11 +119,20 @@ export default function UserProfile() {
         <section className="my-profile">
 			<div className="profile-header">
 				<div className="profile-main">
-					<img
-						className="profile-picture"
-						src={profileUser.profile_picture || "/default-profile.svg"}
-						alt={profileUser.username}
-					/>
+					<div className="profile-avatar">
+						<img
+							className="profile-picture"
+							src={profileUser.profile_picture || "/default-profile.svg"}
+							alt={profileUser.username}
+						/>
+
+						<img
+							className="profile-frame"
+							src="/frame1.png"
+							alt=""
+							aria-hidden="true"
+						/>
+					</div>
 					<div className="profile-info">
 						<div className="profile-name-row">
 							<div>

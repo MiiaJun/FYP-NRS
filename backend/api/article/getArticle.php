@@ -1,6 +1,7 @@
 <?php
 require __DIR__ . "/../../config/cors.php";
 require __DIR__ . "/../../config/database.php";
+require_once __DIR__ . "/../utils/recordArticleView.php";
 
 $articleId = $_GET["id"] ?? null;
 
@@ -29,7 +30,9 @@ $stmt = $conn->prepare(
      FROM article a
      JOIN users u ON a.author_id = u.user_id
      JOIN category c ON a.category_id = c.category_id
-     WHERE a.article_id = ?"
+     WHERE a.article_id = ?
+	 AND a.status = 1
+	 AND a.published_at <= NOW()"
 );
 
 if (!$stmt) {
@@ -52,25 +55,23 @@ $article = $result->fetch_assoc();
 
 if (!$article) {
     http_response_code(404);
-
     echo json_encode([
         "success" => false,
         "message" => "Article not found",
     ]);
-
     exit;
 }
 
 if ($article["status"] != 1) {
     http_response_code(404);
-
     echo json_encode([
         "success" => false,
         "message" => "Article is not available",
     ]);
-
     exit;
 }
+
+recordArticleView($conn, $articleId);
 
 echo json_encode([
     "success" => true,

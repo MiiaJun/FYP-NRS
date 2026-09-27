@@ -53,16 +53,16 @@
 
 .header .search-dropdown {
 	position: absolute;
-	top: calc(100% + 8px);
+	top: calc(100% + 2px);
 	z-index: 200;
 	width: 100%;
 	box-sizing: border-box;
 	max-height: 400px;
 	overflow-y: auto;
 	border: 1px solid #ddd;
-	border-radius: 10px;
+	border-radius: 24px;
 	background: white;
-	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .header .search-dropdown-section {
@@ -188,10 +188,29 @@
 	position: relative;
 }
 
-.header .header-profile-picture {
+.header .header-profile {
+	position: relative;
 	width: 40px;
 	height: 40px;
+	flex-shrink: 0;
+}
+
+.header .header-profile-picture {
+	width: 100%;
+	height: 100%;
 	border-radius: 50%;
 	object-fit: cover;
 	border: 1px solid black;
+}
+
+.header .header-profile-frame {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 120%;
+	height: 120%;
+	transform: translate(-50%, -50%);
+	object-fit: contain;
+	pointer-events: none;
+	z-index: 2;
 }

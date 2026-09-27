@@ -1,5 +1,6 @@
 	import { useEffect, useState } from "react";
 	import { useNavigate, useParams } from "react-router-dom";
+	import { useAuth } from "../context/AuthContext";
 	import { getTimeAgo } from "../utils/date";
 	import api from "../api/axios";
 	import ArticleActions from "./ArticleActions";
@@ -9,6 +10,7 @@
 	export default function Article() {
 		const { id } = useParams();
 		const navigate = useNavigate();
+		const { user } = useAuth();
 		const [article, setArticle] = useState(null);
 		const [errorMessage, setErrorMessage] = useState(null);
 
@@ -27,7 +29,7 @@
 						error.response?.data?.message || "Failed to load article"
 					);
 				});
-		}, [id]);
+		}, [id, user?.user_id]);
 
 		if (errorMessage) {
 			return <div>{errorMessage}</div>;
@@ -46,10 +48,20 @@
 							className="article-author"
 							onClick={() => navigate(`/profile/${article.author_id}`)}
 						>
-							<img
-								src={article.author_profile_picture || "/default-profile.svg"}
-								alt=""
-							/>
+							<div className="article-author-avatar">
+								<img
+									className="article-author-picture"
+									src={article.author_profile_picture || "/default-profile.svg"}
+									alt=""
+								/>
+
+								<img
+									className="article-author-frame"
+									src="/frame1.png"
+									alt=""
+									aria-hidden="true"
+								/>
+							</div>
 							<b>{article.author}</b>
 						</button>
 						<span>|</span>

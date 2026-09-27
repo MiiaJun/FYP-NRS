@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNotification } from "../context/NotificationContext";
 import { getTimeAgo } from "../utils/date";
 import api from "../api/axios";
+import Loading from "./Loading";
 import "./NotificationList.css";
 
 export default function NotificationList() {
@@ -11,6 +12,7 @@ export default function NotificationList() {
 	const { isLoggedIn, isLoading  } = useAuth();
 	const { showNotification } = useNotification();
 	const [notifications, setNotifications] = useState([]);
+	const [isNotificationLoading, setIsNotificationLoading] = useState(true);
 
 	useEffect(() => {
 		if (!isLoading && !isLoggedIn) {
@@ -23,6 +25,8 @@ export default function NotificationList() {
 			return;
 		}
 
+		setIsNotificationLoading(true);
+
 		api.get("/user/listNotification.php")
 			.then(response => {
 				setNotifications(response.data.notifications);
@@ -32,6 +36,9 @@ export default function NotificationList() {
 					error.response?.data?.message || "Failed to load notifications",
 					"error"
 				);
+			})
+			.finally(() => {
+				setIsNotificationLoading(false);
 			});
 	}, [isLoggedIn, showNotification]);
 
@@ -45,26 +52,32 @@ export default function NotificationList() {
 		<div className="notification-page">
 			<h1>Notifications</h1>
 
-			<div className="notification-list">
-				{notifications.map((notification) => (
-					<div
-						className={`notification-item ${notification.is_read == 0 ? "unread" : ""}`}
-						key={notification.notification_id}
-						onClick={() => handleNotificationClick(notification.article_id)}
-					>
-						<p>
-							<b
-								onClick={(e) => {
-									e.stopPropagation();
-									navigate(`/profile/${notification.actor_id}`);
-								}}
-							>
-								{notification.actor_username}
-							</b> {notification.message}
-						</p>
-						<span>{getTimeAgo(notification.created_at)}</span>
-					</div>
-				))}
+			<div className="notification-content">
+				{isNotificationLoading ? (
+					<Loading />
+				) : notifications.length === 0 ? (
+					<p className="notification-empty">No notifications</p>
+				) : (
+					notifications.map((notification) => (
+						<div
+							className={`notification-item ${notification.is_read == 0 ? "unread" : ""}`}
+							key={notification.notification_id}
+							onClick={() => handleNotificationClick(notification.article_id)}
+						>
+							<p>
+								<b
+									onClick={(e) => {
+										e.stopPropagation();
+										navigate(`/profile/${notification.actor_id}`);
+									}}
+								>
+									{notification.actor_username}
+								</b> {notification.message}
+							</p>
+							<span>{getTimeAgo(notification.created_at)}</span>
+						</div>
+					))
+				)}
 			</div>
 		</div>
 	);

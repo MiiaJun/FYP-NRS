@@ -17,7 +17,7 @@ if (!isset($_SESSION["user_id"])) {
 $data = json_decode(file_get_contents("php://input"), true);
 
 $articleId = $data["article_id"] ?? null;
-$title = $data["title"] ?? "";
+$title = trim($data["title"] ?? "");
 $content = sanitizeHtml($data["content"] ?? "");
 $summary = trim($data["summary"] ?? "");
 $thumbnail = $data["thumbnail"] ?? null;
@@ -188,7 +188,10 @@ if ($article["status"] == 0) {
             summary = ?,
             thumbnail = ?,
             status = ?,
-            updated_at = NOW(),
+            updated_at = CASE
+                WHEN published_at <= NOW() THEN NOW()
+                ELSE updated_at
+            END,
             category_id = ?
          WHERE article_id = ?"
     );

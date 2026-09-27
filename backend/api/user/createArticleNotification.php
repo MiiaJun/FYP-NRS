@@ -42,7 +42,8 @@ if (!$articleId || !is_numeric($articleId)) {
 $stmt = $conn->prepare(
     "SELECT
         title,
-        published_at
+        published_at,
+		published_at <= NOW() AS is_published
      FROM article
      WHERE article_id = ? AND author_id = ? AND status = 1"
 );
@@ -69,6 +70,13 @@ if (!$article) {
     echo json_encode([
         "success" => false,
         "message" => "You cannot create notifications for this article",
+    ]);
+    exit;
+}
+
+if ($type == 2 && !$article["is_published"]) {
+    echo json_encode([
+        "success" => true,
     ]);
     exit;
 }

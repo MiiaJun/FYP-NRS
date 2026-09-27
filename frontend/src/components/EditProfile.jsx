@@ -172,8 +172,11 @@ export default function EditProfile() {
 								type="text"
 								value={formData.username}
 								onChange={handleChange}
-								maxLength={30}
 								placeholder="Enter your username..."
+								minLength={2}
+								maxLength={30}
+								pattern="^\S.{0,28}\S$"
+								title="Username must be 2 to 30 characters and cannot start or end with spaces"
 								required
 							/>
 						</div>

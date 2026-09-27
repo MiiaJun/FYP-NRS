@@ -57,8 +57,7 @@
 }
 
 .topics-section {
-	margin-top: 36px;
-	padding-top: 28px;
+	margin-top: 28px;
 }
 
 .topic-list {
@@ -67,7 +66,7 @@
 	gap: 10px;
 }
 
-.topic-pill {
+.topic-item {
 	padding: 8px 14px;
 	border: 1px solid #ddd;
 	border-radius: 20px;
@@ -77,7 +76,7 @@
 	cursor: pointer;
 }
 
-.topic-pill:hover {
+.topic-item:hover {
 	border-color: #7046c6;
 	color: #7046c6;
 }

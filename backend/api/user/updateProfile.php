@@ -14,8 +14,7 @@ if (!isset($_SESSION["user_id"])) {
 }
 
 $data = json_decode(file_get_contents("php://input"), true);
-
-$username = trim($data["username"] ?? "");
+$username = $data["username"] ?? "";
 $bio = $data["bio"] ?? "";
 $profilePicture = $data["profile_picture"] ?? null;
 $userId = $_SESSION["user_id"];
@@ -29,11 +28,11 @@ if ($username === "") {
     exit;
 }
 
-if (mb_strlen($username) > 30) {
+if (!preg_match("/^(?!\s).{2,30}(?<!\s)$/u", $username)) {
     http_response_code(400);
     echo json_encode([
         "success" => false,
-        "message" => "Username must be 30 characters or less"
+        "message" => "Username must be 2 to 30 characters and cannot start or end with spaces"
     ]);
     exit;
 }
@@ -80,6 +79,8 @@ if (!$stmt->execute()) {
     echo json_encode(["success" => false, "message" => "Server error"]);
     exit;
 }
+
+$stmt->close();
 
 echo json_encode([
     "success" => true,

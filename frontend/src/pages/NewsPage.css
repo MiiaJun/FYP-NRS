@@ -5,5 +5,5 @@
 
 .page {
 	display: grid;
-    grid-template-columns: 300px minmax(800px, 1fr)
+    grid-template-columns: 300px minmax(600px, 1fr)
 }

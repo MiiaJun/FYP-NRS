@@ -19,6 +19,7 @@ export default function ArticleEditor({ initialData, onSave, isEditing = false, 
 	const [allTags, setAllTags] = useState([]);
 	const [tagInput, setTagInput] = useState("");
 	const [showTagDropdown, setShowTagDropdown] = useState(false);
+	const [categories, setCategories] = useState([]);
 
 	const [publishMode, setPublishMode] = useState("now");
 	const [scheduledDate, setScheduledDate] = useState("");
@@ -63,6 +64,17 @@ export default function ArticleEditor({ initialData, onSave, isEditing = false, 
 			.catch((error) => {
 				showNotification(
 					error.response?.data?.message || "Failed to load tags",
+					"error"
+				);
+			});
+
+		api.get("/article/listCategory.php")
+			.then((response) => {
+				setCategories(response.data.categories);
+			})
+			.catch((error) => {
+				showNotification(
+					error.response?.data?.message || "Failed to load categories",
 					"error"
 				);
 			});
@@ -250,10 +262,14 @@ export default function ArticleEditor({ initialData, onSave, isEditing = false, 
                         <option value="" disabled>
                             Category
                         </option>
-                        <option value="1">Nintendo</option>
-						<option value="2">PlayStation</option>
-						<option value="3">Xbox</option>
-						<option value="4">PC</option>
+                        {categories.map((category) => (
+							<option
+								key={category.category_id}
+								value={category.category_id}
+							>
+								{category.category_name}
+							</option>
+						))}
                     </select>
 
 					<div className="tag-selector">

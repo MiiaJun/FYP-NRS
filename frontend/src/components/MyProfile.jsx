@@ -78,6 +78,10 @@ export default function MyProfile() {
 	}, [publishedTotalPages, publishedPage]);
 
 	const handleArticleClick = (article) => {
+		if (article.is_scheduled == 1) {
+			handleEdit(article.article_id, "/edit-published");
+			return;
+		}
 		navigate(`/article/${article.article_id}`);
 	};
 
@@ -123,11 +127,18 @@ export default function MyProfile() {
         <section className="my-profile">
 			<div className="profile-header">
 				<div className="profile-main">
-					<img
-						className="profile-picture"
-						src={profileUser.profile_picture || "/default-profile.svg"}
-						alt={profileUser.username}
-					/>
+					<div className="profile-avatar">
+						<img
+							className="profile-picture"
+							src={profileUser.profile_picture || "/default-profile.svg"}
+							alt={profileUser.username}
+						/>
+						<img
+							className="profile-frame"
+							src="/frame1.png"
+							alt=""
+						/>
+					</div>
 					<div className="profile-info">
 						<div className="profile-name-row">
 							<div>

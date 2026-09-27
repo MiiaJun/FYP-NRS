@@ -24,6 +24,7 @@ $stmt = $conn->prepare(
         a.published_at,
         a.updated_at,
         a.status,
+		(a.status = 1 AND a.published_at > NOW()) AS is_scheduled,
 		u.username AS author,
         c.category_name AS category
      FROM article a

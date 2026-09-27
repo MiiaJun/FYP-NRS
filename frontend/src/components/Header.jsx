@@ -169,6 +169,13 @@ export default function Header() {
 							onClick={() => setShowProfileMenu(!showProfileMenu)}
 						/>
 
+						<img
+							src="/frame1.png"
+							alt=""
+							aria-hidden="true"
+							className="header-profile-frame"
+						/>
+
 						{showProfileMenu && (
 							<ProfileMenu onLogout={handleLogout} />
 						)}

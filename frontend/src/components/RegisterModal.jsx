@@ -65,6 +65,10 @@ export default function RegisterModal({ onClose, onOpenLogin }) {
 							value={formData.username}
 							onChange={handleChange}
 							placeholder="Username"
+							minLength={2}
+							maxLength={30}
+							pattern="^\S.{0,28}\S$"
+							title="Username must be 2 to 30 characters and cannot start or end with spaces"
 							required
 						/>
 					</div>
@@ -77,6 +81,9 @@ export default function RegisterModal({ onClose, onOpenLogin }) {
 							value={formData.password}
 							onChange={handleChange}
 							placeholder="At least 8 character"
+							minLength={8}
+							pattern="^(?!\s)(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\S$).{8,}$"
+							title="Password must be at least 8 characters, include an uppercase letter, lowercase letter, and number, and cannot start or end with spaces"
 							required
 						/>
 					</div>

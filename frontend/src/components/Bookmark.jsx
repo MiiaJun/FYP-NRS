@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNotification } from "../context/NotificationContext";
 import { Bookmark } from "lucide-react";
 import api from "../api/axios";
+import Loading from "./Loading";
 import NewsCard from "./NewsCard";
 import Pagination from "./Pagination";
 import "./Bookmark.css";
@@ -13,6 +14,7 @@ export default function BookmarkList() {
 	const { isLoggedIn, isLoading  } = useAuth();
 	const { showNotification } = useNotification();
 	const [bookmarkedArticles, setBookmarkedArticles] = useState([]);
+	const [isBookmarkLoading, setIsBookmarkLoading] = useState(true);
 
 	const [bookmarkPage, setBookmarkPage] = useState(1);
 	const articlesPerPage = 5;
@@ -33,6 +35,8 @@ export default function BookmarkList() {
 			return;
 		}
 
+		setIsBookmarkLoading(true);
+
 		api.get("/article/listBookmark.php")
 			.then(response => {
 				setBookmarkedArticles(
@@ -47,6 +51,9 @@ export default function BookmarkList() {
 					error.response?.data?.message || "Failed to load bookmarks",
 					"error"
 				);
+			})
+			.finally(() => {
+				setIsBookmarkLoading(false);
 			});
 	}, [isLoggedIn, showNotification]);
 
@@ -77,34 +84,40 @@ export default function BookmarkList() {
 
 	return (
 		<section className="bookmark-page">
-			<div className="bookmark-header">
-				<h1>Bookmarks</h1>
-			</div>
+			<h1>Bookmarks</h1>
 
-			<div className="bookmarked-articles">
-				{visibleBookmarks.map(article => (
-					<NewsCard
-						key={article.article_id}
-						article={article}
-						onClick={() => handleArticleClick(article)}
-					>
-						<button
-							className={`bookmark-button ${article.bookmarked ? "bookmark-active" : ""}`}
-							onClick={() => handleBookmark(article.article_id)}
-						>
-							<Bookmark size={18} />
-						</button>
-					</NewsCard>
-				))}
+			<div className="bookmark-content">
+				{isBookmarkLoading ? (
+					<Loading />
+				) : bookmarkedArticles.length === 0 ? (
+					<p className="bookmark-empty">No bookmarks</p>
+				) : (
+					<>
+						{visibleBookmarks.map(article => (
+							<NewsCard
+								key={article.article_id}
+								article={article}
+								onClick={() => handleArticleClick(article)}
+							>
+								<button
+									className={`bookmark-button ${article.bookmarked ? "bookmark-active" : ""}`}
+									onClick={() => handleBookmark(article.article_id)}
+								>
+									<Bookmark size={18} />
+								</button>
+							</NewsCard>
+						))}
+					
+						{bookmarkedArticles.length > articlesPerPage && (
+							<Pagination
+								page={bookmarkPage}
+								totalPages={bookmarkTotalPages}
+								onPageChange={setBookmarkPage}
+							/>
+						)}
+					</>
+				)}
 			</div>
-
-			{bookmarkedArticles.length > articlesPerPage && (
-				<Pagination
-					page={bookmarkPage}
-					totalPages={bookmarkTotalPages}
-					onPageChange={setBookmarkPage}
-				/>
-			)}
 		</section>
 	);
 }

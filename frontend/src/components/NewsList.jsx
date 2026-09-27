@@ -7,13 +7,6 @@ import Pagination from "./Pagination";
 import Loading from "./Loading";
 import "./NewsList.css"
 
-const categories = [
-	{ category_id: 1, category_name: "Nintendo" },
-	{ category_id: 2, category_name: "PlayStation" },
-	{ category_id: 3, category_name: "Xbox" },
-	{ category_id: 4, category_name: "PC" }
-];
-
 export default function NewsList() {
 	const [articles, setArticles] = useState([]);
 	const navigate = useNavigate();
@@ -22,6 +15,17 @@ export default function NewsList() {
 	const { showNotification } = useNotification();
 	const [activeTab, setActiveTab] = useState("latest");
 	const [isLoading, setIsLoading] = useState(true);
+	const [categories, setCategories] = useState([]);
+	const visibleCategories = categories.slice(0, 4);
+	const moreCategories = categories.slice(4);
+	const [showMoreCategories, setShowMoreCategories] = useState(false);
+
+	useEffect(() => {
+		api.get("/article/listCategory.php")
+			.then((response) => {
+				setCategories(response.data.categories);
+			});
+	}, []);
 
     useEffect(() => {
 		const controller = new AbortController();
@@ -65,7 +69,7 @@ export default function NewsList() {
 				>
 					Latest
 				</button>
-				{categories.map((category) => (
+				{visibleCategories.map((category) => (
 					<button
 						key={category.category_id}
 						className={activeTab === category.category_id ? "active" : ""}
@@ -74,25 +78,61 @@ export default function NewsList() {
 						{category.category_name}
 					</button>
 				))}
+				{moreCategories.length > 0 && (
+					<div className="more-category-menu">
+						<button
+							className={
+								moreCategories.some(
+									(category) => category.category_id === activeTab
+								)
+									? "active"
+									: ""
+							}
+							onClick={() => setShowMoreCategories(!showMoreCategories)}
+						>
+							More
+						</button>
+
+						{showMoreCategories && (
+							<div className="more-category-options">
+								{moreCategories.map((category) => (
+									<button
+										key={category.category_id}
+										onClick={() => {
+											handleTabChange(category.category_id);
+											setShowMoreCategories(false);
+										}}
+									>
+										{category.category_name}
+									</button>
+								))}
+							</div>
+						)}
+					</div>
+				)}
 			</div>
-            {isLoading ? (
-				<Loading />
-			) : (
-				articles.map((article) => (
-					<NewsCard
-						key={article.article_id}
-						article={article}
-						onClick={() => handleArticleClick(article)}
-					/>
-				))
-			)}
-			{pagination && pagination.total_pages > 1 && (
-				<Pagination
-					page={pagination.page}
-					totalPages={pagination.total_pages}
-					onPageChange={setPage}
-				/>
-			)}
+			<div className="news-list-content">
+				{isLoading ? (
+					<Loading />
+				) : (
+					<>
+						{articles.map((article) => (
+							<NewsCard
+								key={article.article_id}
+								article={article}
+								onClick={() => handleArticleClick(article)}
+							/>
+						))}
+						{pagination && pagination.total_pages > 1 && (
+							<Pagination
+								page={pagination.page}
+								totalPages={pagination.total_pages}
+								onPageChange={setPage}
+							/>
+						)}
+					</>
+				)}
+			</div>
         </section>
     );
 }
