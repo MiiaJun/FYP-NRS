@@ -5,5 +5,56 @@
 
 .page {
 	display: grid;
-    grid-template-columns: 300px minmax(600px, 1fr)
+    grid-template-columns: 300px minmax(800px, 1fr)
+}
+
+.article-page {
+    isolation: isolate;
+}
+
+.article-page .article-page-background {
+    position: fixed;
+    top: 120px;
+    left: 0;
+    width: 100%;
+    height: calc(100dvh - 120px);
+    object-fit: cover;
+    object-position: center;
+    z-index: -1;
+	opacity: 0.6;
+}
+
+.article-page .article {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.article-page {
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.article-page .header {
+    flex-shrink: 0;
+}
+
+.article-page .article-page-content {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.article-page .left-sidebar,
+.article-page .sidebar {
+    top: 0;
+}
+
+.article-page .header {
+    background: none;
+}
+
+.article-page .article-page-background {
+    top: 0;
+    height: 100dvh;
 }

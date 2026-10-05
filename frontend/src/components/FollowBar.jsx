@@ -26,12 +26,13 @@ export default function FollowBar() {
 							alt={user.username}
 						/>
 
-						<img
-							className="following-profile-frame"
-							src="/frame1.png"
-							alt=""
-							aria-hidden="true"
-						/>
+						{user.profile_frame_url && (
+							<img
+								className="following-profile-frame"
+								src={user.profile_frame_url}
+								alt=""
+							/>
+						)}
 					</div>
 					<span>{user.username}</span>
 				</NavLink>

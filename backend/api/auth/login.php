@@ -4,14 +4,30 @@ require __DIR__ . "/../../config/database.php";
 session_start();
 
 $data = json_decode(file_get_contents("php://input"), true);
-
 $email = strtolower(trim($data["email"] ?? ""));
 $password = $data["password"] ?? "";
 
 $stmt = $conn->prepare(
-	"SELECT user_id, username, email, password, profile_picture
-	 FROM users
-	 WHERE email = ?"
+    "SELECT
+        u.user_id,
+        u.username,
+        u.email,
+        u.password,
+        u.profile_picture,
+		u.bio,
+		u.role_id,
+		u.status,
+		u.suspended_until,
+		u.coin,
+		COALESCE(u.suspended_until > NOW(), 0) AS is_suspended,
+        (
+            SELECT c.image_url
+            FROM cosmetic c 
+            JOIN user_equipped_cosmetic equipped ON c.cosmetic_id = equipped.cosmetic_id AND c.cosmetic_type_id = equipped.cosmetic_type_id
+            WHERE equipped.user_id = u.user_id AND c.cosmetic_type_id = 1
+        ) AS profile_frame_url
+     FROM users u
+     WHERE u.email = ?"
 );
 
 if (!$stmt) {
@@ -43,6 +59,17 @@ if (!$user || !password_verify($password, $user["password"])) {
 	exit;
 }
 
+if ($user["status"] !== 1 || $user["is_suspended"] === 1) {
+    http_response_code(403);
+
+    echo json_encode([
+        "success" => false,
+        "message" => "Your account is disabled or suspended."
+    ]);
+    exit;
+}
+
+session_regenerate_id(true);
 $_SESSION["user_id"] = $user["user_id"];
 
 echo json_encode([
@@ -51,6 +78,10 @@ echo json_encode([
         "user_id" => $user["user_id"],
         "username" => $user["username"],
         "email" => $user["email"],
-        "profile_picture" => $user["profile_picture"]
+        "profile_picture" => $user["profile_picture"],
+		"bio" => $user["bio"],
+		"role_id" => $user["role_id"],
+		"profile_frame_url" => $user["profile_frame_url"],
+		"coin" => $user["coin"]
     ]
 ]);

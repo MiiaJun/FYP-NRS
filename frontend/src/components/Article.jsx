@@ -5,9 +5,10 @@
 	import api from "../api/axios";
 	import ArticleActions from "./ArticleActions";
 	import CommentList from "./CommentList";
+	import Loading from "./Loading";
 	import "./Article.css";
 
-	export default function Article() {
+	export default function Article({ onBackgroundChange }) {
 		const { id } = useParams();
 		const navigate = useNavigate();
 		const { user } = useAuth();
@@ -15,11 +16,21 @@
 		const [errorMessage, setErrorMessage] = useState(null);
 
 		useEffect(() => {
-			api.get(`/article/getArticle.php?id=${id}`)
+			const controller = new AbortController();
+			setArticle(null);
+			setErrorMessage(null);
+			onBackgroundChange(null);
+
+			api.get(`/article/getArticle.php?id=${id}`, { signal: controller.signal })
 				.then(response => {
 					setArticle(response.data.article);
+					onBackgroundChange(response.data.article.background_url);
 				})
 				.catch(error => {
+					if (controller.signal.aborted) {
+						return;
+					}
+
 					 if (error.response?.status === 400) {
 						navigate("/");
 						return;
@@ -29,14 +40,16 @@
 						error.response?.data?.message || "Failed to load article"
 					);
 				});
-		}, [id, user?.user_id]);
+
+				return () => controller.abort();
+		}, [id, user?.user_id, navigate, onBackgroundChange]);
 
 		if (errorMessage) {
 			return <div>{errorMessage}</div>;
 		}
 
 		if (!article) {
-			return <div>Loading...</div>;
+			return <Loading />;
 		}
 
 		return (
@@ -55,12 +68,13 @@
 									alt=""
 								/>
 
-								<img
-									className="article-author-frame"
-									src="/frame1.png"
-									alt=""
-									aria-hidden="true"
-								/>
+								{article.author_profile_frame_url && (
+									<img
+										className="article-author-frame"
+										src={article.author_profile_frame_url}
+										alt=""
+									/>
+								)}
 							</div>
 							<b>{article.author}</b>
 						</button>

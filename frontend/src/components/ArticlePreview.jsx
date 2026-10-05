@@ -5,12 +5,6 @@ import "./Article.css";
 
 export default function ArticlePreview({ article, thumbnailPreview, onClose }) {
 	const { user } = useAuth();
-	const categories = {
-		1: "Nintendo",
-		2: "PlayStation",
-		3: "Xbox",
-		4: "PC"
-	};
     return (
 		<div className="preview-overlay" onClick={onClose}>
 			<div className="preview-modal" onClick={(e) => e.stopPropagation()}>
@@ -29,12 +23,13 @@ export default function ArticlePreview({ article, thumbnailPreview, onClose }) {
 										alt=""
 									/>
 
-									<img
-										className="article-author-frame"
-										src="/frame1.png"
-										alt=""
-										aria-hidden="true"
-									/>
+									{user.profile_frame_url && (
+										<img
+											src={user.profile_frame_url}
+											alt=""
+											className="article-author-frame"
+										/>
+									)}
 								</div>
 								<b>{user?.username || "Unknown User"}</b>
 							</div>

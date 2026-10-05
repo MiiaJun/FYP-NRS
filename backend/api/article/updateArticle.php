@@ -25,6 +25,7 @@ $status = $data["status"] ?? null;
 $categoryId = $data["category_id"] ?? null;
 $publishedAt = $data["published_at"] ?? null;
 $tagIds = $data["tag_ids"] ?? [];
+$backgroundId = $data["background_cosmetic_id"] ?? null;
 $userId = $_SESSION["user_id"];
 
 if (!$articleId || !is_numeric($articleId)) {
@@ -130,7 +131,56 @@ if ($article["status"] == 1 && $status == 0) {
     exit;
 }
 
-$conn->begin_transaction();
+if ($backgroundId !== null && !is_numeric($backgroundId)) {
+    http_response_code(400);
+    echo json_encode([
+        "success" => false,
+        "message" => "Invalid background ID"
+    ]);
+    exit;
+}
+
+if ($backgroundId !== null) {
+    $stmt = $conn->prepare(
+        "SELECT c.cosmetic_id
+         FROM cosmetic c
+         JOIN user_cosmetic owned ON owned.cosmetic_id = c.cosmetic_id
+         WHERE owned.user_id = ? AND c.cosmetic_id = ? AND c.cosmetic_type_id = 2"
+    );
+
+    if (!$stmt) {
+        http_response_code(500);
+        echo json_encode(["success" => false, "message" => "Server error"]);
+        exit;
+    }
+
+    $stmt->bind_param("ii", $userId, $backgroundId);
+
+    if (!$stmt->execute()) {
+        http_response_code(500);
+        echo json_encode(["success" => false, "message" => "Server error"]);
+        exit;
+    }
+
+    $result = $stmt->get_result();
+    $stmt->close();
+    $background = $result->fetch_assoc();
+
+    if (!$background) {
+        http_response_code(400);
+        echo json_encode([
+            "success" => false,
+            "message" => "Invalid or unowned article background"
+        ]);
+        exit;
+    }
+}
+
+if (!$conn->begin_transaction()) {
+    http_response_code(500);
+    echo json_encode(["success" => false, "message" => "Server error"]);
+    exit;
+}
 
 if ($article["status"] == 0) {
     if ($status == 1) {
@@ -148,7 +198,8 @@ if ($article["status"] == 0) {
                     thumbnail = ?,
                     status = ?,
                     published_at = ?,
-                    category_id = ?
+                    category_id = ?,
+					background_cosmetic_id = ?
                  WHERE article_id = ?"
             );
         } else {
@@ -161,7 +212,8 @@ if ($article["status"] == 0) {
                     thumbnail = ?,
                     status = ?,
                     published_at = NOW(),
-                    category_id = ?
+                    category_id = ?,
+					background_cosmetic_id = ?
                  WHERE article_id = ?"
             );
         }
@@ -175,7 +227,8 @@ if ($article["status"] == 0) {
                 thumbnail = ?,
                 status = ?,
                 published_at = NULL,
-                category_id = ?
+                category_id = ?,
+					background_cosmetic_id = ?
              WHERE article_id = ?"
         );
     }
@@ -192,12 +245,14 @@ if ($article["status"] == 0) {
                 WHEN published_at <= NOW() THEN NOW()
                 ELSE updated_at
             END,
-            category_id = ?
+            category_id = ?,
+			background_cosmetic_id = ?
          WHERE article_id = ?"
     );
 }
 
 if (!$stmt) {
+	$conn->rollback();
     http_response_code(500);
     echo json_encode(["success" => false, "message" => "Server error"]);
     exit;
@@ -205,7 +260,7 @@ if (!$stmt) {
 
 if ($article["status"] == 0 && $status == 1 && $publishedAt) {
     $stmt->bind_param(
-        "ssssisii",
+        "ssssisiii",
         $title,
         $content,
         $summary,
@@ -213,22 +268,25 @@ if ($article["status"] == 0 && $status == 1 && $publishedAt) {
         $status,
         $publishedAt,
         $categoryId,
+		$backgroundId,
         $articleId
     );
 } else {
     $stmt->bind_param(
-        "ssssiii",
+        "ssssiiii",
         $title,
         $content,
         $summary,
         $thumbnail,
         $status,
         $categoryId,
+		$backgroundId,
         $articleId
     );
 }
 
 if (!$stmt->execute()) {
+	$conn->rollback();
     http_response_code(500);
     echo json_encode(["success" => false, "message" => "Server error"]);
     exit;

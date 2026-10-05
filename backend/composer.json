@@ -2,6 +2,7 @@
     "require": {
         "php": ">=8.2",
         "ext-mysqli": "*",
-        "ezyang/htmlpurifier": "^4.19"
+        "ezyang/htmlpurifier": "^4.19",
+        "resend/resend-php": "^1.16"
     }
 }

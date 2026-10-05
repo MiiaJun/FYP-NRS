@@ -82,14 +82,16 @@ export default function BookmarkList() {
 		navigate(`/article/${article.article_id}`);
 	};
 
+	if (isLoading || !isLoggedIn || isBookmarkLoading) {
+		return <Loading />;
+	}
+
 	return (
 		<section className="bookmark-page">
 			<h1>Bookmarks</h1>
 
 			<div className="bookmark-content">
-				{isBookmarkLoading ? (
-					<Loading />
-				) : bookmarkedArticles.length === 0 ? (
+				{bookmarkedArticles.length === 0 ? (
 					<p className="bookmark-empty">No bookmarks</p>
 				) : (
 					<>

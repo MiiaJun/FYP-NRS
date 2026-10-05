@@ -6,6 +6,7 @@ import { useNotification } from "../context/NotificationContext";
 import api from "../api/axios";
 import NewsCard from "./NewsCard";
 import Pagination from "./Pagination";
+import Loading from "./Loading";
 import "./MyProfile.css";
 
 export default function UserProfile() {
@@ -112,7 +113,7 @@ export default function UserProfile() {
 	};
 
 	if (!profileUser) {
-		return <div>Loading...</div>;
+		return <Loading />;
 	}
 
     return (
@@ -125,13 +126,14 @@ export default function UserProfile() {
 							src={profileUser.profile_picture || "/default-profile.svg"}
 							alt={profileUser.username}
 						/>
-
-						<img
-							className="profile-frame"
-							src="/frame1.png"
-							alt=""
-							aria-hidden="true"
-						/>
+						{profileUser.profile_frame_url && (
+							<img
+								key={profileUser.profile_frame_url}
+								className="profile-frame"
+								src={profileUser.profile_frame_url}
+								alt=""
+							/>
+						)}
 					</div>
 					<div className="profile-info">
 						<div className="profile-name-row">

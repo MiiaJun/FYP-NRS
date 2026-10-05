@@ -123,16 +123,22 @@ export default function Comment({ comment, repliesByParent, onReply, onEditComme
 			return;
 		}
 
-		const response = await api.post("/article/createComment.php", {
-			article_id: comment.article_id,
-			parent_comment_id: comment.comment_id,
-			content: replyText
-		});
+		try {
+			const response = await api.post("/article/createComment.php", {
+				article_id: comment.article_id,
+				parent_comment_id: comment.comment_id,
+				content: replyText
+			});
 
-		onReply(response.data.comment);
-
-		setReplyText("");
-		setShowReply(false);
+			onReply(response.data.comment);
+			setReplyText("");
+			setShowReply(false);
+		} catch (error) {
+			showNotification(
+				error.response?.data?.message || "Failed to post reply",
+				"error"
+			);
+		}
 	};
 
 	const handleSubmitEdit = async (e) => {
@@ -142,23 +148,39 @@ export default function Comment({ comment, repliesByParent, onReply, onEditComme
 			return;
 		}
 
-		const response = await api.put("/article/editComment.php", {
-			comment_id: comment.comment_id,
-			content: editText
-		});
+		try {
+			const response = await api.put("/article/editComment.php", {
+				comment_id: comment.comment_id,
+				content: editText
+			});
 
-		onEditComment(response.data.comment);
-
-		setEditing(false);
+			onEditComment(response.data.comment);
+			setEditing(false);
+		} catch (error) {
+			showNotification(
+				error.response?.data?.message || "Failed to edit comment",
+				"error"
+			);
+		}
 	};
 
 	return (
 		<div className="comment">
-			<img
-				className="comment-profile-picture"
-				src={comment.profile_picture || "/default-profile.svg"}
-				alt={comment.username}
-			/>
+			<div className="comment-avatar">
+				<img
+					className="comment-profile-picture"
+					src={comment.profile_picture || "/default-profile.svg"}
+					alt={comment.username}
+				/>
+
+				{comment.profile_frame_url && (
+					<img
+						className="comment-profile-frame"
+						src={comment.profile_frame_url}
+						alt=""
+					/>
+				)}
+			</div>
 
 			<div className="comment-main">
 				<div className="comment-user">
@@ -175,6 +197,7 @@ export default function Comment({ comment, repliesByParent, onReply, onEditComme
 					<form className="edit-form" onSubmit={handleSubmitEdit}>
 						<textarea
 							value={editText}
+							maxLength={2000}
 							onChange={handleEditChange}
 						/>
 
@@ -245,7 +268,9 @@ export default function Comment({ comment, repliesByParent, onReply, onEditComme
 					<form className="reply-form" onSubmit={handleSubmit}>
 						<textarea 
 							value={replyText}
+							maxLength={2000}
 							onChange={handleReplyChange} 
+							placeholder="Write a reply..."
 						/>
 						<div className="reply-form-actions">
 						<button

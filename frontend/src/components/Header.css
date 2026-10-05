@@ -5,7 +5,6 @@
 	padding: 0 32px;
 	border-bottom: 1px solid #ddd;
 	background: white;
-
  	position: sticky;
 	top: 0;
     z-index: 100;
@@ -49,6 +48,11 @@
 	border: none;
 	outline: none;
 	font-size: 16px;
+	background: none;
+}
+
+.header .search input::placeholder {
+    color: black;
 }
 
 .header .search-dropdown {
@@ -184,15 +188,87 @@
 	gap: 12px;
 }
 
-.header .header-profile {
-	position: relative;
+.header .header-wallet {
+    position: relative;
+    margin-right: 20px;
+}
+
+.header .header-coins {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+	border: 1px solid #ddd;
+	min-width: 110px;
+    font-variant-numeric: tabular-nums;
+	justify-content: space-between;
+}
+
+.header .header-gem {
+    justify-content: center;
+    color: #8b5cf6;
+}
+
+.header .header-gem svg {
+    transform-origin: 50% 60%;
+    animation: gem-shake 2.4s ease-in-out infinite;
+}
+
+@keyframes gem-shake {
+    0%, 60%, 100% { transform: rotate(0deg) scale(1); }
+    64%  { transform: rotate(-14deg) scale(1.1); }
+    68%  { transform: rotate(12deg) scale(1.1); }
+    72%  { transform: rotate(-10deg) scale(1.1); }
+    76%  { transform: rotate(8deg) scale(1.1); }
+    80%  { transform: rotate(-4deg) scale(1.05); }
+    84%  { transform: rotate(0deg) scale(1); }
+}
+
+.header .header-gem:disabled svg {
+    animation: none;
+}
+
+.header .claim-reward {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: 600;
+    color: #8b5cf6;
+    animation: claim-float 1.2s ease-out forwards;
+}
+
+@keyframes claim-float {
+    0%   { opacity: 0; transform: translate(-50%, 10px) scale(0.8); }
+    20%  { opacity: 1; transform: translate(-50%, -6px) scale(1.15); }
+    100% { opacity: 0; transform: translate(-50%, -34px) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .header .header-gem svg {
+        animation: none;
+    }
+	.header .claim-reward { 
+		animation-duration: 0.01s; 
+	}
 }
 
 .header .header-profile {
 	position: relative;
+	flex-shrink: 0;
 	width: 40px;
 	height: 40px;
-	flex-shrink: 0;
+}
+
+.header .header-profile-avatar {
+    position: relative;
+    width: 100%;
+	height: 100%;
+    padding: 0;
+    border: none;
+    background: none;
 }
 
 .header .header-profile-picture {
@@ -207,8 +283,8 @@
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	width: 120%;
-	height: 120%;
+	width: 130%;
+	height: 130%;
 	transform: translate(-50%, -50%);
 	object-fit: contain;
 	pointer-events: none;

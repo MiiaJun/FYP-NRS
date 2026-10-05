@@ -75,7 +75,8 @@ $stmt = $conn->prepare(
         content,
         summary,
         thumbnail,
-        category_id
+        category_id,
+		background_cosmetic_id
      FROM article
      WHERE article_id = ?"
 );

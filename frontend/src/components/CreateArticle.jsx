@@ -5,7 +5,7 @@ import { useNotification } from "../context/NotificationContext";
 import api from "../api/axios";
 import ArticleEditor from "../components/ArticleEditor";
 
-export default function CreateArticle() {
+export default function CreateArticle({ onBackgroundChange }) {
 	const navigate = useNavigate();
 	const { isLoggedIn, isLoading } = useAuth();
 	const { showNotification } = useNotification();
@@ -48,14 +48,16 @@ export default function CreateArticle() {
 				status: status,
 				category_id: formData.category,
 				published_at: formData.published_at,
-				tag_ids: formData.tags.map((tag) => tag.tag_id)
+				tag_ids: formData.tags.map((tag) => tag.tag_id),
+				background_cosmetic_id: formData.backgroundId === "" ? null : formData.backgroundId,
 			});
 
 			if (status === 1) {
 				void api.post("/user/createArticleNotification.php", {
 					article_id: response.data.article_id,
 					type: 1,
-				});
+				})
+				.catch(() => {});
 			}
 
 			showNotification(response.data.message, "success");
@@ -72,6 +74,7 @@ export default function CreateArticle() {
     return (
         <ArticleEditor 
 			onSave={saveArticle} 
+			onBackgroundChange={onBackgroundChange}
 			heading="Create new article"
 		/>
     );

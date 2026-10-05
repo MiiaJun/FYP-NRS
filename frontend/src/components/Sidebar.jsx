@@ -60,7 +60,10 @@ export default function Sidebar() {
 
 				<div className="topic-list">
 					{recommendedTopics.map((topic) => (
-						<button type="button" className="topic-item" key={topic}>
+						<button 
+							className="topic-item" 
+							key={topic}
+						>
 							{topic}
 						</button>
 					))}

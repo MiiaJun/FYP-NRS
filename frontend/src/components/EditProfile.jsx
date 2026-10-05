@@ -5,6 +5,7 @@ import { useNotification } from "../context/NotificationContext";
 import { Camera } from "lucide-react";
 import api from "../api/axios";
 import LoadingOverlay from "./LoadingOverlay";
+import Loading from "./Loading";
 import "./EditProfile.css";
 
 export default function EditProfile() {
@@ -13,12 +14,19 @@ export default function EditProfile() {
 	const { showNotification } = useNotification();
 	const [profilePicturePreview, setProfilePicturePreview] = useState(null);
 	const [error, setError] = useState("");
+	const [frames, setFrames] = useState([]);
+	const [isDetailsLoading, setIsDetailsLoading] = useState(true);
 
 	const [formData, setFormData] = useState({
 		username: "",
 		bio: "",
-		profilePicture: null
+		profilePicture: null,
+		frameId: ""
 	});
+
+	const selectedFrame = frames.find(
+		frame => frame.cosmetic_id == formData.frameId
+	);
 
 	const [isSaving, setIsSaving] = useState(false);
 
@@ -44,11 +52,43 @@ export default function EditProfile() {
 		setFormData({
 			username: user.username,
 			bio: user.bio,	
-			profilePicture: user.profile_picture
+			profilePicture: user.profile_picture,
+			frameId: ""
 		});
 
 		setProfilePicturePreview(user.profile_picture);
 	}, [user]);
+
+	useEffect(() => {
+		if (!user) {
+			return;
+		}
+
+		setIsDetailsLoading(true);
+
+		api.get("/user/listMyCosmetic.php")
+			.then((response) => {
+				const cosmetics = response.data.cosmetics || [];
+				setFrames(cosmetics);
+
+				const equippedFrame = cosmetics.find((c) => c.is_equipped);
+
+				setFormData(prev => ({
+					...prev,
+					frameId: equippedFrame ? String(equippedFrame.cosmetic_id) : ""
+				}));
+				
+			})
+			.catch(error =>  {
+				showNotification(
+					error.response?.data?.message || "Failed to load frames",
+					"error"
+				);
+			})
+			.finally(() => {
+				setIsDetailsLoading(false);
+			});
+	}, [user, showNotification]);
 
 	const handleChange = (e) => {
 		setFormData((prev) => ({
@@ -101,7 +141,8 @@ export default function EditProfile() {
 			const response = await api.post("/user/updateProfile.php", {
 				username: formData.username,
 				bio: formData.bio,
-				profile_picture: profilePictureUrl
+				profile_picture: profilePictureUrl,
+				frame_id: formData.frameId === "" ? null : formData.frameId
 			});
 
 			await refreshUser();
@@ -134,8 +175,8 @@ export default function EditProfile() {
 		}
 	};
 
-	if (isLoading || !user)  {
-		return <div>Loading...</div>;
+	if (isLoading || !user || isDetailsLoading) {
+		return <Loading />;
 	}
 
 	return (
@@ -144,23 +185,33 @@ export default function EditProfile() {
 
 			<form onSubmit={handleSubmit}>
 				<div className="edit-profile-content">
-					<label className="profile-picture-upload">
-						<input
-							type="file"
-							accept="image/jpeg,image/png,image/webp"
-							hidden
-							onChange={handleProfilePictureChange}
-						/>
+					<div className="edit-profile-avatar">
+						<label className="profile-picture-upload">
+							<input
+								type="file"
+								accept="image/jpeg,image/png,image/webp"
+								hidden
+								onChange={handleProfilePictureChange}
+							/>
 
-						<img
-							src={profilePicturePreview || "/default-profile.svg"}
-							alt="Profile preview"
-						/>
+							<img
+								src={profilePicturePreview || "/default-profile.svg"}
+								alt="Profile preview"
+							/>
 
-						<div className="profile-picture-camera">
-							<Camera size={28} />
-						</div>
-					</label>
+							<div className="profile-picture-camera">
+								<Camera size={28} />
+							</div>
+						</label>
+
+						{selectedFrame && (
+							<img
+								className="edit-profile-frame"
+								src={selectedFrame.image_url}
+								alt=""
+							/>
+						)}
+					</div>
 
 					<div className="edit-profile-form">
 						{error && <p className="error-message">{error}</p>}
@@ -196,6 +247,56 @@ export default function EditProfile() {
 							<span className="bio-character-count">
 								{formData.bio.length}/160
 							</span>
+						</div>
+
+						<div className="form-group">
+							<label>Profile frame</label>
+							<div className="frame-picker">
+								<button
+									type="button"
+									className={`frame-option ${formData.frameId === "" ? "selected" : ""}`}
+									onClick={() => setFormData(prev => ({
+										...prev,
+										frameId: ""
+									}))}
+								>
+									<span className="frame-option-preview">
+										<img
+											className="frame-option-avatar"
+											src={profilePicturePreview || "/default-profile.svg"}
+											alt=""
+										/>
+									</span>
+									<span>No frame</span>
+								</button>
+
+								{frames.map(frame => (
+									<button
+										key={frame.cosmetic_id}
+										type="button"
+										className={`frame-option ${formData.frameId == frame.cosmetic_id ? "selected" : ""}`}
+										onClick={() => setFormData(prev => ({
+											...prev,
+											frameId: frame.cosmetic_id
+										}))}
+									>
+										<span className="frame-option-preview">
+											<img
+												className="frame-option-avatar"
+												src={profilePicturePreview || "/default-profile.svg"}
+												alt=""
+											/>
+
+											<img
+												className="frame-option-frame"
+												src={frame.image_url}
+												alt=""
+											/>
+										</span>
+										<span>{frame.name}</span>
+									</button>
+								))}
+							</div>
 						</div>
 
 						<div className="edit-profile-actions">

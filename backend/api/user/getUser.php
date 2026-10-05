@@ -19,6 +19,12 @@ $stmt = $conn->prepare(
         u.username,
         u.profile_picture,
 		u.bio,
+		(
+            SELECT c.image_url
+            FROM cosmetic c 
+            JOIN user_equipped_cosmetic equipped ON c.cosmetic_id = equipped.cosmetic_id AND c.cosmetic_type_id = equipped.cosmetic_type_id
+            WHERE equipped.user_id = u.user_id AND c.cosmetic_type_id = 1
+        ) AS profile_frame_url,
         (SELECT COUNT(*)
          FROM user_subscription
          WHERE subscribed_to_id = u.user_id) AS followers_count,

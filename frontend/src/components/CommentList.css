@@ -7,8 +7,6 @@
 	font-size: 22px;
 }
 
-/* Comment form */
-
 .comment-form {
 	display: flex;
 	flex-direction: column;
@@ -21,7 +19,7 @@
 	min-height: 24px;
 	padding: 0;
 	border: none;
-	border-bottom: 1px solid #ccc;
+	border-bottom: 1px solid #444;
 	font-size: 14px;
 	line-height: 24px;
 	resize: none;
@@ -44,10 +42,8 @@
 }
 
 .comment-form button:hover {
-	background: #5f38ae;
+	background: #5e3eb0;
 }
-
-/* Comment list */
 
 .comment-items {
 	display: flex;

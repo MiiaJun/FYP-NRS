@@ -19,7 +19,13 @@ $stmt = $conn->prepare(
     "SELECT
 		u.user_id,
 		u.username,
-		u.profile_picture
+		u.profile_picture,
+		(
+            SELECT c.image_url
+            FROM cosmetic c 
+            JOIN user_equipped_cosmetic equipped ON c.cosmetic_id = equipped.cosmetic_id AND c.cosmetic_type_id = equipped.cosmetic_type_id
+            WHERE equipped.user_id = u.user_id AND c.cosmetic_type_id = 1
+        ) AS profile_frame_url
 	 FROM users u
 	 JOIN user_subscription s ON u.user_id = s.subscribed_to_id
 	 WHERE s.subscriber_id = ?

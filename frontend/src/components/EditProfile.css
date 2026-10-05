@@ -10,11 +10,18 @@
     gap: 50px;
 }
 
-.edit-profile .profile-picture-upload {
-	position: relative;
-    flex-shrink: 0;
+.edit-profile .edit-profile-avatar {
+    position: relative;
     width: 160px;
     height: 160px;
+    flex-shrink: 0;
+}
+
+.edit-profile .profile-picture-upload {
+	position: relative;
+	display: block;
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
     overflow: hidden;
 	border: 1px solid black;
@@ -24,6 +31,17 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.edit-profile .edit-profile-frame {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 130%;
+    height: 130%;
+    transform: translate(-50%, -50%);
+    object-fit: contain;
+	pointer-events: none;
 }
 
 .profile-picture-camera {
@@ -106,10 +124,66 @@
 
 .edit-profile .edit-profile-actions .save-button {
     border: none;
-    background: #6d49c6;
+    background: #7046c6;
     color: white;
 }
 
 .edit-profile .edit-profile-actions .save-button:hover {
     background: #5e3eb0;
+}
+
+.edit-profile .edit-profile-form {
+    min-width: 0;
+}
+
+.edit-profile .frame-picker {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+	padding: 4px;
+}
+
+.edit-profile .frame-option {
+    flex: 0 0 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 10px 10px;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    background: white;
+    overflow-wrap: anywhere;
+}
+
+.edit-profile .frame-option:hover,
+.edit-profile .frame-option.selected {
+    border-color: #7046c6;
+}
+
+.edit-profile .frame-option.selected {
+    background: #f0ebfb;
+}
+
+.edit-profile .frame-option-preview {
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.edit-profile .frame-option-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.edit-profile .frame-option-frame {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 130%;
+    height: 130%;
+    transform: translate(-50%, -50%);
+    object-fit: contain;
 }

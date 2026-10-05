@@ -4,10 +4,11 @@ require __DIR__ . "/../../config/database.php";
 
 $page = $_GET["page"] ?? "1"; 
 $limit = 5;
-$tab = $_GET["tab"] ?? "latest";
+$tab = $_GET["tab"] ?? "news";
+$sort = $_GET["sort"] ?? "latest";
 $categoryId = null;
 
-if ($tab !== "latest" && $tab !== "for-you") {
+if ($tab !== "news" && $tab !== "for-you") {
 	if (!ctype_digit($tab) || (int) $tab < 1) {
 		http_response_code(400);
 		echo json_encode([
@@ -17,6 +18,15 @@ if ($tab !== "latest" && $tab !== "for-you") {
 		exit;
 	}
 	$categoryId = (int) $tab;
+}
+
+if ($sort !== "latest" && $sort !== "trending") {
+	http_response_code(400);
+	echo json_encode([
+		"success" => false,
+		"message" => "Invalid sort"
+	]);
+	exit;
 }
 
 if (!ctype_digit($page) || (int) $page < 1) {
@@ -30,6 +40,12 @@ if (!ctype_digit($page) || (int) $page < 1) {
 
 $page = (int) $page;
 $offset = ($page - 1) * $limit;
+
+if ($sort === "latest") {
+	$orderBy = "a.published_at DESC";
+} else {
+	$orderBy = "a.trending_score DESC, a.published_at DESC";
+}
 
 if ($categoryId !== null) {
 	$stmt = $conn->prepare(
@@ -82,7 +98,7 @@ if ($categoryId !== null) {
 		 JOIN users u ON a.author_id = u.user_id
 		 JOIN category c ON a.category_id = c.category_id
 		 WHERE a.status = 1 AND a.published_at <= NOW() AND a.category_id = ?
-		 ORDER BY a.published_at DESC
+		 ORDER BY {$orderBy}
 		 LIMIT ? OFFSET ?"
 	);
 } else {
@@ -100,7 +116,7 @@ if ($categoryId !== null) {
 		 JOIN users u ON a.author_id = u.user_id
 		 JOIN category c ON a.category_id = c.category_id
 	 	 WHERE a.status = 1 AND a.published_at <= NOW()
-		 ORDER BY a.published_at DESC
+		 ORDER BY {$orderBy}
 		 LIMIT ? OFFSET ?"
 	);
 }

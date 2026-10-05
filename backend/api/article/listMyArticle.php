@@ -31,7 +31,7 @@ $stmt = $conn->prepare(
      JOIN category c ON a.category_id = c.category_id
      JOIN users u ON a.author_id = u.user_id
      WHERE a.author_id = ?
-     ORDER BY a.published_at DESC"
+     ORDER BY a.published_at DESC, a.article_id DESC"
 );
 
 if (!$stmt) {

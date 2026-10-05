@@ -2,28 +2,45 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext"
 import { useModal } from "../context/ModalContext";;
-import { Search, LogIn } from 'lucide-react'
+import { useNotification } from "../context/NotificationContext";
+import { Search, LogIn, Coins, Gem } from 'lucide-react'
 import api from "../api/axios";
 import ProfileMenu from './ProfileMenu';
 import './Header.css'
 
 export default function Header() {
-	const { user, isLoggedIn, logout } = useAuth();
-	const { openLogin, openRegister } = useModal();
-	const [showProfileMenu, setShowProfileMenu] = useState(false);
 	const navigate = useNavigate();
+	const { user, isLoggedIn, logout, refreshUser, coinReward, showCoinReward, clearCoinReward } = useAuth();
+	const { openLogin, openRegister } = useModal();
+	const { showNotification } = useNotification();
+	const [showProfileMenu, setShowProfileMenu] = useState(false);
 	const [keyword, setKeyword] = useState("");
 	const [allTags, setAllTags] = useState([]);
 	const [showSearchDropdown, setShowSearchDropdown] = useState(false);
 	const [searchHistory, setSearchHistory] = useState([]);
 	const searchInputRef = useRef(null);
+	const [dailyClaimed, setDailyClaimed] = useState(true);
+	const [isClaiming, setIsClaiming] = useState(false);
 
 	useEffect(() => {
 		api.get("/article/listTag.php")
 			.then((response) => {
 				setAllTags(response.data.tags);
-			});
+			})
+			.catch(() => {});
 	}, []);
+
+	useEffect(() => {
+		if (!isLoggedIn) {
+			return;
+		}
+
+		api.get("/user/getDailyClaim.php")
+			.then(response => {
+				setDailyClaimed(response.data.claimed);
+			})
+			.catch(() => {})
+	}, [isLoggedIn]);
 
 	useEffect(() => {
 		const searchHistory = localStorage.getItem("searchHistory");
@@ -61,7 +78,7 @@ export default function Header() {
 	};
 
 	const handleLogout = () => {
-		logout();
+		logout().catch(() => {});
 		setShowProfileMenu(false);
 	};
 
@@ -76,6 +93,26 @@ export default function Header() {
 		searchInputRef.current?.blur();
 
 		navigate(`/search?search=${encodeURIComponent(keyword.trim())}`);
+	};
+
+	const handleDailyClaim = async () => {
+		if (isClaiming) {
+			return;
+		}
+		setIsClaiming(true);
+		try {
+			const response = await api.post("/user/claimDailyCoins.php");
+			setDailyClaimed(true);
+			await refreshUser();
+			showCoinReward(response.data.amount ?? 0);
+		} catch (error) {
+			showNotification(
+				error.response?.data?.message || "Failed to claim daily coins",
+				"error"
+			);
+		} finally {
+			setIsClaiming(false);
+		}
 	};
 
 	return (
@@ -100,11 +137,10 @@ export default function Header() {
 							<div className="search-dropdown-heading">
 								<h3>Recent searches</h3>
 								<button
-									type="button"
 									className="clear-search-history"
 									onMouseDown={(e) => {
-									e.preventDefault();
-									clearSearchHistory();
+										e.preventDefault();
+										clearSearchHistory();
 									}}
 								>
 									Clear all
@@ -161,25 +197,60 @@ export default function Header() {
 				</div>
 			<div className="header-actions">
 				{isLoggedIn ? (
-					<div className="header-profile">
-						<img
-							src={user.profile_picture || "/default-profile.svg"}
-							alt="Profile"
-							className="header-profile-picture"
-							onClick={() => setShowProfileMenu(!showProfileMenu)}
-						/>
+					<>
+						<div className="header-wallet">
+							{dailyClaimed ? (
+								<button
+									className="header-coins"
+									onClick={() => navigate("/shop")}
+								>
+									<Coins size={20} />
+									<span>{user.coin}</span>
+								</button>
+							) : (
+								<button
+									className="header-coins header-gem"
+									onClick={handleDailyClaim}
+									disabled={isClaiming}
+								>
+									<Gem size={20} />
+								</button>
+							)}
+							{coinReward !== null && (
+								<span
+									key={coinReward.id}
+									className="claim-reward"
+									onAnimationEnd={clearCoinReward}
+								>
+									{coinReward.amount > 0 ? "+" : ""}{coinReward.amount}
+								</span>
+							)}
+						</div>
+						<div className="header-profile">
+							<button
+								className="header-profile-avatar"
+								onClick={() => setShowProfileMenu(!showProfileMenu)}
+							>
+								<img
+									src={user.profile_picture || "/default-profile.svg"}
+									alt="Profile menu"
+									className="header-profile-picture"
+								/>
 
-						<img
-							src="/frame1.png"
-							alt=""
-							aria-hidden="true"
-							className="header-profile-frame"
-						/>
+								{user.profile_frame_url && (
+									<img
+										src={user.profile_frame_url}
+										alt=""
+										className="header-profile-frame"
+									/>
+								)}
+							</button>
 
-						{showProfileMenu && (
-							<ProfileMenu onLogout={handleLogout} />
-						)}
-					</div>
+							{showProfileMenu && (
+								<ProfileMenu onLogout={handleLogout} />
+							)}
+						</div>
+					</>
 				) : (
 					<>
 						<button className="signup-button" onClick={openRegister}>

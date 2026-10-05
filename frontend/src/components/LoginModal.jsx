@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import "./LoginModal.css";
 
-export default function LoginModal({ onClose, onOpenRegister }) {
+export default function LoginModal({ onClose, onOpenRegister, onOpenForgotPassword }) {
 	const [error, setError] = useState("");
 	const [formData, setFormData] = useState({
 		email: "",
@@ -44,7 +44,6 @@ export default function LoginModal({ onClose, onOpenRegister }) {
 						<label htmlFor="email">Email</label>
 						<input
 							id="email"
-							type="email"
 							value={formData.email}
 							onChange={handleChange}
 							placeholder="you@example.com"
@@ -69,7 +68,7 @@ export default function LoginModal({ onClose, onOpenRegister }) {
 					</button>
 				</form>
 				<div className="login-modal-footer">
-					<button className="forgot-password">
+					<button className="forgot-password" onClick={onOpenForgotPassword}>
 						Forgot your password?
 					</button>
 

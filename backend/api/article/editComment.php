@@ -37,6 +37,15 @@ if ($content === "") {
     exit;
 }
 
+if (mb_strlen($content) > 2000) {
+    http_response_code(400);
+    echo json_encode([
+        "success" => false,
+        "message" => "Comment cannot exceed 2000 characters"
+    ]);
+    exit;
+}
+
 $stmt = $conn->prepare(
     "SELECT user_id FROM comment WHERE comment_id = ?"
 );
@@ -110,7 +119,13 @@ $stmt = $conn->prepare(
         c.created_at,
         c.updated_at,
         u.username,
-        u.profile_picture
+        u.profile_picture,
+		(
+			SELECT cosmetic.image_url
+			FROM cosmetic
+			JOIN user_equipped_cosmetic equipped ON cosmetic.cosmetic_id = equipped.cosmetic_id
+			WHERE equipped.user_id = u.user_id AND cosmetic.cosmetic_type_id = 1
+		) AS profile_frame_url
      FROM comment c
      JOIN users u ON c.user_id = u.user_id
      WHERE c.comment_id = ?"

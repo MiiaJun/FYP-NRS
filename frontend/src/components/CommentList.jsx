@@ -122,6 +122,7 @@ export default function CommentList({ articleId }) {
 				<textarea
 					ref={commentInputRef}
 					value={commentText}
+					maxLength={2000}
 					onChange={handleCommentChange}
 					placeholder={
 						isLoggedIn

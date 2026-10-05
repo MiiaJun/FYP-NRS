@@ -19,3 +19,16 @@ export function getTimeAgo(dateString) {
         year: "numeric",
     });
 }
+
+export function getTaskCountdown(resetAt) {
+	const resetDate = new Date(resetAt.replace(" ", "T") + "+08:00").getTime();
+	const now = new Date();
+	const remaining = Math.max(0, Math.ceil((resetDate - now) / 1000));
+	const hours = Math.floor(remaining / 3600);
+	const minutes = Math.floor((remaining % 3600) / 60);
+	const seconds = remaining % 60;
+
+	return [hours, minutes, seconds]
+		.map(value => String(value).padStart(2, "0"))
+		.join(":");
+}

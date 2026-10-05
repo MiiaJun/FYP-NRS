@@ -4,8 +4,9 @@ import { useAuth } from "../context/AuthContext";
 import { useNotification } from "../context/NotificationContext";
 import api from "../api/axios";
 import ArticleEditor from "../components/ArticleEditor";
+import Loading from "./Loading";
 
-export default function EditDraft() {
+export default function EditDraft({ onBackgroundChange }) {
 	const location = useLocation();
     const id = location.state?.articleId;
     const navigate = useNavigate();
@@ -71,7 +72,8 @@ export default function EditDraft() {
                 status: status,
                 category_id: formData.category,
 				published_at: formData.published_at,
-				tag_ids: formData.tags.map((tag) => tag.tag_id)
+				tag_ids: formData.tags.map((tag) => tag.tag_id),
+				background_cosmetic_id: formData.backgroundId === "" ? null : formData.backgroundId
             });
 
 			if (status === 1) {
@@ -93,13 +95,14 @@ export default function EditDraft() {
     };
 
     if (!article) {
-        return <div>Loading...</div>;
+        return <Loading />;
     }
 
     return (
         <ArticleEditor
             initialData={article}
             onSave={saveArticle}
+			onBackgroundChange={onBackgroundChange}
 			heading="Edit draft"
         />
     );

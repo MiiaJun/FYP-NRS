@@ -26,13 +26,19 @@ $stmt = $conn->prepare(
 		a.status,
         u.username AS author,
 		u.profile_picture AS author_profile_picture,
-        c.category_name AS category
+		(
+			SELECT cosmetic.image_url
+			FROM cosmetic cosmetic
+			JOIN user_equipped_cosmetic equipped ON cosmetic.cosmetic_id = equipped.cosmetic_id AND cosmetic.cosmetic_type_id = equipped.cosmetic_type_id
+			WHERE equipped.user_id = a.author_id AND cosmetic.cosmetic_type_id = 1
+		) AS author_profile_frame_url,
+        c.category_name AS category,
+		bg.image_url AS background_url
      FROM article a
      JOIN users u ON a.author_id = u.user_id
      JOIN category c ON a.category_id = c.category_id
-     WHERE a.article_id = ?
-	 AND a.status = 1
-	 AND a.published_at <= NOW()"
+	 LEFT JOIN cosmetic bg ON bg.cosmetic_id = a.background_cosmetic_id AND bg.cosmetic_type_id = 2
+     WHERE a.article_id = ? AND a.status = 1 AND a.published_at <= NOW()"
 );
 
 if (!$stmt) {
@@ -57,16 +63,7 @@ if (!$article) {
     http_response_code(404);
     echo json_encode([
         "success" => false,
-        "message" => "Article not found",
-    ]);
-    exit;
-}
-
-if ($article["status"] != 1) {
-    http_response_code(404);
-    echo json_encode([
-        "success" => false,
-        "message" => "Article is not available",
+        "message" => "Article not found or unavailable"
     ]);
     exit;
 }

@@ -36,6 +36,16 @@
 	text-align: center;
 }
 
+.login-modal-overlay .login-modal .success-message {
+    margin: 8px 0 12px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    background: #e8f5e9;
+    color: #256b35;
+    font-size: 14px;
+    text-align: center;
+}
+
 .login-modal-overlay .login-modal .form-group {
 	display: flex;
 	flex-direction: column;
@@ -45,6 +55,36 @@
 .login-modal-overlay .login-modal .form-group label {
 	margin-bottom: 6px;
 	font-weight: 600;
+}
+
+.login-modal-overlay .login-modal .input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.login-modal-overlay .login-modal .input-row input {
+    flex: 1;
+    min-width: 0;
+}
+
+.login-modal-overlay .login-modal .inline-btn {
+    flex-shrink: 0;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 6px;
+    background: #7046c6;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.login-modal .inline-btn:hover:not(:disabled) {
+    background: #5e3eb0;
+}
+
+.login-modal .inline-btn:disabled {
+    opacity: 0.5;
 }
 
 .login-modal-overlay .login-modal .form-group input {
@@ -59,7 +99,7 @@
 	padding: 12px;
 	border: none;
 	border-radius: 24px;
-	background: #6f4bc3;
+	background: #7046c6;
 	color: white;
 	font-size: 16px;
 	font-weight: 600;
@@ -83,16 +123,17 @@
 
 .login-modal-overlay .login-modal-footer p {
 	font-size: 16px;
-	color: black;
 }
 
 .login-modal-overlay .signup-link {
 	border: none;
 	background: none;
-	color: #6f4bc3
+	color: #6f4bc3;
+	font: inherit;
 }
 
 .login-modal-overlay .login-modal-footer .register-message {
 	font-size: 14px;
 	color: #777;
 }
+

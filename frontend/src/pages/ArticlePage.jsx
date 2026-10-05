@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import LeftSidebar from "../components/LeftSideBar";
@@ -5,12 +6,20 @@ import Article from "../components/Article";
 import './NewsPage.css'
 
 export default function ArticlePage() {
+	const [backgroundUrl, setBackgroundUrl] = useState(null);
     return (
-        <div>
+        <div className="article-page">
             <Header />
-            <main className="news-page">
+			{backgroundUrl && (
+                <img
+                    className="article-page-background"
+                    src={backgroundUrl}
+                    alt=""
+                />
+            )}
+            <main className="news-page article-page-content">
                 <LeftSidebar />
-                <Article />
+                <Article onBackgroundChange={setBackgroundUrl} />
                 <Sidebar />
             </main>
         </div>

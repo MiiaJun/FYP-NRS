@@ -7,6 +7,7 @@ export function AuthProvider({ children }) {
 	const [user, setUser] = useState(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const [followingUsers, setFollowingUsers] = useState([]);
+	const [coinReward, setCoinReward] = useState(null);
 
 	const isLoggedIn = user !== null;
 
@@ -32,7 +33,7 @@ export function AuthProvider({ children }) {
 	}, []);
 
 	useEffect(() => {
-		refreshFollowing();
+		refreshFollowing().catch(() => {});
 	}, [refreshFollowing]);
 
 	const login = async (email, password) => {
@@ -50,13 +51,38 @@ export function AuthProvider({ children }) {
 		} finally {
 			setUser(null);
 			setFollowingUsers([]);
+			setCoinReward(null);
 		}
 	};
 
 	const refreshUser = async () => {
-		const response = await api.get("/auth/me.php");
-		setUser(response.data.user);
+		try {
+			const response = await api.get("/auth/me.php");
+			setUser(response.data.user);
+		} catch (error) {
+			if (error.response?.status === 401 || error.response?.status === 403) {
+				setUser(null);
+				setFollowingUsers([]);
+				setCoinReward(null);
+			}
+			throw error;
+		}
 	};
+
+	const showCoinReward = useCallback((amount) => {
+		if (amount === 0) {
+			return;
+		}
+
+		setCoinReward({
+			amount,
+			id: Date.now()
+		});
+	}, []);
+
+	const clearCoinReward = useCallback(() => {
+		setCoinReward(null);
+	}, []);
 
 	return (
 		<AuthContext.Provider
@@ -69,6 +95,9 @@ export function AuthProvider({ children }) {
 				refreshUser,
 				followingUsers,
 				refreshFollowing,
+				coinReward,
+				showCoinReward,
+				clearCoinReward,
 			}}
 		>
 			{children}

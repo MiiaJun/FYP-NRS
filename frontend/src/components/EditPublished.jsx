@@ -4,8 +4,9 @@ import { useAuth } from "../context/AuthContext";
 import { useNotification } from "../context/NotificationContext";
 import api from "../api/axios";
 import ArticleEditor from "../components/ArticleEditor";
+import Loading from "./Loading";
 
-export default function EditPublished() {
+export default function EditPublished({ onBackgroundChange }) {
 	const location = useLocation();
     const id = location.state?.articleId;
     const navigate = useNavigate();
@@ -73,7 +74,8 @@ export default function EditPublished() {
                 thumbnail: thumbnailUrl,
                 status: status,
                 category_id: formData.category,
-				tag_ids: formData.tags.map((tag) => tag.tag_id)
+				tag_ids: formData.tags.map((tag) => tag.tag_id),
+				background_cosmetic_id: formData.backgroundId === "" ? null : formData.backgroundId
             });
 
 			if (status === 1) {
@@ -95,13 +97,14 @@ export default function EditPublished() {
     };
 
     if (!article) {
-        return <div>Loading...</div>;
+        return <Loading />;
     }
 
     return (
         <ArticleEditor
             initialData={article}
             onSave={saveArticle}
+			onBackgroundChange={onBackgroundChange}
 			isEditing={true}
 			heading="Edit article"
         />

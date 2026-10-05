@@ -1,0 +1,98 @@
+.tasks {
+	padding: 24px;
+	width: 100%;
+	max-width: 800px;
+	display: flex;
+    flex-direction: column;
+	margin: 0 auto;
+}
+
+.tasks h1 {
+	margin: 0 0 8px;
+}
+
+.tasks .tasks-countdown {
+	margin: 0 0 24px;
+	color: #666;
+	font-variant-numeric: tabular-nums;
+}
+
+.tasks .tasks-content {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.tasks .task-item {
+	padding: 20px;
+	border: 1px solid #ddd;
+	border-radius: 12px;
+	background: white;
+}
+
+.tasks .task-header,
+.tasks .task-footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.tasks .task-header {
+	margin-bottom: 16px;
+}
+
+.tasks .task-item h2 {
+	margin: 0;
+	font-size: 18px;
+}
+
+.tasks .task-reward {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex-shrink: 0;
+	font-weight: 600;
+}
+
+.tasks .task-item progress {
+	width: 100%;
+	height: 10px;
+}
+
+.tasks .task-footer {
+	margin-top: 12px;
+}
+
+.tasks .task-footer p {
+	margin: 0;
+	color: #666;
+	font-size: 14px;
+}
+
+.tasks .task-claim,
+.tasks .task-claimed {
+	padding: 10px 22px;
+	border: none;
+	border-radius: 20px;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.tasks .task-claim {
+	background: #7046c6;
+	color: white;
+}
+
+.tasks .task-claim:hover:not(:disabled) {
+	background: #5e3eb0;
+}
+
+.tasks .task-claim:disabled {
+	opacity: 0.5;
+}
+
+.tasks .task-claimed {
+	background: #f0ebfb;
+	color: #7046c6;
+}

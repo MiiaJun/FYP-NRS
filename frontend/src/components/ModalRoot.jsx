@@ -1,15 +1,18 @@
 import { useModal } from "../context/ModalContext";
 import LoginModal from "./LoginModal";
 import RegisterModal from "./RegisterModal";
+import ForgotPasswordModal from "./ForgotPasswordModal";
 
 export default function ModalRoot() {
 	const {
-		showLoginModal,
-		showRegisterModal,
-		openLogin,
-		openRegister,
-		closeModals
-	} = useModal();
+        showLoginModal,
+        showRegisterModal,
+        showForgotPasswordModal,
+        openLogin,
+        openRegister,
+        openForgotPassword,
+        closeModals
+    } = useModal();
 
 	return (
 		<>
@@ -17,6 +20,7 @@ export default function ModalRoot() {
 				<LoginModal
 					onClose={closeModals}
 					onOpenRegister={openRegister}
+					onOpenForgotPassword={openForgotPassword}
 				/>
 			)}
 
@@ -26,6 +30,13 @@ export default function ModalRoot() {
 					onOpenLogin={openLogin}
 				/>
 			)}
+
+			{showForgotPasswordModal && (
+                <ForgotPasswordModal
+                    onClose={closeModals}
+                    onOpenLogin={openLogin}
+                />
+            )}
 		</>
 	);
 }

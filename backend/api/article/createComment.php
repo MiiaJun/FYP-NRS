@@ -38,19 +38,24 @@ if ($content === "") {
     exit;
 }
 
+if (mb_strlen($content) > 2000) {
+    http_response_code(400);
+    echo json_encode([
+        "success" => false,
+        "message" => "Comment cannot exceed 2000 characters"
+    ]);
+    exit;
+}
+
 if ($parentCommentId === null) {
-    $stmt = $conn->prepare(
+   $stmt = $conn->prepare(
         "INSERT INTO comment (article_id, user_id, content)
-         VALUES (?, ?, ?)"
+         SELECT article_id, ?, ?
+         FROM article
+         WHERE article_id = ?
+         AND status = 1
+         AND published_at <= NOW()"
     );
-
-    if (!$stmt) {
-        http_response_code(500);
-        echo json_encode(["success" => false, "message" => "Server error"]);
-        exit;
-    }
-
-    $stmt->bind_param("iis", $articleId, $userId, $content);
 } else {
     if (!is_numeric($parentCommentId)) {
         http_response_code(400);
@@ -61,23 +66,49 @@ if ($parentCommentId === null) {
         exit;
     }
 
-    $stmt = $conn->prepare(
-        "INSERT INTO comment (article_id, user_id, content, parent_comment_id)
-         VALUES (?, ?, ?, ?)"
+	$stmt = $conn->prepare(
+        "INSERT INTO comment (
+            article_id, 
+			user_id, 
+			content, 
+			parent_comment_id
+        )
+         SELECT a.article_id, ?, ?, c.comment_id
+         FROM article a
+         JOIN comment c ON a.article_id = c.article_id
+         WHERE a.article_id = ?
+         AND a.status = 1
+         AND a.published_at <= NOW()
+         AND c.comment_id = ?
+         AND c.status = 1"
     );
+}
 
-    if (!$stmt) {
-        http_response_code(500);
-        echo json_encode(["success" => false, "message" => "Server error"]);
-        exit;
-    }
+if (!$stmt) {
+	http_response_code(500);
+	echo json_encode(["success" => false, "message" => "Server error"]);
+	exit;
+}
 
-    $stmt->bind_param("iisi", $articleId, $userId, $content, $parentCommentId);
+if ($parentCommentId === null) {
+    $stmt->bind_param("isi", $userId, $content, $articleId);
+} else {
+    $stmt->bind_param("isii", $userId, $content, $articleId, $parentCommentId);
 }
 
 if (!$stmt->execute()) {
     http_response_code(500);
     echo json_encode(["success" => false, "message" => "Server error"]);
+    exit;
+}
+
+if ($stmt->affected_rows === 0) {
+    $stmt->close();
+    http_response_code(400);
+    echo json_encode([
+        "success" => false,
+        "message" => "Article or parent comment not available"
+    ]);
     exit;
 }
 
@@ -94,7 +125,13 @@ $stmt = $conn->prepare(
         c.created_at,
         c.updated_at,
         u.username,
-        u.profile_picture
+        u.profile_picture,
+		(
+			SELECT cosmetic.image_url
+			FROM cosmetic
+			JOIN user_equipped_cosmetic equipped ON cosmetic.cosmetic_id = equipped.cosmetic_id
+			WHERE equipped.user_id = u.user_id AND cosmetic.cosmetic_type_id = 1
+		) AS profile_frame_url
      FROM comment c
      JOIN users u ON c.user_id = u.user_id
      WHERE c.comment_id = ?"

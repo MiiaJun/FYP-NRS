@@ -23,13 +23,25 @@ export default function ArticleActions({ articleId }) {
 			.then(response => {
 				setHelpfulCount(response.data.helpful_count);
 				setReaction(response.data.user_reaction);
+			})
+			.catch(error => {
+				showNotification(
+					error.response?.data?.message || "Failed to load reactions",
+					"error"
+				);
 			});
 
 		api.get(`/article/getBookmark.php?id=${articleId}`)
 			.then(response => {
 				setBookmarked(response.data.bookmarked);
+			})
+			.catch(error => {
+				showNotification(
+					error.response?.data?.message || "Failed to load bookmark",
+					"error"
+				);
 			});
-	}, [articleId, isLoggedIn]);
+	}, [articleId, isLoggedIn, showNotification]);
 
 	const handleHelpful = async () => {
 		if (!isLoggedIn) {
@@ -39,13 +51,20 @@ export default function ArticleActions({ articleId }) {
 
 		const newReaction = reaction === 1 ? null : 1;
 
-		const response = await api.post("/article/setReaction.php", {
-			article_id: articleId,
-			reaction: newReaction
-		});
+		try {
+			const response = await api.post("/article/setReaction.php", {
+				article_id: articleId,
+				reaction: newReaction
+			});
 
-		setReaction(response.data.user_reaction);
-		setHelpfulCount(response.data.helpful_count);
+			setReaction(response.data.user_reaction);
+			setHelpfulCount(response.data.helpful_count);
+		} catch (error) {
+			showNotification(
+				error.response?.data?.message || "Failed to set reaction",
+				"error"
+			);
+		}
 	};
 
 	const handleUnhelpful = async () => {
@@ -56,13 +75,20 @@ export default function ArticleActions({ articleId }) {
 
 		const newReaction = reaction === 0 ? null : 0;
 
-		const response = await api.post("/article/setReaction.php", {
-			article_id: articleId,
-			reaction: newReaction
-		});
+		try {
+			const response = await api.post("/article/setReaction.php", {
+				article_id: articleId,
+				reaction: newReaction
+			});
 
-		setReaction(response.data.user_reaction);
-		setHelpfulCount(response.data.helpful_count);
+			setReaction(response.data.user_reaction);
+			setHelpfulCount(response.data.helpful_count);
+		} catch (error) {
+			showNotification(
+				error.response?.data?.message || "Failed to set reaction",
+				"error"
+			);
+		}
 	};
 
 	const handleBookmark = async () => {
@@ -71,11 +97,18 @@ export default function ArticleActions({ articleId }) {
 			return;
 		}
 
-		const response = await api.post("/article/setBookmark.php", {
-			article_id: articleId
-		});
+		try {
+			const response = await api.post("/article/setBookmark.php", {
+				article_id: articleId
+			});
 
-		setBookmarked(response.data.bookmarked);
+			setBookmarked(response.data.bookmarked);
+		} catch (error) {
+			showNotification(
+				error.response?.data?.message || "Failed to update bookmark",
+				"error"
+			);
+		}
 	};
 
 	const handleShare = async () => {

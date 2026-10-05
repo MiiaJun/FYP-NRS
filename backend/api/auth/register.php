@@ -2,11 +2,21 @@
 require __DIR__ . "/../../config/cors.php";
 require __DIR__ . "/../../config/database.php";
 
-$data = json_decode(file_get_contents("php://input"), true);
+session_start();
 
+$data = json_decode(file_get_contents("php://input"), true);
 $username = $data["username"] ?? "";
 $email = strtolower(trim($data["email"] ?? ""));
 $password = $data["password"] ?? "";
+
+if (($_SESSION["verified_registration_email"] ?? null) !== $email) {
+    http_response_code(400);
+    echo json_encode([
+        "success" => false,
+        "message" => "Please verify your email before registering"
+    ]);
+    exit;
+}
 
 if ($username === "" || $email === "" || $password === "") {
     http_response_code(400);
@@ -44,38 +54,6 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     exit;
 }
 
-$stmt = $conn->prepare(
-    "SELECT user_id FROM users WHERE username = ? OR email = ?"
-);
-
-if (!$stmt) {
-    http_response_code(500);
-    echo json_encode(["success" => false, "message" => "Server error"]);
-    exit;
-}
-
-$stmt->bind_param("ss", $username, $email);
-
-if (!$stmt->execute()) {
-    http_response_code(500);
-    echo json_encode(["success" => false, "message" => "Server error"]);
-    exit;
-}
-
-$result = $stmt->get_result();
-$stmt->close();
-
-if ($result->num_rows > 0) {
-    http_response_code(409);
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Username or email already exists"
-    ]);
-
-    exit;
-}
-
 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 $roleId = 1;
 
@@ -99,12 +77,24 @@ $stmt->bind_param(
 );
 
 if (!$stmt->execute()) {
+    if ($stmt->errno === 1062) {
+        http_response_code(409);
+        echo json_encode([
+            "success" => false,
+            "message" => "Username or email already exists"
+        ]);
+        exit;
+    }
     http_response_code(500);
     echo json_encode(["success" => false, "message" => "Server error"]);
     exit;
 }
 
 $stmt->close();
+
+unset(
+    $_SESSION["verified_registration_email"],
+);
 
 echo json_encode([
     "success" => true,

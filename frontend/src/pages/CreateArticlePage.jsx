@@ -1,15 +1,25 @@
+import { useState } from "react";
 import Header from "../components/Header";
 import LeftSidebar from "../components/LeftSideBar";
 import CreateArticle from "../components/CreateArticle";
 import "./NewsPage.css";
 
 export default function CreateArticlePage() {
+	const [backgroundUrl, setBackgroundUrl] = useState(null);
+
 	return (
-		<div>
+		<div className="article-page">
 			<Header />
-			<main className="page">
+			{backgroundUrl && (
+                <img
+                    className="article-page-background"
+                    src={backgroundUrl}
+                    alt=""
+                />
+            )}
+			<main className="page article-page-content">
 				<LeftSidebar />
-				<CreateArticle />
+				<CreateArticle onBackgroundChange={setBackgroundUrl} />
 			</main>
 		</div>
 	);

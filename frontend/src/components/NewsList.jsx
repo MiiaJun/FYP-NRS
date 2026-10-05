@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { useNotification } from "../context/NotificationContext";
+import { ListSortDescending } from "lucide-react";
 import api from "../api/axios";
 import NewsCard from "./NewsCard";
 import Pagination from "./Pagination";
@@ -10,46 +12,67 @@ import "./NewsList.css"
 export default function NewsList() {
 	const [articles, setArticles] = useState([]);
 	const navigate = useNavigate();
+	const { isLoggedIn, isLoading } = useAuth();
 	const [page, setPage] = useState(1);
 	const [pagination, setPagination] = useState(null);
 	const { showNotification } = useNotification();
-	const [activeTab, setActiveTab] = useState("latest");
-	const [isLoading, setIsLoading] = useState(true);
+	const [activeTab, setActiveTab] = useState(null);
+	const [isArticleLoading, setIsArticleLoading] = useState(true);
 	const [categories, setCategories] = useState([]);
 	const visibleCategories = categories.slice(0, 4);
 	const moreCategories = categories.slice(4);
 	const [showMoreCategories, setShowMoreCategories] = useState(false);
+	const [sortBy, setSortBy] = useState("latest");
 
 	useEffect(() => {
 		api.get("/article/listCategory.php")
 			.then((response) => {
 				setCategories(response.data.categories);
+			})
+			.catch(error => {
+				showNotification(
+					error.response?.data?.message || "Failed to load categories",
+					"error"
+				);
 			});
-	}, []);
+	}, [showNotification]);
 
     useEffect(() => {
+		if (isLoading || !activeTab) {
+			return;
+		}
 		const controller = new AbortController();
-		setIsLoading(true);
+		setIsArticleLoading(true);
 		setArticles([]);
 		setPagination(null);
 
-		api.get(`/article/listArticle.php?page=${page}&tab=${activeTab}`)
+		api.get(`/article/listArticle.php?page=${page}&tab=${activeTab}&sort=${sortBy}`, { signal: controller.signal })
 			.then(response => {
 				setArticles(response.data.articles);
 				setPagination(response.data.pagination);
 			})
 			.catch(error => {
+				if (controller.signal.aborted) {
+						return;
+				}
+
 				showNotification(
 					error.response?.data?.message || "Failed to load articles",
 					"error"
 				);
 			})
 			.finally(() => {
-				if (!controller.signal.aborted) setIsLoading(false);
+				if (!controller.signal.aborted) setIsArticleLoading(false);
 			});
 			
 		return () => controller.abort();
-	}, [page, activeTab, showNotification]);
+	}, [page, activeTab, sortBy, isLoading, showNotification]);
+
+	useEffect(() => {
+		if (isLoading) return;
+		setActiveTab(isLoggedIn ? "for-you" : "news");
+		setPage(1);
+	}, [isLoggedIn, isLoading]);
 
 	const handleArticleClick = (article) => {
 		navigate(`/article/${article.article_id}`);
@@ -60,14 +83,30 @@ export default function NewsList() {
 		setPage(1);
 	};
 
+	const handleSortToggle = () => {
+		setSortBy((previousSort) =>
+			previousSort === "latest" ? "trending" : "latest"
+		);
+
+		setPage(1);
+	};
+
     return (
         <section className="news-list">
 			<div className="category-tabs">
+				{isLoggedIn && (
+					<button
+						className={activeTab === "for-you" ? "active" : ""}
+						onClick={() => handleTabChange("for-you")}
+					>
+						For You
+					</button>
+				)}
 				<button
-					className={activeTab === "latest" ? "active" : ""}
-					onClick={() => handleTabChange("latest")}
+					className={activeTab === "news" ? "active" : ""}
+					onClick={() => handleTabChange("news")}
 				>
-					Latest
+					News
 				</button>
 				{visibleCategories.map((category) => (
 					<button
@@ -82,10 +121,7 @@ export default function NewsList() {
 					<div className="more-category-menu">
 						<button
 							className={
-								moreCategories.some(
-									(category) => category.category_id === activeTab
-								)
-									? "active"
+								moreCategories.some((category) => category.category_id === activeTab) ? "active"
 									: ""
 							}
 							onClick={() => setShowMoreCategories(!showMoreCategories)}
@@ -111,8 +147,21 @@ export default function NewsList() {
 					</div>
 				)}
 			</div>
+			{activeTab && activeTab !== "for-you" && (
+				<div className="article-sort-row">
+					<button
+						className="article-sort-button"
+						onClick={handleSortToggle}
+					>
+						<ListSortDescending size={18} />
+						<span>
+							Sort by: {sortBy === "latest" ? "Latest" : "Trending"}
+						</span>
+					</button>
+				</div>
+			)}
 			<div className="news-list-content">
-				{isLoading ? (
+				{isArticleLoading ? (
 					<Loading />
 				) : (
 					<>

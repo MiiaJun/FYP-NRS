@@ -1,0 +1,96 @@
+.account-settings {
+	width: 100%;
+	max-width: 1100px;
+	margin: 0 auto;
+	padding: 36px 20px 30px;
+}
+
+.account-settings form {
+	max-width: 600px;
+}
+
+.account-settings .error-message {
+	margin: 8px 0 12px;
+	padding: 10px 12px;
+	border-radius: 6px;
+	background: #ffe5e5;
+	color: #c62828;
+	text-align: center;
+}
+
+.account-settings .form-group {
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 18px;
+}
+
+.account-settings .form-group label {
+	margin-bottom: 6px;
+	font-weight: 600;
+}
+
+.account-settings .input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.account-settings .input-row input {
+    flex: 1;
+    min-width: 0;
+}
+
+.account-settings .inline-btn {
+    flex-shrink: 0;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 8px;
+    background: #7046c6;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.account-settings .inline-btn:hover:not(:disabled) {
+    background: #5e3eb0;
+}
+
+.account-settings .inline-btn:disabled {
+    opacity: 0.5;
+}
+
+.account-settings .form-group input {
+	padding: 10px 12px;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	font-size: 16px;
+}
+
+.account-settings .account-settings-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 12px;
+	margin-top: 30px;
+}
+
+.account-settings .account-settings-actions button {
+	padding: 10px 30px;
+	border: 1px solid #ddd;
+	border-radius: 20px;
+	background: none;
+	font-weight: 600;
+}
+
+.account-settings .account-settings-actions button:hover {
+	background: #f0f0f0;
+}
+
+.account-settings .account-settings-actions .save-button {
+	border: none;
+	background: #7046c6;
+	color: white;
+}
+
+.account-settings .account-settings-actions .save-button:hover {
+	background: #5e3eb0;
+}

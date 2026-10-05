@@ -29,7 +29,7 @@ export default function SearchList() {
 			? `/article/searchArticle.php?tag_id=${tagId}&page=${page}`
 			: `/article/searchArticle.php?search=${encodeURIComponent(search)}&page=${page}`;
 
-		api.get(url)
+		api.get(url, { signal: controller.signal })
 			.then(response => {
 				setArticles(response.data.articles);
 				setPagination(response.data.pagination);

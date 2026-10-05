@@ -16,7 +16,6 @@
 	margin: 0 0 22px;
 	font-size: 20px;
 	font-weight: 600;
-	color: #111;
 }
 
 .trending-list {
@@ -37,12 +36,7 @@
 	display: flex;
 	flex-wrap: wrap;
 	gap: 4px;
-	color: #666;
 	font-size: 14px;
-}
-
-.trending-meta b {
-	color: black;
 }
 
 .trending-meta span {
@@ -71,9 +65,7 @@
 	border: 1px solid #ddd;
 	border-radius: 20px;
 	background: white;
-	color: #111;
 	font-size: 15px;
-	cursor: pointer;
 }
 
 .topic-item:hover {

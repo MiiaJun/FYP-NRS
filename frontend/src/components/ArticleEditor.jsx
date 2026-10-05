@@ -9,7 +9,7 @@ import LoadingOverlay from "./LoadingOverlay";
 import "ckeditor5/ckeditor5.css";
 import "./CreateArticle.css";
 
-export default function ArticleEditor({ initialData, onSave, isEditing = false, heading }) {
+export default function ArticleEditor({ initialData, onSave, isEditing = false, heading, onBackgroundChange }) {
 	const formRef = useRef(null);
 	const [thumbnailPreview, setThumbnailPreview] = useState(initialData?.thumbnail || null);
 	const [isUploading, setIsUploading] = useState(false);
@@ -20,6 +20,7 @@ export default function ArticleEditor({ initialData, onSave, isEditing = false, 
 	const [tagInput, setTagInput] = useState("");
 	const [showTagDropdown, setShowTagDropdown] = useState(false);
 	const [categories, setCategories] = useState([]);
+	const [backgrounds, setBackgrounds] = useState([]);
 
 	const [publishMode, setPublishMode] = useState("now");
 	const [scheduledDate, setScheduledDate] = useState("");
@@ -53,8 +54,21 @@ export default function ArticleEditor({ initialData, onSave, isEditing = false, 
 		tags: initialData?.tags || [],
 		content: initialData?.content || "",
 		thumbnail: initialData?.thumbnail || null,
+		backgroundId: initialData?.background_cosmetic_id ?? "",
 		published_at: null
 	});
+
+	const selectedBackground = backgrounds.find(
+		background => background.cosmetic_id == formData.backgroundId
+	);
+
+	const backgroundUrl = selectedBackground?.image_url || null;
+
+	useEffect(() => {
+		if (onBackgroundChange) {
+			onBackgroundChange(backgroundUrl);
+		}
+	}, [backgroundUrl, onBackgroundChange]);
 
 	useEffect(() => {
 		api.get("/article/listTag.php")
@@ -75,6 +89,17 @@ export default function ArticleEditor({ initialData, onSave, isEditing = false, 
 			.catch((error) => {
 				showNotification(
 					error.response?.data?.message || "Failed to load categories",
+					"error"
+				);
+			});
+
+		api.get("/user/listMyBackgroundCosmetic.php")
+			.then(response => {
+				setBackgrounds(response.data.cosmetics);
+			})
+			.catch(error => {
+				showNotification(
+					error.response?.data?.message || "Failed to load backgrounds",
 					"error"
 				);
 			});
@@ -383,6 +408,41 @@ export default function ArticleEditor({ initialData, onSave, isEditing = false, 
 						}}
 					/>
                 </div>
+
+				<div className="form-group">
+					<label>Article background</label>
+
+					<div className="background-picker">
+						<button
+							type="button"
+							className={`background-option ${formData.backgroundId === "" ? "selected" : ""}`}
+							disabled={isLoading}
+							onClick={() => setFormData(prev => ({
+								...prev,
+								backgroundId: ""
+							}))}
+						>
+							<span className="background-option-empty" />
+							<span>No background</span>
+						</button>
+
+						{backgrounds.map(background => (
+							<button
+								key={background.cosmetic_id}
+								type="button"
+								className={`background-option ${formData.backgroundId == background.cosmetic_id ? "selected" : ""}`}
+								disabled={isLoading}
+								onClick={() => setFormData(prev => ({
+									...prev,
+									backgroundId: background.cosmetic_id
+								}))}
+							>
+								<img src={background.image_url} alt="" />
+								<span>{background.name}</span>
+							</button>
+						))}
+					</div>
+				</div>
 
 				{!isEditing && (
 					<div className="publish-settings">

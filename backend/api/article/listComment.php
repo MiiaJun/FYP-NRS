@@ -31,6 +31,12 @@ if (isset($_SESSION["user_id"])) {
             c.updated_at,
             u.username,
             u.profile_picture,
+			(
+				SELECT cosmetic.image_url
+				FROM cosmetic
+				JOIN user_equipped_cosmetic equipped ON cosmetic.cosmetic_id = equipped.cosmetic_id
+				WHERE equipped.user_id = u.user_id AND cosmetic.cosmetic_type_id = 1
+			) AS profile_frame_url,
             SUM(cr.reaction = 1) AS like_count,
             SUM(cr.reaction = 0) AS dislike_count,
             MAX(CASE WHEN cr.user_id = ? THEN cr.reaction END) AS user_reaction
@@ -61,6 +67,12 @@ if (isset($_SESSION["user_id"])) {
             c.updated_at,
             u.username,
             u.profile_picture,
+			(
+				SELECT cosmetic.image_url
+				FROM cosmetic
+				JOIN user_equipped_cosmetic equipped ON cosmetic.cosmetic_id = equipped.cosmetic_id
+				WHERE equipped.user_id = u.user_id AND cosmetic.cosmetic_type_id = 1
+			) AS profile_frame_url,
             SUM(cr.reaction = 1) AS like_count,
             SUM(cr.reaction = 0) AS dislike_count,
             NULL AS user_reaction
