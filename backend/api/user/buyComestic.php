@@ -177,5 +177,6 @@ if (!$conn->commit()) {
 
 echo json_encode([
     "success" => true,
+	"amount" => $amount,
     "message" => "Cosmetic purchased successfully"
 ]);

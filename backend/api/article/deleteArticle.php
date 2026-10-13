@@ -31,22 +31,16 @@ $stmt = $conn->prepare(
 );
 
 if (!$stmt) {
-    http_response_code(500);
-    echo json_encode([
-        "success" => false,
-        "message" => "Server error"
-    ]);
-    exit;
+	http_response_code(500);
+	echo json_encode(["success" => false, "message" => "Server error"]);
+	exit;
 }
 
 $stmt->bind_param("i", $articleId);
 
 if (!$stmt->execute()) {
     http_response_code(500);
-    echo json_encode([
-        "success" => false,
-        "message" => "Server error"
-    ]);
+    echo json_encode(["success" => false, "message" => "Server error"]);
     exit;
 }
 

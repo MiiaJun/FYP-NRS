@@ -95,15 +95,15 @@ if ($type == 1) {
             message,
             created_at
         )
-        SELECT
+         SELECT
             subscriber_id,
             ?,
             ?,
             ?,
             ?,
             ?
-        FROM user_subscription
-        WHERE subscribed_to_id = ?"
+         FROM user_subscription
+         WHERE subscribed_to_id = ?"
     );
 } else {
 	$stmt = $conn->prepare(
