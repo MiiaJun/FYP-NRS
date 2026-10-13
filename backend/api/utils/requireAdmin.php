@@ -13,10 +13,7 @@ if (!isset($_SESSION["user_id"])) {
 $userId = $_SESSION["user_id"];
 
 $stmt = $conn->prepare(
-	"SELECT
-		role_id,
-		status,
-		COALESCE(suspended_until > NOW(), 0) AS is_suspended
+	"SELECT role_id, status, COALESCE(suspended_until > NOW(), 0) AS is_suspended
 	 FROM users
 	 WHERE user_id = ?"
 );
@@ -37,7 +34,6 @@ if (!$stmt->execute()) {
 
 $result = $stmt->get_result();
 $stmt->close();
-
 $user = $result->fetch_assoc();
 
 if (!$user) {

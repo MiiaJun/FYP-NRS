@@ -77,23 +77,3 @@
 .reported-content .reported-review:hover {
 	background: #5e3eb0;
 }
-
-.reported-content .resolved-action {
-	flex-shrink: 0;
-	width: 120px;
-	padding: 10px 0;
-	border-radius: 20px;
-	font-size: 14px;
-	font-weight: 600;
-	text-align: center;
-}
-
-.reported-content .resolved-action.removed {
-	background: #f8dddd;
-	color: #bd3e3e;
-}
-
-.reported-content .resolved-action.dismissed {
-	background: #e0f2e6;
-	color: #2e8b57;
-}
