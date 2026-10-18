@@ -5,12 +5,6 @@ export default function NewsCard({ article, onClick, children }) {
     return (
         <article className="news-card" onClick={onClick}>
             <div className="news-thumbnail">
-                {article.trending && (
-                    <span className="trending-badge">
-                        TRENDING
-                    </span>
-                )}
-
                 {article.thumbnail && (
                     <img src={article.thumbnail} alt={article.title} />
                 )}

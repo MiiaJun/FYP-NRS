@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useModal } from '../context/ModalContext';
 import { useNotification } from "../context/NotificationContext";
 import { getTimeAgo } from "../utils/date";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import api from "../api/axios";
+import ReportModal from "./ReportModal";
 import "./Comment.css";
 
 export default function Comment({ comment, repliesByParent, onReply, onEditComment, onDeleteComment }) {
+	const { hash } = useLocation();
 	const [reaction, setReaction] = useState(comment.user_reaction);
 	const [likeCount, setLikeCount] = useState(comment.like_count);
 	const [showReply, setShowReply] = useState(false);
@@ -17,6 +20,7 @@ export default function Comment({ comment, repliesByParent, onReply, onEditComme
 	const { user, isLoggedIn} = useAuth();
 	const { openLogin } = useModal();
 	const { showNotification } = useNotification();
+	const [showReportModal, setShowReportModal] = useState(false);
 
 	const replies = repliesByParent[comment.comment_id] ?? [];
 
@@ -116,6 +120,33 @@ export default function Comment({ comment, repliesByParent, onReply, onEditComme
 		}
 	};
 
+	const handleReport = () => {
+		if (!isLoggedIn) {
+			openLogin();
+			return;
+		}
+
+		setShowReportModal(true);
+	};
+
+	const handleSubmitReport = async reason => {
+		try {
+			const response = await api.post("/article/createReport.php", {
+				comment_id: comment.comment_id,
+				reason
+			});
+
+			showNotification(response.data.message, "success");
+			return true;
+		} catch (error) {
+			showNotification(
+				error.response?.data?.message || "Failed to submit report",
+				"error"
+			);
+			return false;
+		}
+	};
+
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
@@ -129,6 +160,10 @@ export default function Comment({ comment, repliesByParent, onReply, onEditComme
 				parent_comment_id: comment.comment_id,
 				content: replyText
 			});
+
+			void api.post("/user/createCommentNotification.php", {
+				comment_id: response.data.comment.comment_id
+			}).catch(() => {});
 
 			onReply(response.data.comment);
 			setReplyText("");
@@ -165,7 +200,10 @@ export default function Comment({ comment, repliesByParent, onReply, onEditComme
 	};
 
 	return (
-		<div className="comment">
+		<div
+			className={`comment ${hash === `#comment-${comment.comment_id}` ? "comment-target" : ""}`}
+			id={`comment-${comment.comment_id}`}
+		>
 			<div className="comment-avatar">
 				<img
 					className="comment-profile-picture"
@@ -193,7 +231,7 @@ export default function Comment({ comment, repliesByParent, onReply, onEditComme
 					</b>
 				</div>
 
-				{editing ? (
+				{comment.status == 1 && editing ? (
 					<form className="edit-form" onSubmit={handleSubmitEdit}>
 						<textarea
 							value={editText}
@@ -224,47 +262,49 @@ export default function Comment({ comment, repliesByParent, onReply, onEditComme
 					</p>
 				)}
 
-				<div className="comment-actions">
-					<button
-						className={reaction === 1 ? "active" : ""}
-						onClick={handleLike}
-					>
-						<ThumbsUp size={18} />
-					</button>
-
-					<span>{likeCount}</span>
-
-					<button
-						className={reaction === 0 ? "active" : ""}
-						onClick={handleDislike}
-					>
-						<ThumbsDown size={18} />
-					</button>
-
-					<button
-						className="reply-button"
-						onClick={handleReply}
-					>
-						Reply
-					</button>
-
-					{isLoggedIn && comment.user_id === user?.user_id ? (
-						<>
-							<button className="edit-button" onClick={() => setEditing(true)}>
-								Edit
-							</button>
-
-							<button className="delete-button" onClick={handleDelete}>
-								Delete
-							</button>
-						</>
-					) : (
-						<button className="report-button">
-							Report
+				{comment.status == 1 && (
+					<div className="comment-actions">
+						<button
+							className={reaction === 1 ? "active" : ""}
+							onClick={handleLike}
+						>
+							<ThumbsUp size={18} />
 						</button>
-					)}
-				</div>
-				{showReply && (
+
+						<span>{likeCount}</span>
+
+						<button
+							className={reaction === 0 ? "active" : ""}
+							onClick={handleDislike}
+						>
+							<ThumbsDown size={18} />
+						</button>
+
+						<button
+							className="reply-button"
+							onClick={handleReply}
+						>
+							Reply
+						</button>
+
+						{isLoggedIn && comment.user_id === user?.user_id ? (
+							<>
+								<button className="edit-button" onClick={() => setEditing(true)}>
+									Edit
+								</button>
+
+								<button className="delete-button" onClick={handleDelete}>
+									Delete
+								</button>
+							</>
+						) : (
+							<button className="report-button" onClick={handleReport}>
+								Report
+							</button>
+						)}
+					</div>
+				)}
+				{comment.status == 1 && showReply && (
 					<form className="reply-form" onSubmit={handleSubmit}>
 						<textarea 
 							value={replyText}
@@ -305,6 +345,13 @@ export default function Comment({ comment, repliesByParent, onReply, onEditComme
 					</div>
 				)}
 			</div>
+			{showReportModal && (
+				<ReportModal
+					isArticle={false}
+					onConfirm={handleSubmitReport}
+					onClose={() => setShowReportModal(false)}
+				/>
+			)}
 		</div>
 	);
 }

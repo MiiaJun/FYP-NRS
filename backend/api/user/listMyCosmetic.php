@@ -10,7 +10,6 @@ $stmt = $conn->prepare(
         c.cosmetic_id,
         c.name,
         c.image_url,
-        c.rarity,
         c.cosmetic_type_id,
         CASE
             WHEN equipped.cosmetic_id IS NULL THEN 0

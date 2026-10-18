@@ -3,12 +3,36 @@
 	width: 100%;
 	max-width: 800px;
 	display: flex;
-    flex-direction: column;
+	flex-direction: column;
 	margin: 0 auto;
 }
 
 .notification-page h1 {
 	margin: 0 0 20px;
+}
+
+.notification-page .notification-tabs {
+	display: flex;
+	gap: 24px;
+	border-bottom: 1px solid #ddd;
+}
+
+.notification-page .notification-tabs button {
+	padding: 12px 0;
+	border: none;
+	border-bottom: 2px solid transparent;
+	background: none;
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.notification-page .notification-tabs button:hover {
+	color: #7046c6;
+}
+
+.notification-page .notification-tabs button.active {
+	color: #7046c6;
+	border-bottom-color: #7046c6;
 }
 
 .notification-page .notification-content {
@@ -19,21 +43,37 @@
 
 .notification-page .notification-item {
 	display: flex;
-	flex-direction: column;
-	gap: 8px;
+	align-items: flex-start;
+	gap: 16px;
 	padding: 18px 16px;
 	border: 1px solid #ddd;
 }
 
-.notification-page .notification-item.unread {
-	background-color: #faf7ff;
-	border-left: 4px solid #111;
-	padding-left: 12px;
+.notification-page .notification-icon {
+	display: flex;
+	align-items: center;
+	height: 24px;
+}
+
+.notification-page .notification-type-3 .notification-icon {
+	color: #d99c24;
+}
+
+.notification-page .notification-type-4 .notification-icon {
+	color: #bd3e3e;
+}
+
+.notification-page .notification-text {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	min-width: 0;
 }
 
 .notification-page .notification-item p {
 	margin: 0;
 	font-size: 16px;
+	line-height: 24px;
 	white-space: pre-wrap;
 	overflow-wrap: anywhere;
 }
@@ -69,5 +109,32 @@
 }
 
 .notification-page .notification-read-all:disabled {
+	opacity: 0.5;
+}
+
+.notification-page .notification-pagination {
+	display: flex;
+	justify-content: center;
+	gap: 12px;
+	margin-top: 24px;
+}
+
+.notification-page .notification-pagination button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	border: 1px solid #ddd;
+	border-radius: 50%;
+	background: none;
+}
+
+.notification-page .notification-pagination button:hover:not(:disabled) {
+	color: #7046c6;
+	border-color: #7046c6;
+}
+
+.notification-page .notification-pagination button:disabled {
 	opacity: 0.5;
 }

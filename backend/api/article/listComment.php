@@ -26,6 +26,7 @@ if (isset($_SESSION["user_id"])) {
             c.article_id,
             c.user_id,
             c.content,
+			c.status,
             c.parent_comment_id,
             c.created_at,
             c.updated_at,
@@ -43,7 +44,7 @@ if (isset($_SESSION["user_id"])) {
          FROM comment c
          JOIN users u ON c.user_id = u.user_id
          LEFT JOIN comment_reaction cr ON c.comment_id = cr.comment_id
-         WHERE c.article_id = ? AND c.status = 1
+         WHERE c.article_id = ? AND c.status IN (1, 3, 4)
          GROUP BY c.comment_id
          ORDER BY c.created_at ASC"
     );
@@ -62,6 +63,7 @@ if (isset($_SESSION["user_id"])) {
             c.article_id,
             c.user_id,
             c.content,
+			c.status,
             c.parent_comment_id,
             c.created_at,
             c.updated_at,
@@ -79,7 +81,7 @@ if (isset($_SESSION["user_id"])) {
          FROM comment c
          JOIN users u ON c.user_id = u.user_id
          LEFT JOIN comment_reaction cr ON c.comment_id = cr.comment_id
-         WHERE c.article_id = ? AND c.status = 1
+         WHERE c.article_id = ? AND c.status IN (1, 3, 4)
          GROUP BY c.comment_id
          ORDER BY c.created_at ASC"
     );
@@ -110,6 +112,19 @@ while ($comment = $result->fetch_assoc()) {
     if ($comment["user_reaction"] !== null) {
         $comment["user_reaction"] = (int) $comment["user_reaction"];
     }
+
+	if ($comment["status"] == 3 || $comment["status"] == 4) {
+		if ($comment["status"] == 3) {
+			$comment["content"] = "This comment was deleted by the author.";
+		} elseif ($comment["status"] == 4) {
+			$comment["content"] = "This comment was removed by an admin.";
+		}
+
+		$comment["username"] = "[deleted]";
+		$comment["user_id"] = null;
+		$comment["profile_picture"] = null;
+		$comment["profile_frame_url"] = null;
+	}
 
     $comments[] = $comment;
 }

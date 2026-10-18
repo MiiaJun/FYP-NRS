@@ -94,7 +94,6 @@ export default function SuspendUserModal({ username, initialReason = "", warning
 						value={reason}
 						onChange={e => setReason(e.target.value)}
 						maxLength={2000}
-						disabled={isSubmitting}
 						required
 					/>
 

@@ -47,7 +47,7 @@ if (mb_strlen($content) > 2000) {
 }
 
 $stmt = $conn->prepare(
-    "SELECT user_id FROM comment WHERE comment_id = ?"
+    "SELECT user_id FROM comment WHERE comment_id = ? AND status = 1"
 );
 
 if (!$stmt) {
@@ -90,7 +90,7 @@ if ($comment["user_id"] != $userId) {
 $stmt = $conn->prepare(
     "UPDATE comment
      SET content = ?, updated_at = NOW()
-     WHERE comment_id = ? AND user_id = ?"
+     WHERE comment_id = ? AND user_id = ? AND status = 1"
 );
 
 if (!$stmt) {
@@ -115,6 +115,7 @@ $stmt = $conn->prepare(
         c.article_id,
         c.user_id,
         c.content,
+		c.status,
         c.parent_comment_id,
         c.created_at,
         c.updated_at,

@@ -10,7 +10,6 @@ $stmt = $conn->prepare(
         c.cosmetic_id,
         c.name,
         c.image_url,
-        c.rarity,
         c.cosmetic_type_id,
         c.price,
         CASE

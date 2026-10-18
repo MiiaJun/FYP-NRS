@@ -5,6 +5,7 @@ import { useNotification } from "../context/NotificationContext";
 import { ThumbsUp, ThumbsDown, Bookmark, Flag, Share2, Sparkles  } from "lucide-react";
 import api from "../api/axios";
 import AISummaryModal from "./AISummaryModal";
+import ReportModal from "./ReportModal";
 import "./ArticleActions.css";
 
 export default function ArticleActions({ articleId }) {
@@ -17,6 +18,7 @@ export default function ArticleActions({ articleId }) {
 	const [showAISummary, setShowAISummary] = useState(false);
 	const { showNotification } = useNotification();
 	const [loadingSummary, setLoadingSummary] = useState(false);
+	const [showReportModal, setShowReportModal] = useState(false);
 
 	useEffect(() => {
 		api.get(`/article/getReaction.php?id=${articleId}`)
@@ -143,6 +145,33 @@ export default function ArticleActions({ articleId }) {
 		}
 	};
 
+	const handleReport = () => {
+		if (!isLoggedIn) {
+			openLogin();
+			return;
+		}
+
+		setShowReportModal(true);
+	};
+
+	const handleSubmitReport = async reason => {
+		try {
+			const response = await api.post("/article/createReport.php", {
+				article_id: articleId,
+				reason
+			});
+
+			showNotification(response.data.message, "success");
+			return true;
+		} catch (error) {
+			showNotification(
+				error.response?.data?.message || "Failed to submit report",
+				"error"
+			);
+			return false;
+		}
+	};
+
     return (
 		<>
 			<div className="article-actions">
@@ -170,7 +199,7 @@ export default function ArticleActions({ articleId }) {
 					Bookmark
 				</button>
 
-				<button>
+				<button onClick={handleReport}>
 					<Flag size={18} />
 					Report
 				</button>
@@ -190,6 +219,12 @@ export default function ArticleActions({ articleId }) {
 					summary={summary}
 					loading={loadingSummary}
 					onClose={() => setShowAISummary(false)}
+				/>
+			)}
+			{showReportModal && (
+				<ReportModal
+					onConfirm={handleSubmitReport}
+					onClose={() => setShowReportModal(false)}
 				/>
 			)}
 		</>

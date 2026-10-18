@@ -16,7 +16,12 @@ export default function AdminHeader() {
 
 	return (
 		<header className="admin-header">
-			<div className="logo" onClick={() => navigate("/")}>P</div>
+			<img
+				className="logo"
+				src="/logo.png"
+				alt="Logo"
+				onClick={() => navigate("/")}
+			/>
 			<h1>Admin Dashboard</h1>
 			<div className="header-profile">
 				<button

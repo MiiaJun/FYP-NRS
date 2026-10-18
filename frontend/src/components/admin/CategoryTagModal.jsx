@@ -50,7 +50,6 @@ export default function CategoryTagModal({ type, isEditing = false, initialName 
 						value={name}
 						onChange={e => setName(e.target.value)}
 						maxLength={30}
-						disabled={isSubmitting}
 						required
 					/>
 

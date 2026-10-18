@@ -8,7 +8,7 @@ $tab = $_GET["tab"] ?? "news";
 $sort = $_GET["sort"] ?? "latest";
 $categoryId = null;
 
-if ($tab !== "news" && $tab !== "for-you") {
+if ($tab !== "news") {
 	if (!ctype_digit($tab) || (int) $tab < 1) {
 		http_response_code(400);
 		echo json_encode([
@@ -20,7 +20,7 @@ if ($tab !== "news" && $tab !== "for-you") {
 	$categoryId = (int) $tab;
 }
 
-if ($sort !== "latest" && $sort !== "trending") {
+if (!in_array($sort, ["latest", "trending", "helpful"], true)) {
 	http_response_code(400);
 	echo json_encode([
 		"success" => false,
@@ -42,9 +42,11 @@ $page = (int) $page;
 $offset = ($page - 1) * $limit;
 
 if ($sort === "latest") {
-	$orderBy = "a.published_at DESC";
+    $orderBy = "a.published_at DESC";
+} elseif ($sort === "trending") {
+    $orderBy = "a.trending_score DESC, a.published_at DESC";
 } else {
-	$orderBy = "a.trending_score DESC, a.published_at DESC";
+    $orderBy = "a.bridging_score IS NULL, a.bridging_score DESC, a.published_at DESC";
 }
 
 if ($categoryId !== null) {

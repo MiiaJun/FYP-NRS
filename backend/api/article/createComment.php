@@ -121,6 +121,7 @@ $stmt = $conn->prepare(
         c.article_id,
         c.user_id,
         c.content,
+		c.status,
         c.parent_comment_id,
         c.created_at,
         c.updated_at,

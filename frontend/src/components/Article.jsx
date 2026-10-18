@@ -20,6 +20,12 @@ export default function Article({ onBackgroundChange }) {
 	const { user } = useAuth();
 	const [article, setArticle] = useState(null);
 	const [errorMessage, setErrorMessage] = useState(null);
+	const trustScore = article?.trust_score ?? null;
+	const trustScoreClass =
+		trustScore === null ? "none"
+		: trustScore >= 80 ? "high"
+		: trustScore >= 50 ? "medium"
+		: "low";
 
 	useEffect(() => {
 		const controller = new AbortController();
@@ -99,6 +105,12 @@ export default function Article({ onBackgroundChange }) {
 							? `Updated ${getTimeAgo(article.updated_at)}`
 							: getTimeAgo(article.published_at)}
 					</span>
+					<span
+						className={`trust-score ${trustScoreClass}`}
+						title="How helpful this article is to readers who usually disagree with each other"
+					>
+						Trust Score: {trustScore ?? "Not enough ratings"}
+					</span>
 				</div>
 
 				{article.thumbnail && (
@@ -116,6 +128,19 @@ export default function Article({ onBackgroundChange }) {
 					}}
 				/>
 				<ArticleActions articleId={article.article_id} />
+				{article.tags.length > 0 && (
+					<div className="article-tags">
+						{article.tags.map(tag => (
+							<button
+								className="article-tag"
+								key={tag.tag_id}
+								onClick={() => navigate(`/search?tag_id=${tag.tag_id}`)}
+							>
+								{tag.name}
+							</button>
+						))}
+					</div>
+				)}
 			</article>
 			<CommentList articleId={article.article_id} />
 		</div>

@@ -117,7 +117,12 @@ export default function Header() {
 
 	return (
 		<header className="header">
-			<div className="logo" onClick={() => navigate("/")}>P</div>
+			<img
+				className="logo"
+				src="/logo.png"
+				alt="Logo"
+				onClick={() => navigate("/")}
+			/>
 			<div className="search-bar">
 				<form className="search" onSubmit={(e) => { e.preventDefault(); handleSearch(keyword); }}>
 					<Search size={20} />

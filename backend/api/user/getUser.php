@@ -2,6 +2,10 @@
 require __DIR__ . "/../../config/cors.php";
 require __DIR__ . "/../../config/database.php";
 
+const TRUST_MIN_ARTICLES = 3;
+const TRUST_PRIOR = 3;
+const TRUST_SCALE = 250;
+
 $userId = $_GET["id"] ?? null;
 
 if (!$userId || !is_numeric($userId)) {
@@ -19,18 +23,28 @@ $stmt = $conn->prepare(
         u.username,
         u.profile_picture,
 		u.bio,
-		(
-            SELECT c.image_url
-            FROM cosmetic c 
-            JOIN user_equipped_cosmetic equipped ON c.cosmetic_id = equipped.cosmetic_id AND c.cosmetic_type_id = equipped.cosmetic_type_id
-            WHERE equipped.user_id = u.user_id AND c.cosmetic_type_id = 1
-        ) AS profile_frame_url,
+		(SELECT c.image_url
+         FROM cosmetic c 
+         JOIN user_equipped_cosmetic equipped ON c.cosmetic_id = equipped.cosmetic_id AND c.cosmetic_type_id = equipped.cosmetic_type_id
+         WHERE equipped.user_id = u.user_id AND c.cosmetic_type_id = 1) AS profile_frame_url,
         (SELECT COUNT(*)
          FROM user_subscription
          WHERE subscribed_to_id = u.user_id) AS followers_count,
         (SELECT COUNT(*)
          FROM user_subscription
-         WHERE subscriber_id = u.user_id) AS following_count
+         WHERE subscriber_id = u.user_id) AS following_count,
+		(SELECT COUNT(*)
+         FROM article a
+         WHERE a.author_id = u.user_id
+         AND a.status = 1
+         AND a.published_at <= NOW()
+         AND a.bridging_score IS NOT NULL) AS rated_articles,
+        (SELECT COALESCE(SUM(a.bridging_score), 0)
+         FROM article a
+         WHERE a.author_id = u.user_id
+         AND a.status = 1
+         AND a.published_at <= NOW()
+         AND a.bridging_score IS NOT NULL) AS bridging_sum
      FROM users u
      WHERE u.user_id = ?"
 );
@@ -61,6 +75,17 @@ if (!$user) {
     ]);
     exit;
 }
+
+$ratedArticles = (int) $user["rated_articles"];
+
+if ($ratedArticles >= TRUST_MIN_ARTICLES) {
+	$score = 50 + TRUST_SCALE * $user["bridging_sum"] / ($ratedArticles + TRUST_PRIOR);
+	$user["trust_score"] = (int) max(0, min(100, round($score)));
+} else {
+	$user["trust_score"] = null;
+}
+
+unset($user["rated_articles"], $user["bridging_sum"]);
 
 echo json_encode([
     "success" => true,

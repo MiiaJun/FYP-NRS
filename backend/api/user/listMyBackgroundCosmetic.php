@@ -10,7 +10,6 @@ $stmt = $conn->prepare(
         c.cosmetic_id,
         c.name,
         c.image_url,
-        c.rarity,
         c.cosmetic_type_id
      FROM cosmetic c
      JOIN user_cosmetic owned ON c.cosmetic_id = owned.cosmetic_id

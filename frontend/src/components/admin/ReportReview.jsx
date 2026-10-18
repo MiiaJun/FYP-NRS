@@ -190,7 +190,7 @@ export default function ReportReview({ articleId, commentId, onBack, onResolved 
 						</p>
 						<a
 							className="review-view"
-							href={`/article/${report.parent_article_id}`}
+							href={`/article/${report.parent_article_id}#comment-${report.comment_id}`}
 							target="_blank"
 						>
 							View article

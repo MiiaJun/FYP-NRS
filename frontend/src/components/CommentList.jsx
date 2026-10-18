@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useModal } from '../context/ModalContext';
 import { useNotification } from "../context/NotificationContext";	
@@ -7,6 +8,7 @@ import Comment from "./Comment";
 import "./CommentList.css";
 
 export default function CommentList({ articleId }) {
+	const { hash } = useLocation();
 	const { user, isLoggedIn } = useAuth();
 	const { openLogin } = useModal();
 	const { showNotification } = useNotification();
@@ -26,6 +28,21 @@ export default function CommentList({ articleId }) {
 			);
 		});
 	}, [articleId, user?.user_id]);
+
+	useEffect(() => {
+		if (!hash.startsWith("#comment-")) {
+			return;
+		}
+
+		const target = document.getElementById(hash.slice(1));
+
+		if (target) {
+			target.scrollIntoView({
+				behavior: "smooth",
+				block: "center"
+			});
+		}
+	}, [comments, hash]);
 
 	const handleCommentChange = (e) => {
 		setCommentText(e.target.value);
@@ -82,6 +99,10 @@ export default function CommentList({ articleId }) {
 				content: commentText
 			});
 
+			void api.post("/user/createCommentNotification.php", {
+				comment_id: response.data.comment.comment_id
+			}).catch(() => {});
+
 			setComments(prev => [response.data.comment, ...prev]);
 			setCommentText("");
 
@@ -110,7 +131,19 @@ export default function CommentList({ articleId }) {
 
 	const handleDeleteComment = (commentId) => {
 		setComments(prev =>
-			prev.filter(comment => comment.comment_id !== commentId)
+			prev.map(comment =>
+				comment.comment_id === commentId
+					? {
+						...comment,
+						status: 3,
+						content: "This comment was deleted by the author.",
+						username: "[deleted]",
+						user_id: null,
+						profile_picture: null,
+						profile_frame_url: null
+					}
+					: comment
+			)
 		);
 	};
 

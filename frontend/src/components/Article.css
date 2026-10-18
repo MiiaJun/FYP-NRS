@@ -60,6 +60,32 @@
 	color: #7046c6;
 }
 
+.article .trust-score {
+	font-size: 14px;
+	border-radius: 20px;
+	padding: 7px 14px;
+}
+
+.article .trust-score.high {
+	color: #287a4b;
+	background: #e3f5ea;
+}
+
+.article .trust-score.medium {
+	color: #a66a00;
+	background: #fff0d2;
+}
+
+.article .trust-score.low {
+	color: #c62828;
+	background: #ffe5e5;
+}
+
+.article .trust-score.none {
+	color: #666;
+	background: #f0f0f0;
+}
+
 /* Main thumbnail */
 
 .article .article-thumbnail {
@@ -178,4 +204,23 @@
 	border: 1px solid #ddd;
 	border-radius: 8px;
 	background: #f7f7f7;
+}
+
+.article .article-tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.article .article-tag {
+	padding: 4px 8px;
+	border: none;
+	border-radius: 16px;
+	background: #f0ebfb;
+	color: #5e3eb0;
+	font-size: 14px;
+}
+
+.article .article-tag:hover {
+	background: #e6ddf8;
 }

@@ -51,6 +51,12 @@
 	font-size: 16px;
 }
 
+.admin-action-overlay .form-group {
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 18px;
+}
+
 .admin-action-overlay label,
 .admin-action-overlay .action-label {
 	display: block;
@@ -161,4 +167,12 @@
 
 .admin-action-overlay .action-save:hover:not(:disabled) {
 	background: #5e3eb0;
+}
+
+.admin-action-overlay .cosmetic-preview {
+	display: block;
+	max-width: 100%;
+	height: 160px;
+	margin-bottom: 16px;
+	object-fit: contain;
 }

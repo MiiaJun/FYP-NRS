@@ -17,7 +17,7 @@ if (!$commentId || !is_numeric($commentId)) {
 }
 
 $stmt = $conn->prepare(
-    "SELECT user_id FROM comment WHERE comment_id = ?"
+    "SELECT user_id FROM comment WHERE comment_id = ? AND status = 1"
 );
 
 if (!$stmt) {
@@ -59,8 +59,8 @@ if ($comment["user_id"] != $userId) {
 
 $stmt = $conn->prepare(
     "UPDATE comment
-     SET status = 0
-     WHERE comment_id = ? AND user_id = ?"
+     SET status = 3
+     WHERE comment_id = ? AND user_id = ? AND status = 1"
 );
 
 if (!$stmt) {

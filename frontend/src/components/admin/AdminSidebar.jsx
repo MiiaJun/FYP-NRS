@@ -24,6 +24,10 @@ export default function AdminSidebar() {
 				<NavLink to="/admin/categories-tags">
 					Categories & Tags
 				</NavLink>
+				
+				<NavLink to="/admin/cosmetics">
+					Cosmetics
+				</NavLink>
 			</nav>
 		</aside>
 	);

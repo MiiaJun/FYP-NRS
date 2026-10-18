@@ -24,19 +24,6 @@
     object-fit: contain;
 }
 
-.news-card .trending-badge {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    z-index: 1;
-    padding: 6px 12px;
-    border-radius: 12px;
-    background: #7046c6;
-    color: white;
-    font-size: 12px;
-    font-weight: 600;
-}
-
 .news-card .news-content {
     flex: 1;
     margin: 0 20px;

@@ -110,7 +110,7 @@ export default function ResolutionReview({ resolutionId, onBack }) {
 						</p>
 						<a
 							className="review-view"
-							href={`/article/${resolution.parent_article_id}`}
+							href={`/article/${resolution.parent_article_id}#comment-${resolution.comment_id}`}
 							target="_blank"
 						>
 							View article

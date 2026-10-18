@@ -24,6 +24,7 @@ import ResolvedReport from "./components/admin/ResolvedReport";
 import ModerationRecord from "./components/admin/ModerationRecord";
 import UserAccount from "./components/admin/UserAccount";
 import CategoriesTags from "./components/admin/CategoriesTags";
+import Cosmetics from "./components/admin/Cosmetics";
 import ModalRoot from "./components/ModalRoot";
 import NotificationRoot from "./components/NotificationRoot";
 
@@ -57,6 +58,7 @@ export default function App() {
 								<Route path="moderation" element={<ModerationRecord />} />
 								<Route path="users" element={<UserAccount />} />
 								<Route path="categories-tags" element={<CategoriesTags />} />
+								<Route path="cosmetics" element={<Cosmetics />} />
 							</Route>
 						</Routes>
 						<ModalRoot />

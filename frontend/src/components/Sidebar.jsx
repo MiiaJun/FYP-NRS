@@ -4,25 +4,14 @@ import { getTimeAgo } from "../utils/date";
 import api from "../api/axios";
 import "./Sidebar.css";
 
-const recommendedTopics = [
-	"Esports",
-	"PC Gaming",
-	"Indie Games",
-	"Hardware",
-	"Reviews",
-	"Retro Gaming",
-	"Mobile"
-];
-
 export default function Sidebar() {
 	const navigate = useNavigate();
 	const [trendingNews, setTrendingNews] = useState([]);
+	const [recommendedTopics, setRecommendedTopics] = useState([]);
 
 	useEffect(() => {
 		const loadTrendingNews = async () => {
 			try {
-				await api.post("/article/calculateTrendingScore.php");
-
 				const response = await api.get("/article/listTrending.php");
 				setTrendingNews(response.data.articles);
 			} catch (error) {
@@ -31,6 +20,19 @@ export default function Sidebar() {
 		};
 
 		loadTrendingNews();
+	}, []);
+
+	useEffect(() => {
+		const loadRecommendedTopics = async () => {
+			try {
+				const response = await api.get("/article/listRecommendedTopics.php");
+				setRecommendedTopics(response.data.tags);
+			} catch (error) {
+				console.error("Failed to load recommended topics", error);
+			}
+		};
+
+		loadRecommendedTopics();
 	}, []);
 
 	return (
@@ -59,12 +61,13 @@ export default function Sidebar() {
 				<h2>Recommended Topics</h2>
 
 				<div className="topic-list">
-					{recommendedTopics.map((topic) => (
-						<button 
-							className="topic-item" 
-							key={topic}
+					{recommendedTopics.map(topic => (
+						<button
+							className="topic-item"
+							key={topic.tag_id}
+							onClick={() => navigate(`/search?tag_id=${topic.tag_id}`)}
 						>
-							{topic}
+							{topic.name}
 						</button>
 					))}
 				</div>
