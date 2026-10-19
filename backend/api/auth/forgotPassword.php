@@ -127,7 +127,7 @@ if (!$stmt->execute()) {
 
 $stmt->close();
 
-$resetUrl = "http://localhost:5173/reset-password?token=" . $token;
+$resetUrl = "https://nrs.rabutenri.com/reset-password?token=" . $token;
 
 try {
     $resend = Resend::client($resendApiKey);

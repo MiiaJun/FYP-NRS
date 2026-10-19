@@ -1,4 +1,1 @@
-config/cloudinary.php
-config/openai.php
 /vendor/
-config/resend.php
