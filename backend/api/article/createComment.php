@@ -154,8 +154,10 @@ if (!$stmt->execute()) {
 
 $result = $stmt->get_result();
 $stmt->close();
-
 $comment = $result->fetch_assoc();
+$comment["like_count"] = 0;
+$comment["dislike_count"] = 0;
+$comment["user_reaction"] = null;
 
 echo json_encode([
     "success" => true,

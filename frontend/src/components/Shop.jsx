@@ -46,7 +46,7 @@ export default function Shop() {
 			.finally(() => {
 				setIsShopLoading(false);
 			});
-    }, [isLoggedIn]);
+    }, [isLoggedIn, showNotification]);
 
 	const handleBuy = async (cosmeticId) => {
 		if (buying !== null) {

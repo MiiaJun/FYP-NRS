@@ -8,6 +8,7 @@ export function AuthProvider({ children }) {
 	const [isLoading, setIsLoading] = useState(true);
 	const [followingUsers, setFollowingUsers] = useState([]);
 	const [coinReward, setCoinReward] = useState(null);
+	const [hasUnreadNotification, setHasUnreadNotification] = useState(false);
 
 	const isLoggedIn = user !== null;
 
@@ -18,6 +19,15 @@ export function AuthProvider({ children }) {
 
 		const response = await api.get("/user/getFollowing.php");
 		setFollowingUsers(response.data.users);
+	}, [isLoggedIn]);
+
+	const refreshNotificationStatus = useCallback(async () => {
+		if (!isLoggedIn) {
+			return;
+		}
+
+		const response = await api.get("/user/getNotificationStatus.php");
+		setHasUnreadNotification(response.data.has_unread);
 	}, [isLoggedIn]);
 
 	useEffect(() => {
@@ -36,6 +46,10 @@ export function AuthProvider({ children }) {
 		refreshFollowing().catch(() => {});
 	}, [refreshFollowing]);
 
+	useEffect(() => {
+		refreshNotificationStatus().catch(() => {});
+	}, [refreshNotificationStatus]);
+
 	const login = async (email, password) => {
 		const response = await api.post("/auth/login.php", {
 			email,
@@ -52,6 +66,7 @@ export function AuthProvider({ children }) {
 			setUser(null);
 			setFollowingUsers([]);
 			setCoinReward(null);
+			setHasUnreadNotification(false);
 		}
 	};
 
@@ -64,6 +79,7 @@ export function AuthProvider({ children }) {
 				setUser(null);
 				setFollowingUsers([]);
 				setCoinReward(null);
+				setHasUnreadNotification(false);
 			}
 			throw error;
 		}
@@ -98,6 +114,8 @@ export function AuthProvider({ children }) {
 				coinReward,
 				showCoinReward,
 				clearCoinReward,
+				hasUnreadNotification,
+				refreshNotificationStatus,
 			}}
 		>
 			{children}

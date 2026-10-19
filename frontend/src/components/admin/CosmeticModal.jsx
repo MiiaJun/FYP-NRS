@@ -95,6 +95,7 @@ export default function CosmeticModal({ isEditing = false, cosmetic = null, onCo
 							className="action-name"
 							value={formData.cosmetic_type_id}
 							onChange={handleChange}
+							disabled={isEditing}
 						>
 							<option value="1">Profile frame</option>
 							<option value="2">Background</option>

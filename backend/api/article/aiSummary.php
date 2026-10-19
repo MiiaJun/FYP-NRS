@@ -45,7 +45,7 @@ $stmt->close();
 $stmt = $conn->prepare(
 	"SELECT content, updated_at
 	 FROM article
-	 WHERE article_id = ?"
+	 WHERE article_id = ? AND status = 1 AND published_at <= NOW()"
 );
 
 if (!$stmt) {

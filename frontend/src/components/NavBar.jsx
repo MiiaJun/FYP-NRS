@@ -5,7 +5,7 @@ import { House, UserRoundPen, Bell, Bookmark, NotebookPen, ListChecks, ShieldUse
 import "./NavBar.css";
 
 export default function NavBar() {
-	const { user, isLoggedIn } = useAuth();
+	const { user, isLoggedIn, hasUnreadNotification } = useAuth();
     const { openLogin } = useModal();
 
 	const handleLoginClick = (e) => {
@@ -40,7 +40,10 @@ export default function NavBar() {
 			</NavLink>
 
 			<NavLink to="/notification" className="navbar-item" onClick={handleLoginClick}>
-				<Bell size={30} />
+				<Bell
+					size={30}
+					className={isLoggedIn && hasUnreadNotification ? "notification-shake" : ""}
+				/>
 				<span>Notification</span>
 			</NavLink>
 

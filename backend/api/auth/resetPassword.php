@@ -75,7 +75,9 @@ $userId = $tokenRecord["user_id"];
 $tokenId = $tokenRecord["token_id"];
 
 $stmt = $conn->prepare(
-    "UPDATE users SET password = ? WHERE user_id = ?"
+    "UPDATE users
+     SET password = ?, auth_version = auth_version + 1
+     WHERE user_id = ?"
 );
 
 if (!$stmt) {

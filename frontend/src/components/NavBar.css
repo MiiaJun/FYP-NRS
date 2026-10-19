@@ -19,3 +19,14 @@
 .navbar-item:hover {
 	background-color: rgba(112, 70, 198, 0.3);
 }
+
+.navbar .notification-shake {
+	transform-origin: 50% 20%;
+	animation: gem-shake 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.navbar .notification-shake {
+		animation: none;
+	}
+}

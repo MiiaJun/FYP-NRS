@@ -7,7 +7,6 @@ $data = json_decode(file_get_contents("php://input"), true);
 $cosmeticId = $data["cosmetic_id"] ?? null;
 $name = $data["name"] ?? "";
 $imageUrl = $data["image_url"] ?? "";
-$typeId = $data["cosmetic_type_id"] ?? null;
 $price = $data["price"] ?? null;
 
 if (!$cosmeticId || !is_numeric($cosmeticId)) {
@@ -44,15 +43,6 @@ if (mb_strlen($name) > 30) {
 	echo json_encode([
 		"success" => false,
 		"message" => "Cosmetic name cannot exceed 30 characters"
-	]);
-	exit;
-}
-
-if (!is_numeric($typeId)) {
-	http_response_code(400);
-	echo json_encode([
-		"success" => false,
-		"message" => "Invalid cosmetic type"
 	]);
 	exit;
 }
@@ -100,7 +90,7 @@ if ($result->num_rows === 0) {
 
 $stmt = $conn->prepare(
 	"UPDATE cosmetic
-	 SET cosmetic_type_id = ?, name = ?, image_url = ?, price = ?
+	 SET name = ?, image_url = ?, price = ?
 	 WHERE cosmetic_id = ?"
 );
 
@@ -110,7 +100,7 @@ if (!$stmt) {
 	exit;
 }
 
-$stmt->bind_param("issii", $typeId, $name, $imageUrl, $price, $cosmeticId);
+$stmt->bind_param("ssii", $name, $imageUrl, $price, $cosmeticId);
 
 if (!$stmt->execute()) {
 	http_response_code(500);

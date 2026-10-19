@@ -13,9 +13,9 @@ if (!isset($_SESSION["user_id"])) {
 $userId = $_SESSION["user_id"];
 
 $stmt = $conn->prepare(
-	"SELECT role_id, status, COALESCE(suspended_until > NOW(), 0) AS is_suspended
-	 FROM users
-	 WHERE user_id = ?"
+    "SELECT role_id, status, auth_version, COALESCE(suspended_until > NOW(), 0) AS is_suspended
+     FROM users
+     WHERE user_id = ?"
 );
 
 if (!$stmt) {
@@ -41,6 +41,18 @@ if (!$user) {
     echo json_encode([
         "success" => false,
         "message" => "User not found"
+    ]);
+    exit;
+}
+
+if (($_SESSION["auth_version"] ?? null) != $user["auth_version"]) {
+    session_unset();
+    session_destroy();
+
+    http_response_code(401);
+    echo json_encode([
+        "success" => false,
+        "message" => "Your session has expired. Please log in again."
     ]);
     exit;
 }

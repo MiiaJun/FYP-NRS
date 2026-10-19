@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 18, 2026 at 01:04 PM
+-- Generation Time: Oct 18, 2026 at 09:07 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -52,7 +52,7 @@ CREATE TABLE `article` (
   `published_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   `category_id` int(11) NOT NULL,
-  `trending_score` int(11) NOT NULL DEFAULT 0,
+  `trending_score` double NOT NULL DEFAULT 0,
   `score_calculated_at` datetime DEFAULT NULL,
   `background_cosmetic_id` int(11) DEFAULT NULL,
   `bridging_score` double DEFAULT NULL,
@@ -577,6 +577,7 @@ INSERT INTO `article_view` (`article_id`, `user_id`, `viewer_key`, `viewed_at`) 
 (68, 26, 'a6724b4c1f3680199072772bbdeeca300c83ce3255fa230a47ebe99c01e2d166', '2026-10-12 15:06:38'),
 (68, 1, 'abc3a47b8ad18b855c687d9ca2c6091ee7312db5563021942a57ada889c87b34', '2026-10-16 00:21:26'),
 (68, 27, 'e443e68b7cb47260cec664c485de79d5f31b397430b3e6da98d5a65403157779', '2026-10-11 21:22:47'),
+(69, 2, '0195616cec890a4dc990b9d0d41435fae026900a411f1fe03ba4c2e709701d69', '2026-10-18 21:10:52'),
 (69, 23, '0b95ee623f264837fdb38120bae0deda82924cabec868564663a5b2a023c963c', '2026-10-11 23:51:56'),
 (69, NULL, '2d73c95f72af612918fd0f9eaad8930f85f58a87784341c61f4ccd2c18c7b9e1', '2026-10-11 23:52:41'),
 (69, 28, '697c28b376901ffd7fa8c30e27f632147a39eaf6e8bced5f9c07fbd49b28012d', '2026-10-13 22:16:04'),
@@ -592,12 +593,14 @@ INSERT INTO `article_view` (`article_id`, `user_id`, `viewer_key`, `viewed_at`) 
 (71, 28, '697c28b376901ffd7fa8c30e27f632147a39eaf6e8bced5f9c07fbd49b28012d', '2026-10-13 22:13:59'),
 (71, 24, '8100f2b879e040593e98ced465000a2eb0479d0a77e56e8aa86708d912b04c45', '2026-10-14 22:50:06'),
 (71, NULL, '85c242f8f1b1d9484e49e827eedbe0f141cfa6f171eeb3e84743908bb177375a', '2026-10-14 16:44:43'),
+(72, 2, '0195616cec890a4dc990b9d0d41435fae026900a411f1fe03ba4c2e709701d69', '2026-10-18 21:10:50'),
 (72, 23, '0b95ee623f264837fdb38120bae0deda82924cabec868564663a5b2a023c963c', '2026-10-12 22:02:45'),
 (72, 1, 'abc3a47b8ad18b855c687d9ca2c6091ee7312db5563021942a57ada889c87b34', '2026-10-15 01:14:35'),
 (72, 27, 'e443e68b7cb47260cec664c485de79d5f31b397430b3e6da98d5a65403157779', '2026-10-13 21:57:40'),
 (73, 23, '0b95ee623f264837fdb38120bae0deda82924cabec868564663a5b2a023c963c', '2026-10-15 01:37:10'),
 (73, 28, '697c28b376901ffd7fa8c30e27f632147a39eaf6e8bced5f9c07fbd49b28012d', '2026-10-13 22:09:42'),
 (73, 1, 'abc3a47b8ad18b855c687d9ca2c6091ee7312db5563021942a57ada889c87b34', '2026-10-15 01:14:30'),
+(74, 2, '0195616cec890a4dc990b9d0d41435fae026900a411f1fe03ba4c2e709701d69', '2026-10-18 21:10:47'),
 (74, 23, '0b95ee623f264837fdb38120bae0deda82924cabec868564663a5b2a023c963c', '2026-10-15 01:37:44'),
 (74, 28, '697c28b376901ffd7fa8c30e27f632147a39eaf6e8bced5f9c07fbd49b28012d', '2026-10-13 22:06:23'),
 (74, 24, '8100f2b879e040593e98ced465000a2eb0479d0a77e56e8aa86708d912b04c45', '2026-10-14 22:50:25'),
@@ -1103,43 +1106,44 @@ CREATE TABLE `users` (
   `role_id` int(11) NOT NULL,
   `status` tinyint(4) NOT NULL DEFAULT 1,
   `suspended_until` datetime DEFAULT NULL,
-  `coin` int(11) UNSIGNED NOT NULL DEFAULT 0
+  `coin` int(11) UNSIGNED NOT NULL DEFAULT 0,
+  `auth_version` int(11) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `profile_picture`, `bio`, `role_id`, `status`, `suspended_until`, `coin`) VALUES
-(1, 'John', 'john@test.com', '$2y$10$2bgDcYwtVoVV4/32Dfr5luO8Ynxxu02i4t8Jj7aSS1a.755FXDALW', 'https://res.cloudinary.com/bl7j2jno/image/upload/v1789634379/FYP-NRS/profilepic/sff5dherflwsxnpxqs0d.png', 'this is a new bio123', 2, 1, NULL, 450),
-(2, 'John2', 'john2@test.com', '$2y$10$QBi18IpHKKg7IwVggtRScudlvyFbxPxeP3ZkX16xN7MJ/dECG8kge', NULL, 'This user prefers to keep things a mystery.', 2, 1, NULL, 100),
-(3, 'Alice', 'alice@test.com', '$2y$10$9zc8LRpNOevFc365SGvE4ueeuqk8pbWP.ySHox8Kfql4QyqsHwSjC', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0),
-(4, 'Bob', 'bob@test.com', '$2y$10$AAff8V3tWThxSPHTZjeTn.TSrycexVlIv/afGRKlEfnmfkP3Gn81O', NULL, 'This user prefers to keep things a mystery.', 1, 4, NULL, 0),
-(5, 'Charlie', 'charlie@test.com', '$2y$10$odZ3w1VEzS7SZ9GyzeFyae.Qv1P4.Hy3fOIBU6l85VJci9vNraVKe', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0),
-(6, 'David', 'david@test.com', '$2y$10$LThkJ.b7YZIn7OT9slpwP.5KiknDJeubNqK/k3hPup46DN1qRXVfy', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0),
-(7, 'Emma', 'emma@test.com', '$2y$10$TP2TsoBsgsqphw8ftxGUEuNIUBFZlpYGJg38iglRwi2kCdTnfbwne', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0),
-(8, 'Fiona', 'fiona@test.com', '$2y$10$BVI0pBz2XFAcT4y0iquqSeejORBTflzTgGYn4aanUpdiT3FmcF8HK', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0),
-(9, 'George', 'george@test.com', '$2y$10$/2j2gW66lNdmQkGJiCvkZ.QE2oT2803dgHyA76Vg7qBVmxhkHBD56', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0),
-(10, 'Hannah', 'hannah@test.com', '$2y$10$C.GY6tGsYy/VhkoqEtzAlOF28AjC3C.t8m5/xG1wX5SljwenJRG.e', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0),
-(11, 'Isaac', 'isaac@test.com', '$2y$10$DgrivSZVIZVFNpwxMdWZxu3VeU6IMPgqG9vN74fA7SYFS4nIaG65.', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0),
-(12, 'Julia', 'julia@test.com', '$2y$10$kE9ryyEE7rMmndeXTWi5V.9EjMXFA7u20qfLxQoVs7MYft5FodJOK', NULL, 'This user prefers to keep things a mystery.', 1, 1, '2026-10-23 19:25:02', 0),
-(13, 'Kevin', 'kevin@test.com', '$2y$10$V8Qnhzk.X.84q0CTm8jVC.h40FjHfp7Mxbd3KSGoLzoFF4JCM6BwO', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0),
-(14, 'Lily', 'lily@test.com', '$2y$10$m/9s9.gvNXOLsdyhELVx5OAihL4EjV7iLcEsdHl9SwGMnVDVG2ZDG', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0),
-(15, 'Mason', 'mason@test.com', '$2y$10$grJU5xfzY6s9UYP6pwzxo.dnAgCvMKzBl4HCY85WvSg9XIY81UT0.', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0),
-(16, 'Nora', 'nora@test.com', '$2y$10$B/ZsvxzJrwUlny20wCGuD.jQ2RLRscDm7bHRD96olKMXX/WnBdNuG', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0),
-(17, 'Owen', 'owen@test.com', '$2y$10$V5Jj73iREv0DVzukWhZmXu5XrxSjoegVXHRfqjPxguSCReJKur8Si', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0),
-(18, 'Priya', 'priya@test.com', '$2y$10$ZnDYT.Nri4i2CYLBy6yN1.mGzRRn2liJXvUaJ/ynSOxJVbYBU0n.K', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0),
-(19, 'Quinn', 'quinn@test.com', '$2y$10$AE93kIzLNlnp/KdMvADGteUOstm3wadPiu0LDLlnc0Lvtz0BY9lcK', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0),
-(20, 'Ryan', 'ryan@test.com', '$2y$10$tCrfgTui.Pl30R4QAGJLzuw97WA08OEHq43YgMD4ym4Aj1M.sHzTm', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0),
-(21, 'Kagi News Gaming', 'kagi-gaming@test.com', '$2y$10$pQAgWvFOT17Fds/CM/Sdn.kCC9ahA/XpCmDP3OaT4rkFdYCfHroQC', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0),
-(22, 'Kagi News Nintendo', 'kagi-nintendo@test.com', '$2y$10$x36BR1MdLGFP5xGhALxR/emz6HlBxbKzYL7Ij70N1AJhiOVVVHfQ.', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0),
-(23, 'The Almighty', 'bryan@gmail.com', '$2y$10$3UTpgdpcvtAa3EoVkVQx4uw1MnRgFrmgPlAOx3WAYQSzFHXdcvTtC', 'https://res.cloudinary.com/bl7j2jno/image/upload/v1791128588/FYP-NRS/profilepic/xjojz3row2efq1nzydq0.jpg', 'Smite me, O mighty smiter!', 1, 1, NULL, 210),
-(24, 'priss', 'priscillachew23@gmail.com', '$2y$10$OZjUbl9HXmSg071JHxcmV.E5jOkj8BLOxcwrjBbRMN1V7s3anBXSO', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 230),
-(25, 'Jun', 'jun@test.com', '$2y$10$Z/NqUqyRYdIDFIk./OyV6OgkmoBJI2VzZeUKdWmAl7Md.wO5zpjky', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0),
-(26, 'YY', 'tanyuyang2@gmail.com', '$2y$10$hgPa8pCMD8V7i7jSIxRjMeM.rEXkz13DUPFuNLBoTvbFdajk2zIu.', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 430),
-(27, 'Hazzy1209', 'abdullh001@mymail.sim.edu.sg', '$2y$10$Qc1zmf1QbfcF0vqkkusnW.LLnleukAlJEq3597cgX2M5We7ZWYrC2', 'https://res.cloudinary.com/bl7j2jno/image/upload/v1791338056/FYP-NRS/profilepic/vsmkigyjxzew62ixabku.jpg', 'This user prefers to keep things a mystery.', 1, 1, NULL, 400),
-(28, 'iDontShowSpeed67', 'hkah048@uowmail.edu.au', '$2y$10$1mbVsk9pB.ARsVygq4HFh.GRFzgdWUZc4RtFGuao.yXBGdvOpNdEy', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 200),
-(29, 'controlpost', 'tanyuyang2+fypnrs@gmail.com', '$2y$10$crIaW2Ezmuv1nO6bzohFsemZItQNcS/usB0Qdqa64qq8H89k0hXIe', NULL, 'Holds the two calibration posts used to test the bridging score.', 1, 1, NULL, 100);
+INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `profile_picture`, `bio`, `role_id`, `status`, `suspended_until`, `coin`, `auth_version`) VALUES
+(1, 'John', 'john@test.com', '$2y$10$2bgDcYwtVoVV4/32Dfr5luO8Ynxxu02i4t8Jj7aSS1a.755FXDALW', 'https://res.cloudinary.com/bl7j2jno/image/upload/v1789634379/FYP-NRS/profilepic/sff5dherflwsxnpxqs0d.png', 'this is a new bio123', 2, 1, NULL, 450, 1),
+(2, 'John2', 'john2@test.com', '$2y$10$QBi18IpHKKg7IwVggtRScudlvyFbxPxeP3ZkX16xN7MJ/dECG8kge', NULL, 'This user prefers to keep things a mystery.', 2, 1, NULL, 100, 1),
+(3, 'Alice', 'alice@test.com', '$2y$10$9zc8LRpNOevFc365SGvE4ueeuqk8pbWP.ySHox8Kfql4QyqsHwSjC', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0, 1),
+(4, 'Bob', 'bob@test.com', '$2y$10$AAff8V3tWThxSPHTZjeTn.TSrycexVlIv/afGRKlEfnmfkP3Gn81O', NULL, 'This user prefers to keep things a mystery.', 1, 4, NULL, 0, 1),
+(5, 'Charlie', 'charlie@test.com', '$2y$10$odZ3w1VEzS7SZ9GyzeFyae.Qv1P4.Hy3fOIBU6l85VJci9vNraVKe', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0, 1),
+(6, 'David', 'david@test.com', '$2y$10$LThkJ.b7YZIn7OT9slpwP.5KiknDJeubNqK/k3hPup46DN1qRXVfy', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0, 1),
+(7, 'Emma', 'emma@test.com', '$2y$10$TP2TsoBsgsqphw8ftxGUEuNIUBFZlpYGJg38iglRwi2kCdTnfbwne', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0, 1),
+(8, 'Fiona', 'fiona@test.com', '$2y$10$BVI0pBz2XFAcT4y0iquqSeejORBTflzTgGYn4aanUpdiT3FmcF8HK', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0, 1),
+(9, 'George', 'george@test.com', '$2y$10$/2j2gW66lNdmQkGJiCvkZ.QE2oT2803dgHyA76Vg7qBVmxhkHBD56', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0, 1),
+(10, 'Hannah', 'hannah@test.com', '$2y$10$C.GY6tGsYy/VhkoqEtzAlOF28AjC3C.t8m5/xG1wX5SljwenJRG.e', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0, 1),
+(11, 'Isaac', 'isaac@test.com', '$2y$10$DgrivSZVIZVFNpwxMdWZxu3VeU6IMPgqG9vN74fA7SYFS4nIaG65.', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0, 1),
+(12, 'Julia', 'julia@test.com', '$2y$10$kE9ryyEE7rMmndeXTWi5V.9EjMXFA7u20qfLxQoVs7MYft5FodJOK', NULL, 'This user prefers to keep things a mystery.', 1, 1, '2026-10-23 19:25:02', 0, 1),
+(13, 'Kevin', 'kevin@test.com', '$2y$10$V8Qnhzk.X.84q0CTm8jVC.h40FjHfp7Mxbd3KSGoLzoFF4JCM6BwO', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0, 1),
+(14, 'Lily', 'lily@test.com', '$2y$10$m/9s9.gvNXOLsdyhELVx5OAihL4EjV7iLcEsdHl9SwGMnVDVG2ZDG', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0, 1),
+(15, 'Mason', 'mason@test.com', '$2y$10$grJU5xfzY6s9UYP6pwzxo.dnAgCvMKzBl4HCY85WvSg9XIY81UT0.', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0, 1),
+(16, 'Nora', 'nora@test.com', '$2y$10$B/ZsvxzJrwUlny20wCGuD.jQ2RLRscDm7bHRD96olKMXX/WnBdNuG', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0, 1),
+(17, 'Owen', 'owen@test.com', '$2y$10$V5Jj73iREv0DVzukWhZmXu5XrxSjoegVXHRfqjPxguSCReJKur8Si', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0, 1),
+(18, 'Priya', 'priya@test.com', '$2y$10$ZnDYT.Nri4i2CYLBy6yN1.mGzRRn2liJXvUaJ/ynSOxJVbYBU0n.K', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0, 1),
+(19, 'Quinn', 'quinn@test.com', '$2y$10$AE93kIzLNlnp/KdMvADGteUOstm3wadPiu0LDLlnc0Lvtz0BY9lcK', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0, 1),
+(20, 'Ryan', 'ryan@test.com', '$2y$10$tCrfgTui.Pl30R4QAGJLzuw97WA08OEHq43YgMD4ym4Aj1M.sHzTm', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0, 1),
+(21, 'Kagi News Gaming', 'kagi-gaming@test.com', '$2y$10$pQAgWvFOT17Fds/CM/Sdn.kCC9ahA/XpCmDP3OaT4rkFdYCfHroQC', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0, 1),
+(22, 'Kagi News Nintendo', 'kagi-nintendo@test.com', '$2y$10$x36BR1MdLGFP5xGhALxR/emz6HlBxbKzYL7Ij70N1AJhiOVVVHfQ.', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0, 1),
+(23, 'The Almighty', 'bryan@gmail.com', '$2y$10$3UTpgdpcvtAa3EoVkVQx4uw1MnRgFrmgPlAOx3WAYQSzFHXdcvTtC', 'https://res.cloudinary.com/bl7j2jno/image/upload/v1791128588/FYP-NRS/profilepic/xjojz3row2efq1nzydq0.jpg', 'Smite me, O mighty smiter!', 1, 1, NULL, 210, 1),
+(24, 'priss', 'priscillachew23@gmail.com', '$2y$10$OZjUbl9HXmSg071JHxcmV.E5jOkj8BLOxcwrjBbRMN1V7s3anBXSO', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 230, 1),
+(25, 'Jun', 'jun@test.com', '$2y$10$Z/NqUqyRYdIDFIk./OyV6OgkmoBJI2VzZeUKdWmAl7Md.wO5zpjky', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 0, 1),
+(26, 'YY', 'tanyuyang2@gmail.com', '$2y$10$hgPa8pCMD8V7i7jSIxRjMeM.rEXkz13DUPFuNLBoTvbFdajk2zIu.', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 430, 1),
+(27, 'Hazzy1209', 'abdullh001@mymail.sim.edu.sg', '$2y$10$Qc1zmf1QbfcF0vqkkusnW.LLnleukAlJEq3597cgX2M5We7ZWYrC2', 'https://res.cloudinary.com/bl7j2jno/image/upload/v1791338056/FYP-NRS/profilepic/vsmkigyjxzew62ixabku.jpg', 'This user prefers to keep things a mystery.', 1, 1, NULL, 400, 1),
+(28, 'iDontShowSpeed67', 'hkah048@uowmail.edu.au', '$2y$10$1mbVsk9pB.ARsVygq4HFh.GRFzgdWUZc4RtFGuao.yXBGdvOpNdEy', NULL, 'This user prefers to keep things a mystery.', 1, 1, NULL, 200, 1),
+(29, 'controlpost', 'tanyuyang2+fypnrs@gmail.com', '$2y$10$crIaW2Ezmuv1nO6bzohFsemZItQNcS/usB0Qdqa64qq8H89k0hXIe', NULL, 'Holds the two calibration posts used to test the bridging score.', 1, 1, NULL, 100, 1);
 
 -- --------------------------------------------------------
 

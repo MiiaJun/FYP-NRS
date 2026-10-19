@@ -142,8 +142,8 @@ if ($notification) {
 	$notificationId = $notification["notification_id"];
 	
 	$message = $type == 5
-		? "new comments on your article: " . $comment["title"]
-		: "new replies to your comment on: " . $comment["title"];
+		? " new comments on your article: " . $comment["title"]
+		: " new replies to your comment on: " . $comment["title"];
 
 	$stmt = $conn->prepare(
 		"UPDATE notification

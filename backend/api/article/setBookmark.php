@@ -45,46 +45,47 @@ if ($existingBookmark) {
         "DELETE FROM article_bookmark
          WHERE article_id = ? AND user_id = ?"
     );
-
-    if (!$stmt) {
-        http_response_code(500);
-        echo json_encode(["success" => false, "message" => "Server error"]);
-        exit;
-    }
-
-    $stmt->bind_param("ii", $articleId, $userId);
-
-    if (!$stmt->execute()) {
-        http_response_code(500);
-        echo json_encode(["success" => false, "message" => "Server error"]);
-        exit;
-    }
-
-    $stmt->close();
-    $bookmarked = false;
 } else {
     $stmt = $conn->prepare(
         "INSERT INTO article_bookmark (article_id, user_id)
-         VALUES (?, ?)"
+         SELECT article_id, ?
+         FROM article
+         WHERE article_id = ?
+         AND status = 1
+         AND published_at <= NOW()"
     );
-
-    if (!$stmt) {
-        http_response_code(500);
-        echo json_encode(["success" => false, "message" => "Server error"]);
-        exit;
-    }
-
-    $stmt->bind_param("ii", $articleId, $userId);
-
-    if (!$stmt->execute()) {
-        http_response_code(500);
-        echo json_encode(["success" => false, "message" => "Server error"]);
-        exit;
-    }
-
-    $stmt->close();
-    $bookmarked = true;
 }
+
+if (!$stmt) {
+    http_response_code(500);
+    echo json_encode(["success" => false, "message" => "Server error"]);
+    exit;
+}
+
+if ($existingBookmark) {
+    $stmt->bind_param("ii", $articleId, $userId);
+} else {
+    $stmt->bind_param("ii", $userId, $articleId);
+}
+
+if (!$stmt->execute()) {
+    http_response_code(500);
+    echo json_encode(["success" => false, "message" => "Server error"]);
+    exit;
+}
+
+if (!$existingBookmark && $stmt->affected_rows === 0) {
+    $stmt->close();
+    http_response_code(404);
+    echo json_encode([
+        "success" => false,
+        "message" => "Article not found or unavailable"
+    ]);
+    exit;
+}
+
+$stmt->close();
+$bookmarked = !$existingBookmark;
 
 echo json_encode([
     "success" => true,

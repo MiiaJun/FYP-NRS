@@ -30,6 +30,7 @@ $stmt = $conn->prepare(
 		u.status,
 		u.suspended_until,
 		u.coin,
+		u.auth_version,
 		COALESCE(u.suspended_until > NOW(), 0) AS is_suspended,
         (
             SELECT c.image_url
@@ -82,6 +83,7 @@ if ($user["status"] != 1 || $user["is_suspended"] == 1) {
 
 session_regenerate_id(true);
 $_SESSION["user_id"] = $user["user_id"];
+$_SESSION["auth_version"] = $user["auth_version"];
 
 echo json_encode([
     "success" => true,

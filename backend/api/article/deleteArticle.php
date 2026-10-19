@@ -60,7 +60,7 @@ if ($article["author_id"] != $userId) {
 $stmt = $conn->prepare(
     "UPDATE article
      SET status = 3
-     WHERE article_id = ? AND author_id = ?"
+     WHERE article_id = ? AND author_id = ? AND status IN (0, 1)"
 );
 
 if (!$stmt) {
@@ -77,7 +77,30 @@ if (!$stmt->execute()) {
     exit;
 }
 
+if ($stmt->affected_rows === 0) {
+    $stmt->close();
+    http_response_code(409);
+    echo json_encode([
+        "success" => false,
+        "message" => "This article was already deleted or removed by an admin"
+    ]);
+    exit;
+}
+
 $stmt->close();
+
+$stmt = $conn->prepare(
+    "DELETE FROM notification
+     WHERE article_id = ?
+     AND type = 1
+     AND created_at > NOW()"
+);
+
+if ($stmt) {
+    $stmt->bind_param("i", $articleId);
+    $stmt->execute();
+    $stmt->close();
+}
 
 echo json_encode([
     "success" => true,

@@ -27,7 +27,7 @@ export default function CommentList({ articleId }) {
 				"error"
 			);
 		});
-	}, [articleId, user?.user_id]);
+	}, [articleId, user?.user_id, showNotification]);
 
 	useEffect(() => {
 		if (!hash.startsWith("#comment-")) {
@@ -123,7 +123,7 @@ export default function CommentList({ articleId }) {
 		setComments(prev =>
 			prev.map(comment =>
 				comment.comment_id === updatedComment.comment_id
-					? updatedComment
+					? { ...comment, ...updatedComment }
 					: comment
 			)
 		);

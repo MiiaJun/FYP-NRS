@@ -44,7 +44,13 @@ $offset = ($page - 1) * $limit;
 if ($sort === "latest") {
     $orderBy = "a.published_at DESC";
 } elseif ($sort === "trending") {
-    $orderBy = "a.trending_score DESC, a.published_at DESC";
+    $orderBy = "CASE
+        WHEN a.score_calculated_at = (
+            SELECT MAX(score_calculated_at)
+            FROM article
+        ) THEN a.trending_score
+        ELSE 0
+    END DESC, a.published_at DESC";
 } else {
     $orderBy = "a.bridging_score IS NULL, a.bridging_score DESC, a.published_at DESC";
 }

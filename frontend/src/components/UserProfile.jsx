@@ -81,7 +81,7 @@ export default function UserProfile() {
 		} else {
 			setFollowing(false);
 		}
-	}, [id, isLoggedIn]);
+	}, [id, isLoggedIn, navigate, showNotification]);
 
 	const handleArticleClick = (article) => {
 		navigate(`/article/${article.article_id}`);

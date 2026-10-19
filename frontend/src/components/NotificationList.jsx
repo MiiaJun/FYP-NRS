@@ -20,7 +20,7 @@ const notificationIcons = {
 
 export default function NotificationList() {
 	const navigate = useNavigate();
-	const { isLoggedIn, isLoading } = useAuth();
+	const { isLoggedIn, isLoading, refreshNotificationStatus } = useAuth();
 	const { showNotification } = useNotification();
 	const [notifications, setNotifications] = useState([]);
 	const [isNotificationLoading, setIsNotificationLoading] = useState(true);
@@ -88,6 +88,7 @@ export default function NotificationList() {
 					notification_id: notification.notification_id
 				});
 
+				void refreshNotificationStatus().catch(() => {});
 				setRefreshCount(prev => prev + 1);
 			}
 		} catch (error) {}
@@ -113,6 +114,7 @@ export default function NotificationList() {
 		try {
 			await api.post("/user/markNotificationRead.php", {});
 
+			void refreshNotificationStatus().catch(() => {});
 			setPage(1);
 			setRefreshCount(prev => prev + 1);
 		} catch (error) {

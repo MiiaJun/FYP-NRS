@@ -31,45 +31,39 @@ if ($reaction === null) {
         "DELETE FROM comment_reaction
          WHERE comment_id = ? AND user_id = ?"
     );
-
-    if (!$stmt) {
-        http_response_code(500);
-        echo json_encode(["success" => false, "message" => "Server error"]);
-        exit;
-    }
-
-    $stmt->bind_param("ii", $commentId, $userId);
-
-    if (!$stmt->execute()) {
-        http_response_code(500);
-        echo json_encode(["success" => false, "message" => "Server error"]);
-        exit;
-    }
-
-    $stmt->close();
 } else {
     $stmt = $conn->prepare(
         "INSERT INTO comment_reaction (comment_id, user_id, reaction)
-         VALUES (?, ?, ?)
+         SELECT c.comment_id, ?, ?
+         FROM comment c
+         JOIN article a ON c.article_id = a.article_id
+         WHERE c.comment_id = ?
+         AND c.status = 1
+         AND a.status = 1
+         AND a.published_at <= NOW()
          ON DUPLICATE KEY UPDATE reaction = VALUES(reaction)"
     );
-
-    if (!$stmt) {
-        http_response_code(500);
-        echo json_encode(["success" => false, "message" => "Server error"]);
-        exit;
-    }
-
-    $stmt->bind_param("iii", $commentId, $userId, $reaction);
-
-    if (!$stmt->execute()) {
-        http_response_code(500);
-        echo json_encode(["success" => false, "message" => "Server error"]);
-        exit;
-    }
-
-    $stmt->close();
 }
+
+if (!$stmt) {
+    http_response_code(500);
+    echo json_encode(["success" => false, "message" => "Server error"]);
+    exit;
+}
+
+if ($reaction === null) {
+    $stmt->bind_param("ii", $commentId, $userId);
+} else {
+    $stmt->bind_param("iii", $userId, $reaction, $commentId);
+}
+
+if (!$stmt->execute()) {
+    http_response_code(500);
+    echo json_encode(["success" => false, "message" => "Server error"]);
+    exit;
+}
+
+$stmt->close();
 
 $stmt = $conn->prepare(
     "SELECT

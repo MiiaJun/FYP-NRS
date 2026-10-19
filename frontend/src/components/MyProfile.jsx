@@ -53,7 +53,7 @@ export default function MyProfile() {
 					"error"
 				);
 			});
-	}, [user]);
+	}, [user, showNotification]);
 
 	useEffect(() => {
 		if (!isLoggedIn) {
@@ -71,7 +71,7 @@ export default function MyProfile() {
 					"error"
 				);
 			});
-	}, [isLoggedIn]);
+	}, [isLoggedIn, showNotification]);
 
 	useEffect(() => {
 		if (publishedPage > publishedTotalPages) {

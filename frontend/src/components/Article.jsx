@@ -58,7 +58,7 @@ export default function Article({ onBackgroundChange }) {
 			});
 
 			return () => controller.abort();
-	}, [id, user?.user_id, navigate, onBackgroundChange]);
+	}, [id, user?.user_id, user?.role_id, navigate, onBackgroundChange]);
 
 	if (errorMessage) {
 		return <div>{errorMessage}</div>;
