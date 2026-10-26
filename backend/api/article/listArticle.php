@@ -9,7 +9,7 @@ $sort = $_GET["sort"] ?? "latest";
 $categoryId = null;
 
 if ($tab !== "news") {
-	if (!ctype_digit($tab) || (int) $tab < 1) {
+	if (!ctype_digit($tab) || $tab < 1) {
 		http_response_code(400);
 		echo json_encode([
 			"success" => false,
@@ -17,7 +17,7 @@ if ($tab !== "news") {
 		]);
 		exit;
 	}
-	$categoryId = (int) $tab;
+	$categoryId = $tab;
 }
 
 if (!in_array($sort, ["latest", "trending", "helpful"], true)) {

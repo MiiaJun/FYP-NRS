@@ -6,6 +6,9 @@ $page = $_GET["page"] ?? "1";
 $limit = 5;
 $search = $_GET["search"] ?? "";
 $tagId = $_GET["tag_id"] ?? null;
+$categoryId = $_GET["category_id"] ?? null;
+$sort = $_GET["sort"] ?? "latest";
+
 
 if (!is_string($search)) {
 	http_response_code(400);
@@ -34,6 +37,38 @@ if ($tagId !== null && (!ctype_digit($tagId) || $tagId < 1)) {
 		"message" => "Invalid tag ID"
 	]);
 	exit;
+}
+
+if ($categoryId !== null && (!ctype_digit($categoryId) || $categoryId < 1)) {
+	http_response_code(400);
+	echo json_encode([
+		"success" => false,
+		"message" => "Invalid category ID"
+	]);
+	exit;
+}
+
+if (!in_array($sort, ["latest", "trending", "helpful"], true)) {
+	http_response_code(400);
+	echo json_encode([
+		"success" => false,
+		"message" => "Invalid sort"
+	]);
+	exit;
+}
+
+if ($sort === "latest") {
+	$orderBy = "a.published_at DESC";
+} elseif ($sort === "trending") {
+	$orderBy = "CASE
+		WHEN a.score_calculated_at = (
+			SELECT MAX(score_calculated_at)
+			FROM article
+		) THEN a.trending_score
+		ELSE 0
+	END DESC, a.published_at DESC";
+} else {
+	$orderBy = "a.bridging_score IS NULL, a.bridging_score DESC, a.published_at DESC";
 }
 
 $tagName = null;
@@ -87,6 +122,7 @@ if ($tagId !== null) {
 		 JOIN article_tag at ON a.article_id = at.article_id
 		 WHERE a.status = 1
 		 AND a.published_at <= NOW()
+		 AND (? IS NULL OR a.category_id = ?)
 		 AND at.tag_id = ?"
 	);
 } else {
@@ -95,6 +131,7 @@ if ($tagId !== null) {
 		 FROM article
 		 WHERE status = 1
 		 AND published_at <= NOW()
+		 AND (? IS NULL OR category_id = ?)
 		 AND (
 			title LIKE ?
 			OR summary LIKE ?
@@ -109,9 +146,9 @@ if (!$stmt) {
 }
 
 if ($tagId !== null) {
-	$stmt->bind_param("i", $tagId);
+	$stmt->bind_param("iii", $categoryId, $categoryId, $tagId);
 } else {
-	$stmt->bind_param("ss", $searchTerm, $searchTerm);
+	$stmt->bind_param("iiss", $categoryId, $categoryId, $searchTerm, $searchTerm);
 }
 
 if (!$stmt->execute()) {
@@ -143,8 +180,9 @@ if ($tagId !== null) {
 		 JOIN article_tag at ON a.article_id = at.article_id
 		 WHERE a.status = 1
 		 AND a.published_at <= NOW()
+		 AND (? IS NULL OR a.category_id = ?)
 		 AND at.tag_id = ?
-		 ORDER BY a.published_at DESC
+		 ORDER BY {$orderBy}
 		 LIMIT ? OFFSET ?"
 	);
 } else {
@@ -163,11 +201,12 @@ if ($tagId !== null) {
 		 JOIN category c ON a.category_id = c.category_id
 		 WHERE a.status = 1
 		 AND a.published_at <= NOW()
+		 AND (? IS NULL OR a.category_id = ?)
 		 AND (
 			a.title LIKE ?
 			OR a.summary LIKE ?
-		)
-		 ORDER BY a.published_at DESC
+		 )
+		 ORDER BY {$orderBy}	
 		 LIMIT ? OFFSET ?"
 	);
 }
@@ -180,14 +219,18 @@ if (!$stmt) {
 
 if ($tagId !== null) {
 	$stmt->bind_param(
-		"iii", 
-		$tagId, 
-		$limit, 
+		"iiiii",
+		$categoryId,
+		$categoryId,
+		$tagId,
+		$limit,
 		$offset
 	);
 } else {
 	$stmt->bind_param(
-		"ssii",
+		"iissii",
+		$categoryId,
+		$categoryId,
 		$searchTerm,
 		$searchTerm,
 		$limit,
