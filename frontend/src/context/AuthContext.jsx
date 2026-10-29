@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { useLocation } from "react-router-dom";
 import api from "../api/axios";
 
 const AuthContext = createContext(null);
@@ -9,6 +10,8 @@ export function AuthProvider({ children }) {
 	const [followingUsers, setFollowingUsers] = useState([]);
 	const [coinReward, setCoinReward] = useState(null);
 	const [hasUnreadNotification, setHasUnreadNotification] = useState(false);
+	const [hasClaimableTask, setHasClaimableTask] = useState(false);
+	const location = useLocation();
 
 	const isLoggedIn = user !== null;
 
@@ -30,6 +33,18 @@ export function AuthProvider({ children }) {
 		setHasUnreadNotification(response.data.has_unread);
 	}, [isLoggedIn]);
 
+	const refreshTaskStatus = useCallback(async () => {
+		if (!isLoggedIn) {
+			return;
+		}
+
+		const response = await api.get("/user/getMissionStatus.php");
+
+		setHasClaimableTask(
+			response.data.missions.some(mission => mission.can_claim)
+		);
+	}, [isLoggedIn]);
+
 	useEffect(() => {
 		api.get("/auth/me.php")
 			.then(response => {
@@ -47,8 +62,31 @@ export function AuthProvider({ children }) {
 	}, [refreshFollowing]);
 
 	useEffect(() => {
-		refreshNotificationStatus().catch(() => {});
-	}, [refreshNotificationStatus]);
+		if (!isLoggedIn) {
+			return;
+		}
+
+		const checkNotificationStatus = () => {
+			if (document.visibilityState === "visible") {
+				refreshNotificationStatus().catch(() => {});
+			}
+		};
+
+		checkNotificationStatus();
+
+		const interval = setInterval(checkNotificationStatus, 300000);
+
+		window.addEventListener("focus", checkNotificationStatus);
+
+		return () => {
+			clearInterval(interval);
+			window.removeEventListener("focus", checkNotificationStatus);
+		};
+	}, [location.pathname, isLoggedIn, refreshNotificationStatus]);
+
+	useEffect(() => {
+		refreshTaskStatus().catch(() => {});
+	}, [refreshTaskStatus]);
 
 	const login = async (email, password) => {
 		const response = await api.post("/auth/login.php", {
@@ -67,6 +105,7 @@ export function AuthProvider({ children }) {
 			setFollowingUsers([]);
 			setCoinReward(null);
 			setHasUnreadNotification(false);
+			setHasClaimableTask(false);
 		}
 	};
 
@@ -80,6 +119,7 @@ export function AuthProvider({ children }) {
 				setFollowingUsers([]);
 				setCoinReward(null);
 				setHasUnreadNotification(false);
+				setHasClaimableTask(false);
 			}
 			throw error;
 		}
@@ -116,6 +156,8 @@ export function AuthProvider({ children }) {
 				clearCoinReward,
 				hasUnreadNotification,
 				refreshNotificationStatus,
+				hasClaimableTask,
+				refreshTaskStatus,
 			}}
 		>
 			{children}

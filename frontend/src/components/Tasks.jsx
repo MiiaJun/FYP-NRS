@@ -10,7 +10,7 @@ import "./Tasks.css";
 
 export default function Tasks() {
 	const navigate = useNavigate();
-	const { user, isLoggedIn, isLoading, refreshUser,showCoinReward } = useAuth();
+	const { user, isLoggedIn, isLoading, refreshUser, showCoinReward, refreshTaskStatus } = useAuth();
 	const { showNotification } = useNotification();
 	const [missions, setMissions] = useState([]);
 	const [isTasksLoading, setIsTasksLoading] = useState(true);
@@ -105,6 +105,7 @@ export default function Tasks() {
 				)
 			);
 			await refreshUser();
+			await refreshTaskStatus();
 			showCoinReward(response.data.amount ?? 0);
 		} catch (error) {
 			showNotification(

@@ -20,6 +20,24 @@
 	background-color: rgba(112, 70, 198, 0.3);
 }
 
+.navbar .navbar-icon {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+.navbar .navbar-alert-dot {
+	position: absolute;
+	top: -4px;
+	right: -5px;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: red;
+}
+
 .navbar .notification-shake {
 	transform-origin: 50% 20%;
 	animation: gem-shake 2.4s ease-in-out infinite;
