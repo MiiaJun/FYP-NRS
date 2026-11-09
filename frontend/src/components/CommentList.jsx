@@ -129,7 +129,7 @@ export default function CommentList({ articleId }) {
 		setComments(prev =>
 			prev.map(comment =>
 				comment.comment_id === updatedComment.comment_id
-					? { ...comment, ...updatedComment }
+					? { ...comment, ...updatedComment, just_created: true }
 					: comment
 			)
 		);
