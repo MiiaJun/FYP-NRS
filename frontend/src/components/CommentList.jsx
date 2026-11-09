@@ -103,7 +103,10 @@ export default function CommentList({ articleId }) {
 				comment_id: response.data.comment.comment_id
 			}).catch(() => {});
 
-			setComments(prev => [response.data.comment, ...prev]);
+			setComments(prev => [
+				{ ...response.data.comment, just_created: true },
+				...prev
+			]);
 			setCommentText("");
 
 			commentInputRef.current.style.height = "24px";
@@ -116,7 +119,10 @@ export default function CommentList({ articleId }) {
 	};
 
 	const handleReply = (newReply) => {
-		setComments(prev => [...prev, newReply]);
+		setComments(prev => [
+			...prev,
+			{ ...newReply, just_created: true }
+		]);
 	};
 
 	const handleEditComment = (updatedComment) => {
