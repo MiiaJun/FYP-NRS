@@ -227,7 +227,9 @@ export default function Comment({ comment, repliesByParent, onReply, onEditComme
 					<b>
 						{comment.updated_at
 							? `Edited ${getTimeAgo(comment.updated_at)}`
-							: getTimeAgo(comment.created_at)}
+							: comment.just_created
+								? "Just now"
+								: getTimeAgo(comment.created_at)}
 					</b>
 				</div>
 
